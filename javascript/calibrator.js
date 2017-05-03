@@ -1,7 +1,7 @@
 class Calibrator {
-	constructor(width) {
+	constructor(width,height) {
 		this.width = width;
-		this.height = this.width * 0.75;
+		this.height = height;
 
 		this.svg = d3.select("#calibrator")
 			.attr("width", this.width)
@@ -34,21 +34,16 @@ class Calibrator {
 			.attr("y",      function(d) { return d.y;      })
 			.attr("width",  function(d) { return d.width;  })
 			.attr("height", function(d) { return d.height; })
-			.call(d3.drag()
-	            .on("start", this.dragStarted)
-	            .on("drag", this.dragged)
-	            .on("end", this.dragEnded));
+			.call(d3.drag().on("drag",  this.dragCalibratorLine.bind(this)));
 		
 	}
 
-	dragStarted(d) {}
-	dragged(d) {
+	dragCalibratorLine(d) {
 		switch(d.id) {
-			case "leftLine":   d3.select(this).attr("x", d.x = d3.event.x); break;
-			case "rightLine":  d3.select(this).attr("x", d.x = d3.event.x); break;
-			case "topLine":    d3.select(this).attr("y", d.x = d3.event.y); break;
-			case "bottomLine": d3.select(this).attr("y", d.x = d3.event.y); break;
+			case "leftLine":   this.calibratorLinesContainer.select("#leftLine").attr  ("x", d.x = Math.max(0, Math.min(this.calibratorLines[1].x,d3.event.x))); break;
+			case "rightLine":  this.calibratorLinesContainer.select("#rightLine").attr ("x", d.x = Math.max(this.calibratorLines[0].x, Math.min(this.width,d3.event.x))); break;
+			case "topLine":    this.calibratorLinesContainer.select("#topLine").attr   ("y", d.y = Math.max(0, Math.min(this.calibratorLines[3].y,d3.event.y))); break;
+			case "bottomLine": this.calibratorLinesContainer.select("#bottomLine").attr("y", d.y = Math.max(this.calibratorLines[2].y, Math.min(this.height,d3.event.y))); break;
 		}
 	}
-	dragEnded(d) {}
 }

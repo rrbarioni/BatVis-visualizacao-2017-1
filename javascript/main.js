@@ -1,1 +1,1 @@
-var calibrator = new Calibrator(800);
+var calibrator = new Calibrator(800,600);
