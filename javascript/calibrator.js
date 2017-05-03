@@ -50,10 +50,10 @@ class Calibrator {
 
 	dragCalibratorLine(d) {
 		switch(d.id) {
-			case "leftLine":   { this.calibratorLinesContainer.select("#leftLine").attr  ("x", d.x = Math.max(0, Math.min(this.calibratorLinesValues[this.getLineIndexById("rightLine")].x,d3.event.x)));         this.updateCalibratorCells(); break; }
-			case "rightLine":  { this.calibratorLinesContainer.select("#rightLine").attr ("x", d.x = Math.max(this.calibratorLinesValues[this.getLineIndexById("leftLine")].x, Math.min(this.width,d3.event.x))); this.updateCalibratorCells(); break; }
-			case "topLine":    { this.calibratorLinesContainer.select("#topLine").attr   ("y", d.y = Math.max(0, Math.min(this.calibratorLinesValues[this.getLineIndexById("bottomLine")].y,d3.event.y)));        this.updateCalibratorCells(); break; }
-			case "bottomLine": { this.calibratorLinesContainer.select("#bottomLine").attr("y", d.y = Math.max(this.calibratorLinesValues[this.getLineIndexById("topLine")].y, Math.min(this.height,d3.event.y))); this.updateCalibratorCells(); break; }
+			case "leftLine":   { this.calibratorLinesContainer.select("#leftLine").attr  ("x", d.x = Math.max(0, Math.min(this.calibratorLinesValues[this.getLineIndexById("rightLine")].x,d3.event.x)));                                this.updateCalibratorCells(); break; }
+			case "rightLine":  { this.calibratorLinesContainer.select("#rightLine").attr ("x", d.x = Math.max(this.calibratorLinesValues[this.getLineIndexById("leftLine")].x, Math.min((this.width - this.lineThickness),d3.event.x))); this.updateCalibratorCells(); break; }
+			case "topLine":    { this.calibratorLinesContainer.select("#topLine").attr   ("y", d.y = Math.max(0, Math.min(this.calibratorLinesValues[this.getLineIndexById("bottomLine")].y,d3.event.y)));                               this.updateCalibratorCells(); break; }
+			case "bottomLine": { this.calibratorLinesContainer.select("#bottomLine").attr("y", d.y = Math.max(this.calibratorLinesValues[this.getLineIndexById("topLine")].y, Math.min((this.height - this.lineThickness),d3.event.y))); this.updateCalibratorCells(); break; }
 		}
 	}
 
