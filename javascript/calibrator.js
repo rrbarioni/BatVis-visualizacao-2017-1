@@ -59,16 +59,33 @@ class Calibrator {
 		var bottomLineY = this.calibratorLines[this.getLineIndexById("bottomLine")].y;
 
 		this.calibratorGrid = [
-			{ "id": 1, "x": 0,                               "y": 0,                                "width": leftLineX, "height": topLineY , "status": "neutral" },
-			{ "id": 2, "x": leftLineX + this.lineThickness,  "y": 0,                                "width": leftLineX, "height": topLineY , "status": "neutral" },
-			{ "id": 3, "x": rightLineX + this.lineThickness, "y": 0,                                "width": leftLineX, "height": topLineY , "status": "neutral" },
-			{ "id": 4, "x": 0,                               "y": topLineY + this.lineThickness,    "width": leftLineX, "height": topLineY , "status": "neutral" },
-			{ "id": 5, "x": leftLineX + this.lineThickness,  "y": topLineY + this.lineThickness,    "width": leftLineX, "height": topLineY , "status": "neutral" },
-			{ "id": 6, "x": rightLineX + this.lineThickness, "y": topLineY + this.lineThickness,    "width": leftLineX, "height": topLineY , "status": "neutral" },
-			{ "id": 7, "x": 0,                               "y": bottomLineY + this.lineThickness, "width": leftLineX, "height": topLineY , "status": "neutral" },
-			{ "id": 8, "x": leftLineX + this.lineThickness,  "y": bottomLineY + this.lineThickness, "width": leftLineX, "height": topLineY , "status": "neutral" },
-			{ "id": 9, "x": rightLineX + this.lineThickness, "y": bottomLineY + this.lineThickness, "width": leftLineX, "height": topLineY , "status": "neutral" }
-		]
+			{ "id": "cell1", "x": 0,                               "y": 0,                                "width": leftLineX,                                      "height": topLineY,                                         "status": "neutral" },
+			{ "id": "cell2", "x": leftLineX + this.lineThickness,  "y": 0,                                "width": rightLineX - (leftLineX + this.lineThickness),  "height": topLineY,                                         "status": "neutral" },
+			{ "id": "cell3", "x": rightLineX + this.lineThickness, "y": 0,                                "width": this.width - (rightLineX + this.lineThickness), "height": topLineY,                                         "status": "neutral" },
+			{ "id": "cell4", "x": 0,                               "y": topLineY + this.lineThickness,    "width": leftLineX,                                      "height": bottomLineY - (topLineY + this.lineThickness),    "status": "neutral" },
+			{ "id": "cell5", "x": leftLineX + this.lineThickness,  "y": topLineY + this.lineThickness,    "width": rightLineX - (leftLineX + this.lineThickness),  "height": bottomLineY - (topLineY + this.lineThickness),    "status": "neutral" },
+			{ "id": "cell6", "x": rightLineX + this.lineThickness, "y": topLineY + this.lineThickness,    "width": this.width - (rightLineX + this.lineThickness), "height": bottomLineY - (topLineY + this.lineThickness),    "status": "neutral" },
+			{ "id": "cell7", "x": 0,                               "y": bottomLineY + this.lineThickness, "width": leftLineX,                                      "height": this.height - (bottomLineY + this.lineThickness), "status": "neutral" },
+			{ "id": "cell8", "x": leftLineX + this.lineThickness,  "y": bottomLineY + this.lineThickness, "width": rightLineX - (leftLineX + this.lineThickness),  "height": this.height - (bottomLineY + this.lineThickness), "status": "neutral" },
+			{ "id": "cell9", "x": rightLineX + this.lineThickness, "y": bottomLineY + this.lineThickness, "width": this.width - (rightLineX + this.lineThickness), "height": this.height - (bottomLineY + this.lineThickness), "status": "neutral" }
+		];
+
+		console.log(this.calibratorGrid[0].x + ", " + 
+					this.calibratorGrid[0].y + ", " + 
+					this.calibratorGrid[0].width + ", " + 
+					this.calibratorGrid[0].height);
+
+		this.calibratorGridContainer.selectAll(".calibratorCell")
+			.data(this.calibratorGrid)
+			.enter()
+			.append("rect")
+			.attr("class", "calibratorGrid")
+			.attr("id",     function(d) { return d.id;     })
+			.attr("x",      function(d) { return d.x;      })
+			.attr("y",      function(d) { return d.y;      })
+			.attr("width",  function(d) { return d.width;  })
+			.attr("height", function(d) { return d.height; })
+			.attr("status", function(d) { return d.status; });
 	}
 
 	getLineIndexById(id) {
