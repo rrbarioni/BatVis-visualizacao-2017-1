@@ -14,7 +14,7 @@ class Calibrator {
 		this.linesContainer = this.container.append("g")
 			.attr("class", "calibratorLines");
 		this.linesValues, this.lines;
-		this.setlines();
+		this.setLines();
 
 		this.cellsContainer = this.container.append("g")
 			.attr("class", "calibratorCells");
@@ -57,7 +57,7 @@ class Calibrator {
 		}
 	}
 
-	updateCalibratorCellsValues() {
+	updateCellsValues() {
 		var leftLineX =   this.linesValues[this.getLineIndexById("leftLine")].x;
 		var rightLineX =  this.linesValues[this.getLineIndexById("rightLine")].x;
 		var topLineY =    this.linesValues[this.getLineIndexById("topLine")].y;
@@ -121,4 +121,9 @@ class Calibrator {
 		}
 		return -1;
 	}
+/*
+	getCellIdByPos(x,y) {
+		var cellX = 1;
+		if (x >= this.cells)
+	}*/
 }
