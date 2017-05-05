@@ -1,11 +1,7 @@
 #calibrator {
-  	display: block;
+  	//display: block;
   	margin: auto;
   	margin-top: 5px;
-  	//border: 3px solid #EEEEEE;
-  	//background-color: #111111;
-  	background: url("cave1.png") 0 0;
-  	background-size: 900px 600px;
   	box-shadow: 5px 5px 5px #555555;
 }
 
@@ -17,3 +13,11 @@
 .calibratorCell[status="neutral"]  { opacity: 0;                }
 .calibratorCell[status="entrance"] { opacity: 0.5; fill: green; }
 .calibratorCell[status="exit"]     { opacity: 0.5; fill: red;   }
+
+#populationGraph {
+	//display: block;
+  	margin: auto;
+  	margin-top: 5px;
+  	border: 3px solid gray;
+  	box-shadow: 5px 5px 5px #555555;
+}

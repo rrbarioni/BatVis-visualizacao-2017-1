@@ -1,13 +1,16 @@
 class Calibrator {
-	constructor(width,height) {
-		this.width = width;
-		this.height = height;
+	constructor(deviceWidth, deviceHeight, screenScale) {
+		this.screenScale = screenScale;
+		this.width = deviceWidth * this.screenScale;
+		this.height = deviceHeight * this.screenScale;
 
 		this.svg = d3.select("#calibrator")
 			.attr("width", this.width)
 			.attr("height", this.height);
 		this.container = this.svg.append("g")
 			.attr("class", "container");
+
+		this.setBackground();
 
 		this.lineThickness = 5;
 
@@ -20,6 +23,12 @@ class Calibrator {
 			.attr("class", "calibratorCells");
 		this.cellsValues, this.cells;
 		this.setCells();
+	}
+
+	setBackground() {
+		this.svg
+			.style("background", "url(\"images/cave1.png\") 0 0")
+			.style("background-size", this.width + "px " + this.height + "px");
 	}
 
 	updateLinesValues() {
@@ -55,6 +64,7 @@ class Calibrator {
 			case "topLine":    { this.linesContainer.select("#topLine").attr   ("y", d.y = Math.max(0, Math.min(this.linesValues[this.getLineIndexById("bottomLine")].y,d3.event.y)));                               this.updateCells(); break; }
 			case "bottomLine": { this.linesContainer.select("#bottomLine").attr("y", d.y = Math.max(this.linesValues[this.getLineIndexById("topLine")].y, Math.min((this.height - this.lineThickness),d3.event.y))); this.updateCells(); break; }
 		}
+		this.sendData();
 	}
 
 	updateCellsValues() {
@@ -110,7 +120,8 @@ class Calibrator {
 			case "neutral":  this.cellsContainer.select("#" + d.id).attr("status", d.status = "entrance"); break;
 			case "entrance": this.cellsContainer.select("#" + d.id).attr("status", d.status = "exit");     break;
 			case "exit":     this.cellsContainer.select("#" + d.id).attr("status", d.status = "neutral");  break;
-		}	
+		}
+		this.sendData();
 	}
 
 	getLineIndexById(id) {
@@ -121,9 +132,17 @@ class Calibrator {
 		}
 		return -1;
 	}
-/*
-	getCellIdByPos(x,y) {
-		var cellX = 1;
-		if (x >= this.cells)
-	}*/
+
+	sendData() {
+		this.dispatch.call(
+			"calibratorChanged",
+			{
+				"id": "calibrator",
+				"lines": this.linesValues,
+				"cells": this.cellsValues,
+				"screenScale": this.screenScale
+			}
+		);
+	}
+
 }
