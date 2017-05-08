@@ -14,16 +14,16 @@ class PopulationGraph {
 		this.yScale = d3.scaleLinear().range([this.height, 0]);
 
 		this.calibratorLines, this.calibratorCells, this.calibratorScreenScale;
-
-		this.data;
-		this.loadData();
+		
+		this.batData, this.batEntranceData, this.batExitData;
+		this.loadBatFile("files/simulation.json");
 	}
 
-	loadData() {
-		d3.json("files/simulation.json", function(error,data) {
+	loadBatFile(batFilePath) {
+		d3.json(batFilePath, function(error, batData) {
 			if (error) { throw error; }
 
-			this.data = data;
+			this.batData = batData;
 			this.setAxisDomain();
 			this.drawAxis();
 
@@ -31,8 +31,8 @@ class PopulationGraph {
 	}
 
 	setAxisDomain() {
-		this.xScale.domain(d3.extent (this.data.bats, function(d) { return d.x1; }));
-  		this.yScale.domain([0, d3.max(this.data.bats, function(d) { return d.y1; })]);
+		this.xScale.domain(d3.extent (this.batData.bats, function(d) { return d.x1; }));
+  		this.yScale.domain([0, d3.max(this.batData.bats, function(d) { return d.y1; })]);
 	}
 
 	drawAxis() {

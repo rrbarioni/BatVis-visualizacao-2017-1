@@ -2,8 +2,12 @@ var deviceWidth = 320;
 var deviceHeight = 240;
 var calibratorScale = 2;
 
+var populationGraphWidth = 900;
+var populationGraphHeight = 600;
+
 var calibrator = new Calibrator(deviceWidth,deviceHeight,calibratorScale);
-var populationGraph = new PopulationGraph(900,600);
+var calendar = new Calendar();
+var populationGraph = new PopulationGraph(populationGraphWidth,populationGraphHeight);
 
 var calibratorChangeDispatch = d3.dispatch("calibratorChanged");
 calibratorChangeDispatch.on("calibratorChanged", function() {

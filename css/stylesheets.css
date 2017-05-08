@@ -1,5 +1,7 @@
+/* ----------- Calibrator styles ----------- */
+
 #calibrator {
-  	//display: block;
+  	/* display: block; */
   	margin: auto;
   	margin-top: 5px;
   	box-shadow: 5px 5px 5px #555555;
@@ -14,10 +16,18 @@
 .calibratorCell[status="entrance"] { opacity: 0.5; fill: green; }
 .calibratorCell[status="exit"]     { opacity: 0.5; fill: red;   }
 
+/* ----------- Population graph styles ----------- */
+
 #populationGraph {
-	//display: block;
+	/* display: block; */
   	margin: auto;
   	margin-top: 5px;
   	border: 3px solid gray;
-  	box-shadow: 5px 5px 5px #555555;
+  	box-shadow: 5px 5px 5px #BBBBBB;
+}
+
+/* ----------- Calendar styles ----------- */
+
+#calendarMonthYear {
+	background-color: #1abc9c;
 }
