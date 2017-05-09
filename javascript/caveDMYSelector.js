@@ -4,11 +4,11 @@ class CaveDMYSelector {
 		this.height = height;
 
 		this.caves = [
+			"Caverna 0",
 			"Caverna 1",
 			"Caverna 2",
 			"Caverna 3",
 			"Caverna 4",
-			"Caverna 5",
 		]
 		
 		this.div = d3.select("#caveDMYSelector")
@@ -35,26 +35,52 @@ class CaveDMYSelector {
 			.attr("class", "prev")
 			.style("font-size", (this.height * 0.15) + "px")
 			.html("&#10094;")
-			.on("click", function(d) { console.log("CAVE PREV"); });
+			.on("click", this.prevCave.bind(this));
 		this.containerCaveSelector.list.append("li")
 			.attr("class", "next")
 			.style("font-size", (this.height * 0.15) + "px")
 			.html("&#10095;")
-			.on("click", function(d) { console.log("CAVE NEXT"); });
+			.on("click", this.nextCave.bind(this));
 		this.containerCaveSelector.list.append("li")
-			.attr("class", "caveName")
+			.attr("class", "currentCave")
 			.style("font-size", (this.height * 0.15) + "px")
+			.html(this.caves[this.currentCave]);
+	}
+
+	prevCave() {
+		this.currentCave--;
+		if (this.currentCave < 0) {
+			this.currentCave = this.caves.length - 1;
+		}
+		this.updateCaveName();
+	}
+
+	nextCave() {
+		this.currentCave++;
+		if (this.currentCave > this.caves.length - 1) {
+			this.currentCave = 0;
+		}
+		this.updateCaveName();
+	}
+
+	updateCaveName() {
+		this.containerCaveSelector.list.select(".currentCave")
 			.html(this.caves[this.currentCave]);
 	}
 
 	setMYSelector() {
 		this.containerMYSelector = this.div.append("div")
 			.attr("class", "mySelector");
+		this.containerMYSelector.list = this.containerMYSelector.append("ul")
+			.attr("class", "list");
 	}
 
 	setDSelector() {
 		this.containerDSelector = this.div.append("div")
 			.attr("class", "dSelector");
+		this.containerDSelector.list = this.containerDSelector.append("ul")
+			.attr("class", "list");
+			
 	}
 
 }

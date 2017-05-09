@@ -30,17 +30,19 @@
 
 #caveDMYSelector {
 	width: 100%;
-	margin-top: 5px;
+	//margin-top: 5px;
+	margin: 0;
   	box-shadow: 5px 5px 5px #555555;
 }
 
 .caveSelector {
+	margin: 0;
 	width: 100%;
 	height: 20%;
 	background-color: #111111;
 }
 
-.caveSelector .list {
+.caveSelector > .list {
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -49,24 +51,35 @@
 	height: 100%;
 }
 
-.caveSelector .list > * {
+.caveSelector > .list > * {
 	margin-left: 3%;
 	margin-right: 3%;
 	font-family: Courier;
 }
 
-.caveSelector .list .prev, .caveSelector .list .next {
+.caveSelector > .list > .prev, .caveSelector > .list > .next {
 	cursor: pointer;
 	color: #AAAA00;
 }
 
-.caveSelector .list .caveName, .caveSelector .list .prev:hover, .caveSelector .list .next:hover {
+.caveSelector > .list > .currentCave, .caveSelector > .list > .prev:hover, .caveSelector > .list > .next:hover {
 	color: #FFFF00;
 }
 
-.caveSelector .list .prev     {	float: left; }
-.caveSelector .list .next     {	float: right; }
-.caveSelector .list .caveName {	text-align: center; }
+.caveSelector > .list > .prev        { float: left; }
+.caveSelector > .list > .next        { float: right; }
+.caveSelector > .list > .currentCave { text-align: center; }
 
-.mySelector   { width: 100%; height: 40%; background-color: #37003C; }
-.dSelector    { width: 100%; height: 40%; background-color: #00FF87; }
+.mySelector {
+	margin: 0;
+	width: 100%;
+	height: 40%;
+	background-color: #37003C;
+}
+
+.dSelector {
+	margin: 0;
+	width: 100%;
+	height: 40%;
+	background-color: #00FF87;
+}
