@@ -28,6 +28,11 @@
 
 /* ----------- Calendar styles ----------- */
 
-#calendarMonthYear {
-	background-color: #1abc9c;
+#caveDMYSelector {
+	margin-top: 5px;
+  	box-shadow: 5px 5px 5px #555555;
 }
+
+#caveSelector { background-color: #000000; }
+#mySelector   { background-color: #37003C; }
+#dSelector    { background-color: #00FF87; }

@@ -12,6 +12,8 @@ class PopulationGraph {
 
 		this.xScale = d3.scaleLinear().range([0, this.width]);
 		this.yScale = d3.scaleLinear().range([this.height, 0]);
+		this.container.append("g").attr("class", "xAxis");
+		this.container.append("g").attr("class", "yAxis");
 
 		this.calibratorLines, this.calibratorCells, this.calibratorScreenScale;
 		
@@ -36,11 +38,11 @@ class PopulationGraph {
 	}
 
 	drawAxis() {
-		this.container.append("g")
+		this.container.selectAll(".xAxis")
 	        .attr("transform", "translate(" + this.margin.left + "," + (this.height + this.margin.top) + ")")
 	        .call(d3.axisBottom(this.xScale));
 
-	    this.container.append("g")
+	    this.container.selectAll(".yAxis")
 	        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
 	        .call(d3.axisLeft(this.yScale));
 	}
