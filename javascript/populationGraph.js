@@ -28,8 +28,29 @@ class PopulationGraph {
 			this.batData = batData;
 			this.setAxisDomain();
 			this.drawAxis();
+			//debugger;
+			this.batEntranceData = new Array();
+			this.batExitData = new Array();
+			var entranceDataIndex = 0;
+			var exitDataIndex = 0;
 
-		}.bind(this));	
+			for (var i = 0; i < batData.bats.length; i++) {
+            	var bat = {x1:batData.bats[i].x1, y1:batData.bats[i].y1, f1:batData.bats[i].f1, x2:batData.bats[i].x2, y2:batData.bats[i].y2, f2:batData.bats[i].f2}
+
+            	if(this.filterEnteringBat(bat)) {
+            		this.batEntranceData[entranceDataIndex] = bat;
+            		entranceDataIndex++;
+            	}else if(this.filterExitingBat(bat)){
+            		this.batExitData[exitDataIndex] = bat;
+            		exitDataIndex++;
+            	}
+
+            }
+
+			console.log("Entrando: " + (this.batEntranceData.length) + "\n" + "Saindo: " + (this.batExitData.length));
+
+		}.bind(this));
+
 	}
 
 	setAxisDomain() {
@@ -53,17 +74,22 @@ class PopulationGraph {
 		this.calibratorScreenScale = screenScale;
 	}
 
-	filterBat(bat) {
-		return (this.calibratorCells[getCalibratorCellIdByPos(bat.x1, bat.y1)].status == "entrance" &&
-				this.calibratorCells[getCalibratorCellIdByPos(bat.x2, bat.y2)].status == "exit");
+	filterEnteringBat(bat) {
+		return (this.calibratorCells[this.getCalibratorCellIdByPos(bat.x1, bat.y1)].status == "entrance" &&
+				this.calibratorCells[this.getCalibratorCellIdByPos(bat.x2, bat.y2)].status == "exit");
+	}
+
+	filterExitingBat(bat) {
+		return (this.calibratorCells[this.getCalibratorCellIdByPos(bat.x1, bat.y1)].status == "exit" &&
+				this.calibratorCells[this.getCalibratorCellIdByPos(bat.x2, bat.y2)].status == "entrance");
 	}
 
 	getCalibratorCellIdByPos(x,y) {
-		var cellId = 1;
-		if (x >= this.calibratorCells[1].x / screenScale) { cellId++;    }
-		if (x >= this.calibratorCells[2].x / screenScale) { cellId++;    }
-		if (y >= this.calibratorCells[3].y / screenScale) { cellId += 3; }
-		if (y >= this.calibratorCells[6].y / screenScale) { cellId += 3; }
+		var cellId = 0;
+		if (x >= this.calibratorCells[1].x / this.calibratorScreenScale) { cellId++;    }
+		if (x >= this.calibratorCells[2].x / this.calibratorScreenScale) { cellId++;    }
+		if (y >= this.calibratorCells[3].y / this.calibratorScreenScale) { cellId += 3; }
+		if (y >= this.calibratorCells[6].y / this.calibratorScreenScale) { cellId += 3; }
 		return cellId;
 	}
 
