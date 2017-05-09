@@ -7,10 +7,10 @@
   	box-shadow: 5px 5px 5px #555555;
 }
 
-.calibratorLine#leftLine   { fill: yellow; }
-.calibratorLine#rightLine  { fill: green; }
-.calibratorLine#topLine    { fill: red; }
-.calibratorLine#bottomLine { fill: blue; }
+.calibratorLine#leftLine   { fill: yellow; cursor: e-resize; }
+.calibratorLine#rightLine  { fill: green;  cursor: e-resize; }
+.calibratorLine#topLine    { fill: red;    cursor: n-resize; }
+.calibratorLine#bottomLine { fill: blue;   cursor: n-resize; }
 
 .calibratorCell[status="neutral"]  { opacity: 0;                }
 .calibratorCell[status="entrance"] { opacity: 0.5; fill: green; }
@@ -29,22 +29,44 @@
 /* ----------- CaveDMYSelector styles ----------- */
 
 #caveDMYSelector {
-	display: block;
+	width: 100%;
 	margin-top: 5px;
   	box-shadow: 5px 5px 5px #555555;
 }
-#caveSelector { width: 100%; height: 20%; background-color: #111111; }
-#caveSelector .list { 
-	//margin: 0;
-	padding-top: 0%;
+
+.caveSelector {
+	width: 100%;
+	height: 20%;
+	background-color: #111111;
 }
-#caveSelector .list .prev {
+
+.caveSelector .list {
 	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: table;
+	width: 100%;
+	height: 100%;
+}
+
+.caveSelector .list > * {
+	margin-left: 3%;
+	margin-right: 3%;
+	font-family: Courier;
+}
+
+.caveSelector .list .prev, .caveSelector .list .next {
+	cursor: pointer;
+	color: #AAAA00;
+}
+
+.caveSelector .list .caveName, .caveSelector .list .prev:hover, .caveSelector .list .next:hover {
 	color: #FFFF00;
 }
 
+.caveSelector .list .prev     {	float: left; }
+.caveSelector .list .next     {	float: right; }
+.caveSelector .list .caveName {	text-align: center; }
 
-#mySelector   { width: 100%; height: 40%; background-color: #37003C; }
-
-
-#dSelector    { width: 100%; height: 40%; background-color: #00FF87; }
+.mySelector   { width: 100%; height: 40%; background-color: #37003C; }
+.dSelector    { width: 100%; height: 40%; background-color: #00FF87; }
