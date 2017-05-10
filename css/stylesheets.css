@@ -36,13 +36,13 @@
   	box-shadow: 5px 5px 5px #555555;
 }
 
-.caveSelector { margin: 0; width: 100%; height: 20%; background-color: #111111; }
+.caveSelector { margin: 0; width: 100%; height: 20%; background-color: #222222; }
 .mySelector   { margin: 0; width: 100%; height: 40%; background-color: #37003C; }
 .dSelector    { margin: 0; width: 100%; height: 40%; background-color: #00FF87; }
 
-.caveSelector > .list { list-style: none; margin: 0; padding: 0; display: table; width: 100%; height: 100%; }
-.mySelector > .list   { list-style: none; margin: 0; padding: 0; display: table; width: 100%; height: 100%; }
-.dSelector > .list    { list-style: none; margin: 0; padding: 0; display: table; width: 100%; height: 100%; }
+.caveSelector > .list { list-style: none; margin: 0; padding: 0; width: 100%; height: 100%; }
+.mySelector > .list   { list-style: none; margin: 0; padding: 0; width: 100%; height: 100%; }
+.dSelector > .list    { list-style: none; margin: 0; padding: 0; width: 100%; height: 100%; }
 
 .caveSelector > .list > * {
 	margin-left: 3%;
@@ -51,16 +51,60 @@
 	user-select: none;
 }
 
-.caveSelector > .list > .prev, .caveSelector > .list > .next {
+.caveSelector > .list > .prevCave,
+.caveSelector > .list > .nextCave {
 	cursor: pointer;
-	color: #AAAA00;
+	color: #444400;
+	transition: color 100ms linear;
 }
 
-.caveSelector > .list > .currentCave, .caveSelector > .list > .prev:hover, .caveSelector > .list > .next:hover {
+.caveSelector > .list > .currentCave,
+.caveSelector > .list > .prevCave:hover,
+.caveSelector > .list > .nextCave:hover {
 	color: #FFFF00;
 }
 
-.caveSelector > .list > .prev        { float: left; }
-.caveSelector > .list > .next        { float: right; }
-.caveSelector > .list > .currentCave { cursor: default; text-align: center; }
+.caveSelector > .list > .prevCave    { float: left; }
+.caveSelector > .list > .nextCave    { float: right; }
+.caveSelector > .list > .currentCave {
+	cursor: default;
+	text-align: center;
+}
 
+.mySelector > .list > * {
+	margin-left: 3%;
+	margin-right: 3%;
+	font-family: Courier;
+	user-select: none;
+}
+
+.mySelector > .list > .prevM,
+.mySelector > .list > .nextM,
+.mySelector > .list > .prevY,
+.mySelector > .list > .nextY {
+	cursor: pointer;
+	color: #444444;
+	transition: color 100ms linear;
+	height: 50%;
+}
+
+.mySelector > .list > .currentMY,
+.mySelector > .list > .prevM:hover,
+.mySelector > .list > .nextM:hover,
+.mySelector > .list > .prevY:hover,
+.mySelector > .list > .nextY:hover {
+	color: #FFFFFF;
+}
+
+.mySelector > .list > .prevM,
+.mySelector > .list > .prevY {
+	float: left;
+}
+.mySelector > .list > .nextM,
+.mySelector > .list > .nextY {
+	float: right;
+}
+.mySelector > .list > .currentMY {
+	cursor: default;
+	text-align: center;
+}

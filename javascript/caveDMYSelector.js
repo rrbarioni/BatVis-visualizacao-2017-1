@@ -12,6 +12,7 @@ class CaveDMYSelector {
 		]
 
 		this.months = [
+			{ "en": "NO_MONTH",  "pt": "NO_MONTH"  },
 			{ "en": "January",   "pt": "Janeiro"   },
 			{ "en": "February",  "pt": "Fevereiro" },
 			{ "en": "March",     "pt": "Março"     },
@@ -24,7 +25,7 @@ class CaveDMYSelector {
 			{ "en": "October",   "pt": "Outubro"   },
 			{ "en": "November",  "pt": "Novembro"  },
 			{ "en": "December",  "pt": "Dezembro"  }
-		]
+		];
 		
 		this.div = d3.select("#caveDMYSelector")
 			.style("width", this.width + "px")
@@ -47,12 +48,12 @@ class CaveDMYSelector {
 		this.containerCaveSelector.list = this.containerCaveSelector.append("ul")
 			.attr("class", "list");
 		this.containerCaveSelector.list.append("li")
-			.attr("class", "prev")
+			.attr("class", "prevCave")
 			.style("font-size", (this.height * 0.15) + "px")
 			.html("&#10094;")
 			.on("click", this.prevCave.bind(this));
 		this.containerCaveSelector.list.append("li")
-			.attr("class", "next")
+			.attr("class", "nextCave")
 			.style("font-size", (this.height * 0.15) + "px")
 			.html("&#10095;")
 			.on("click", this.nextCave.bind(this));
@@ -62,23 +63,7 @@ class CaveDMYSelector {
 			.html(this.caves[this.currentCave]);
 	}
 
-	prevCave() {
-		this.currentCave--;
-		if (this.currentCave < 0) {
-			this.currentCave = this.caves.length - 1;
-		}
-		this.updateCaveName();
-	}
-
-	nextCave() {
-		this.currentCave++;
-		if (this.currentCave > this.caves.length - 1) {
-			this.currentCave = 0;
-		}
-		this.updateCaveName();
-	}
-
-	updateCaveName() {
+	updateCaveNameText() {
 		this.containerCaveSelector.list.select(".currentCave")
 			.html(this.caves[this.currentCave]);
 	}
@@ -88,6 +73,37 @@ class CaveDMYSelector {
 			.attr("class", "mySelector");
 		this.containerMYSelector.list = this.containerMYSelector.append("ul")
 			.attr("class", "list");
+		this.containerMYSelector.list.append("li")
+			.attr("class", "prevM")
+			.style("font-size", (this.height * 0.15) + "px")
+			.html("&#10094;")
+			.on("click", this.prevMonth.bind(this));
+		this.containerMYSelector.list.append("li")
+			.attr("class", "nextM")
+			.style("font-size", (this.height * 0.15) + "px")
+			.html("&#10095;")
+			.on("click", this.nextMonth.bind(this));
+		this.containerMYSelector.list.append("li")
+			.attr("class", "prevY")
+			.style("font-size", (this.height * 0.15) + "px")
+			.html("&#10094;")
+			.on("click", this.prevYear.bind(this));
+		this.containerMYSelector.list.append("li")
+			.attr("class", "nextY")
+			.style("font-size", (this.height * 0.15) + "px")
+			.html("&#10095;")
+			.on("click", this.nextYear.bind(this));
+		this.containerMYSelector.list.append("li")
+			.attr("class", "currentMY")
+			.style("font-size", (this.height * 0.15) + "px")
+			.html(this.months[this.currentMonth].pt + "<br>" +
+				  this.currentYear);
+	}
+
+	updateMonthYearText() {
+		this.containerMYSelector.list.select(".currentMY")
+			.html(this.months[this.currentMonth].pt + "<br>" +
+				  this.currentYear);
 	}
 
 	setDSelector() {
@@ -96,6 +112,48 @@ class CaveDMYSelector {
 		this.containerDSelector.list = this.containerDSelector.append("ul")
 			.attr("class", "list");
 
+	}
+
+	prevCave() {
+		this.currentCave--;
+		if (this.currentCave < 0) {
+			this.currentCave = this.caves.length - 1;
+		}
+		this.updateCaveNameText();
+	}
+
+	nextCave() {
+		this.currentCave++;
+		if (this.currentCave > this.caves.length - 1) {
+			this.currentCave = 0;
+		}
+		this.updateCaveNameText();
+	}
+
+	prevMonth() {
+		this.currentMonth--;
+		if (this.currentMonth < 1) {
+			this.currentMonth = this.months.length - 1;
+		}
+		this.updateMonthYearText();
+	}
+
+	nextMonth() {
+		this.currentMonth++;
+		if (this.currentMonth > this.months.length - 1) {
+			this.currentMonth = 1;
+		}
+		this.updateMonthYearText();
+	}
+
+	prevYear() {
+		this.currentYear--;
+		this.updateMonthYearText();
+	}
+
+	nextYear() {
+		this.currentYear++;
+		this.updateMonthYearText();
 	}
 
 }
