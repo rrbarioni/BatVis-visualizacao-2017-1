@@ -17,7 +17,7 @@ class PopulationGraph {
 
 		this.calibratorLines, this.calibratorCells, this.calibratorScreenScale;
 		
-		this.batData, this.batEntranceData, this.batExitData;
+		this.batData, this.enteringBatData, this.exitingBatData;
 		this.loadBatFile("files/simulation.json");
 	}
 
@@ -29,28 +29,27 @@ class PopulationGraph {
 			
 			this.setAxisDomain();
 			this.drawAxis();
-			
-			//debugger;
 
-			this.batEntranceData = [];
-			this.batExitData = [];
+			this.enteringBatData = [];
+			this.exitingBatData = [];
 			var entranceDataIndex = 0;
 			var exitDataIndex = 0;
-
+			
 			for (var i = 0; i < this.batData.bats.length; i++) {
             	var bat = this.batData.bats[i];
             	if(this.filterEnteringBat(bat)) {
-            		this.batEntranceData.push(bat);
+            		//this.enteringBatData.push(bat);
+            		this.enteringBatData[bat.f2]++;
             		entranceDataIndex++;
             	}
             	else if(this.filterExitingBat(bat)) {
-            		this.batExitData.push(bat);
+            		this.exitingBatData[bat.f2]++;
+            		this.exitingBatData.push(bat);
             		exitDataIndex++;
             	}
-
             }
-			console.log("Entrando: " + (this.batEntranceData.length) + ", " + "Saindo: " + (this.batExitData.length));
 
+            console.log("Entrando: " + (entranceDataIndex) + ", " + "Saindo: " + (exitDataIndex));
 		}.bind(this));
 	}
 
