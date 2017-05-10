@@ -156,4 +156,11 @@ class CaveDMYSelector {
 		this.updateMonthYearText();
 	}
 
+	fileExists(path) {
+		// return d3.json(path, function(error,data) {
+		// 	if (error) { return false; }
+		// 	else { return true; }
+		// });
+	}
+
 }
