@@ -7,11 +7,12 @@
   	box-shadow: 5px 5px 5px #555555;
 }
 
-.calibratorLine#leftLine   { fill: yellow; cursor: e-resize; }
+.calibratorLine#leftLine   { fill: yellow; cursor: w-resize; }
 .calibratorLine#rightLine  { fill: green;  cursor: e-resize; }
 .calibratorLine#topLine    { fill: red;    cursor: n-resize; }
-.calibratorLine#bottomLine { fill: blue;   cursor: n-resize; }
+.calibratorLine#bottomLine { fill: blue;   cursor: s-resize; }
 
+.calibratorCell                    { cursor: pointer; }
 .calibratorCell[status="neutral"]  { opacity: 0;                }
 .calibratorCell[status="entrance"] { opacity: 0.5; fill: green; }
 .calibratorCell[status="exit"]     { opacity: 0.5; fill: red;   }
@@ -62,8 +63,4 @@
 .caveSelector > .list > .prev        { float: left; }
 .caveSelector > .list > .next        { float: right; }
 .caveSelector > .list > .currentCave { cursor: default; text-align: center; }
-
-
-
-
 

@@ -10,6 +10,21 @@ class CaveDMYSelector {
 			"Caverna 3",
 			"Caverna 4",
 		]
+
+		this.months = [
+			{ "en": "January",   "pt": "Janeiro"   },
+			{ "en": "February",  "pt": "Fevereiro" },
+			{ "en": "March",     "pt": "Março"     },
+			{ "en": "April",     "pt": "Abril"     },
+			{ "en": "May",       "pt": "Maio"      },
+			{ "en": "June",      "pt": "Junho"     },
+			{ "en": "July",      "pt": "Julho"     },
+			{ "en": "August",    "pt": "Agosto"    },
+			{ "en": "September", "pt": "Setembro"  },
+			{ "en": "October",   "pt": "Outubro"   },
+			{ "en": "November",  "pt": "Novembro"  },
+			{ "en": "December",  "pt": "Dezembro"  }
+		]
 		
 		this.div = d3.select("#caveDMYSelector")
 			.style("width", this.width + "px")
@@ -80,7 +95,7 @@ class CaveDMYSelector {
 			.attr("class", "dSelector");
 		this.containerDSelector.list = this.containerDSelector.append("ul")
 			.attr("class", "list");
-			
+
 	}
 
 }

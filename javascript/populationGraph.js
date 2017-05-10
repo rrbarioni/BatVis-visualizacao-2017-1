@@ -39,10 +39,15 @@ class PopulationGraph {
             	var bat = this.batData.bats[i];
             	if(this.filterEnteringBat(bat)) {
             		//this.enteringBatData.push(bat);
+
+            		// A ideia aqui seria incrementar a posição no array correspondente ao frame que o morcego saiu do tracking
+            		// (no caso, seriam <numeroDeFramesDoArquivo> posições no array, mas isso poderia ser diminuido, já que temos o FPS)
             		this.enteringBatData[bat.f2]++;
             		entranceDataIndex++;
             	}
             	else if(this.filterExitingBat(bat)) {
+
+            		//mesma coisa aqui
             		this.exitingBatData[bat.f2]++;
             		this.exitingBatData.push(bat);
             		exitDataIndex++;
