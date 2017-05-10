@@ -17,12 +17,12 @@ class Calibrator {
 		this.linesContainer = this.container.append("g")
 			.attr("class", "calibratorLines");
 		this.linesValues, this.lines;
-		this.setLines();
+		this.startLines();
 
 		this.cellsContainer = this.container.append("g")
 			.attr("class", "calibratorCells");
 		this.cellsValues, this.cells;
-		this.setCells();
+		this.startCells();
 	}
 
 	setBackground() {
@@ -40,7 +40,7 @@ class Calibrator {
 		];
 	}
 
-	setLines() {
+	startLines() {
 		this.updateLinesValues();
 
 		this.lines = this.linesContainer
@@ -67,7 +67,7 @@ class Calibrator {
 		this.sendData();
 	}
 
-	updateCellsValues() {
+	updateCellsValuesWithNeutralStatus() {
 		var leftLineX =   this.linesValues[this.getLineIndexById("leftLine")].x;
 		var rightLineX =  this.linesValues[this.getLineIndexById("rightLine")].x;
 		var topLineY =    this.linesValues[this.getLineIndexById("topLine")].y;
@@ -86,6 +86,17 @@ class Calibrator {
 		];
 	}
 
+	updateCellsValues() {
+		var cellsStatusValues = [];
+		for(var i = 0; i < this.cellsValues.length; i++) {
+			cellsStatusValues.push(this.cellsValues[i].status);
+		}
+		this.updateCellsValuesWithNeutralStatus();
+		for(var i = 0; i < this.cellsValues.length; i++) {
+			this.cellsValues[i].status = cellsStatusValues[i];
+		}
+	}
+
 	updateCells() {
 		this.updateCellsValues();
 
@@ -97,8 +108,12 @@ class Calibrator {
 			.attr("height", function(d) { return d.height; });
 	}
 
-	setCells() {
-		this.updateCellsValues();
+	startCellsValues() {
+		this.updateCellsValuesWithNeutralStatus();
+	}
+
+	startCells() {
+		this.startCellsValues();
 
 		this.cells = this.cellsContainer
 			.selectAll(".calibratorCell")

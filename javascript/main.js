@@ -20,3 +20,5 @@ calibratorChangeDispatch.on("calibratorChanged", function() {
 
 calibrator.dispatch = calibratorChangeDispatch;
 populationGraph.dispatch = calibratorChangeDispatch;
+
+calibrator.sendData();

@@ -26,31 +26,32 @@ class PopulationGraph {
 			if (error) { throw error; }
 
 			this.batData = batData;
+			
 			this.setAxisDomain();
 			this.drawAxis();
+			
 			//debugger;
-			this.batEntranceData = new Array();
-			this.batExitData = new Array();
+
+			this.batEntranceData = [];
+			this.batExitData = [];
 			var entranceDataIndex = 0;
 			var exitDataIndex = 0;
 
-			for (var i = 0; i < batData.bats.length; i++) {
-            	var bat = {x1:batData.bats[i].x1, y1:batData.bats[i].y1, f1:batData.bats[i].f1, x2:batData.bats[i].x2, y2:batData.bats[i].y2, f2:batData.bats[i].f2}
-
+			for (var i = 0; i < this.batData.bats.length; i++) {
+            	var bat = this.batData.bats[i];
             	if(this.filterEnteringBat(bat)) {
-            		this.batEntranceData[entranceDataIndex] = bat;
+            		this.batEntranceData.push(bat);
             		entranceDataIndex++;
-            	}else if(this.filterExitingBat(bat)){
-            		this.batExitData[exitDataIndex] = bat;
+            	}
+            	else if(this.filterExitingBat(bat)) {
+            		this.batExitData.push(bat);
             		exitDataIndex++;
             	}
 
             }
-
-			console.log("Entrando: " + (this.batEntranceData.length) + "\n" + "Saindo: " + (this.batExitData.length));
+			console.log("Entrando: " + (this.batEntranceData.length) + ", " + "Saindo: " + (this.batExitData.length));
 
 		}.bind(this));
-
 	}
 
 	setAxisDomain() {
