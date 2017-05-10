@@ -10,8 +10,8 @@ class PopulationGraph {
 		this.container = this.svg.append("g")
 			.attr("class", "container");
 
-		this.xScale = d3.scaleLinear().range([0, this.width]);
-		this.yScale = d3.scaleLinear().range([this.height, 0]);
+		this.xScale = d3.scaleLinear().range([this.margin.left, this.width + this.margin.left]);
+		this.yScale = d3.scaleLinear().range([this.height + this.margin.top, this.margin.top]);
 		this.container.append("g").attr("class", "xAxis");
 		this.container.append("g").attr("class", "yAxis");
 
@@ -29,8 +29,6 @@ class PopulationGraph {
 			this.batData = batData;
 
 			this.setEnteringAndExitingBatData();
-
-			this.drawAxis();
 			this.drawGraph();
 		}.bind(this));
 	}
@@ -44,15 +42,17 @@ class PopulationGraph {
 		this.setAxisDomain();
 
 		this.container.selectAll(".xAxis")
-	        .attr("transform", "translate(" + this.margin.left + "," + (this.height + this.margin.top) + ")")
+	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
 	        .call(d3.axisBottom(this.xScale));
 
 	    this.container.selectAll(".yAxis")
-	        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
+	        .attr("transform", "translate(" + this.margin.left + ",0)")
 	        .call(d3.axisLeft(this.yScale));
 	}
 
 	drawGraph() {
+		this.drawAxis();
+		console.log("eae meeen");
 		this.enteringBatGraphNodes = this.container.selectAll(".enteringBatNode")
 			.data(this.enteringBatData)
 			.enter()
@@ -99,11 +99,11 @@ class PopulationGraph {
         	}
         }
 
-	    var sEnteringBatData = "";
-	    for(var i = 0; i < this.enteringBatData.length; i++) {
-	    	sEnteringBatData += this.enteringBatData[i].bats.length + ", ";
-	    }
-	    console.log(sEnteringBatData);
+	    // var sEnteringBatData = "";
+	    // for(var i = 0; i < this.enteringBatData.length; i++) {
+	    // 	sEnteringBatData += this.enteringBatData[i].f2 + ", ";
+	    // }
+	    // console.log(sEnteringBatData);
 	}
 
 	filterEnteringBat(bat) {
