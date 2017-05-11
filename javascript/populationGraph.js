@@ -14,22 +14,20 @@ class PopulationGraph {
 		this.yScale = d3.scaleLinear().range([this.height + this.margin.top, this.margin.top]);
 		this.container.append("g").attr("class", "xAxis");
 		this.container.append("g").attr("class", "yAxis");
+		this.transition = d3.transition().duration(200);
 
 		this.calibratorLines, this.calibratorCells, this.calibratorScreenScale;
 		
 		this.batData, this.enteringBatData, this.exitingBatData;
 
 		this.enteringBatGraphNodes, this.exitingBatGraphNodes;
-		//this.loadBatFile("files/simulation.json");
+		this.loadBatFile("files/simulation.json");
 	}
 
 	loadBatFile(batFilePath) {
 		d3.json(batFilePath, function(error, batData) {
 			if (error) { throw error; }
 			this.batData = batData;
-
-			this.setEnteringAndExitingBatData();
-			this.drawGraph();
 		}.bind(this));
 	}
 
@@ -42,19 +40,31 @@ class PopulationGraph {
 		this.setAxisDomain();
 
 		this.container.selectAll(".xAxis")
+			.transition(this.transition)
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
 	        .call(d3.axisBottom(this.xScale));
 
 	    this.container.selectAll(".yAxis")
+	    	.transition(this.transition)
 	        .attr("transform", "translate(" + this.margin.left + ",0)")
 	        .call(d3.axisLeft(this.yScale));
 	}
 
 	drawGraph() {
 		this.drawAxis();
-		console.log("eae meeen");
+
 		this.enteringBatGraphNodes = this.container.selectAll(".enteringBatNode")
 			.data(this.enteringBatData)
+		this.enteringBatGraphNodes
+			.exit()
+			.remove();
+		this.enteringBatGraphNodes
+			.attr("class", "enteringBatNode")
+			.attr("r", 5)
+			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+			.attr("fill", "#FF0000");
+		this.enteringBatGraphNodes
 			.enter()
 			.append("circle")
 			.attr("class", "enteringBatNode")
@@ -62,13 +72,16 @@ class PopulationGraph {
 			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
 			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
 			.attr("fill", "#FF0000");
-		this.enteringBatGraphNodes.exit().remove();
+		
 	}
 
 	receivedCalibratorData(lines, cells, screenScale) {
 		this.calibratorLines = lines;
 		this.calibratorCells = cells;
 		this.calibratorScreenScale = screenScale;
+		
+		this.setEnteringAndExitingBatData();
+		this.drawGraph();
 	}
 
 	setEnteringAndExitingBatData() {
@@ -99,11 +112,11 @@ class PopulationGraph {
         	}
         }
 
-	    // var sEnteringBatData = "";
-	    // for(var i = 0; i < this.enteringBatData.length; i++) {
-	    // 	sEnteringBatData += this.enteringBatData[i].f2 + ", ";
-	    // }
-	    // console.log(sEnteringBatData);
+	    var sEnteringBatData = "";
+	    for(var i = 0; i < this.enteringBatData.length; i++) {
+	    	sEnteringBatData += this.enteringBatData[i].bats.length + ", ";
+	    }
+	    console.log(sEnteringBatData);
 	}
 
 	filterEnteringBat(bat) {
