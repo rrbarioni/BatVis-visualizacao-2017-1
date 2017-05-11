@@ -42,70 +42,76 @@ class PopulationGraph {
 
 	drawAxis() {
 		this.setAxisDomain();
-		
+
 		this.container.selectAll(".xAxis")
 			// .transition(this.transition)
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
 	        .call(d3.axisBottom(this.xScale)
 	        		.tickValues((d3.range(0, this.framesPerInterval * this.enteringExitingBatDataSize, this.framesPerInterval)).concat([this.batData.total]))
-	        );
+	        		.tickFormat(d3.format(".0f")));
 
 	    this.container.selectAll(".yAxis")
 	    	// .transition(this.transition)
 	        .attr("transform", "translate(" + this.margin.left + ",0)")
 	        .call(d3.axisLeft(this.yScale)
-	        		.tickValues(d3.range(0, this.maxEntranceOrExitingOnInterval + 1, 1)));
+	        		.tickValues(d3.range(0, this.maxEntranceOrExitingOnInterval + 1, 1))
+	        		.tickFormat(d3.format(".0f")));
 	}
 
 	drawGraph() {
 		this.drawAxis();
 
+		var nodeRadius = 5;
+		var nodeOpacity = 0.8;
+
+		this.enteringBatGraphNodes = this.container.selectAll(".enteringBatNode")
+			.data(this.enteringBatData.slice(1, this.enteringBatData.length));
+		this.enteringBatGraphNodes
+			.exit()
+			.remove();
+		this.enteringBatGraphNodes
+			// .transition(this.transition)
+			.attr("class", "enteringBatNode")
+			.attr("r", nodeRadius)
+			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+			.attr("fill", "#00FF00")
+			.attr('fill-opacity', nodeOpacity);
+		this.enteringBatGraphNodes
+			.enter()
+			.append("circle")
+			// .transition(this.transition)
+			.attr("class", "enteringBatNode")
+			.attr("r", nodeRadius)
+			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+			.attr("fill", "#00FF00")
+			.attr('fill-opacity', nodeOpacity);
+
+		this.exitingBatGraphNodes = this.container.selectAll(".exitingBatNode")
+			.data(this.exitingBatData.slice(1, this.exitingBatData.length))
+		this.exitingBatGraphNodes
+			.exit()
+			.remove();
+		this.exitingBatGraphNodes
+			.attr("class", "exitingBatNode")
+			.attr("r", nodeRadius)
+			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+			.attr("fill", "#FF0000")
+			.attr('fill-opacity', nodeOpacity);
+		this.exitingBatGraphNodes
+			.enter()
+			.append("circle")
+			.attr("class", "exitingBatNode")
+			.attr("r", nodeRadius)
+			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+			.attr("fill", "#FF0000")
+			.attr('fill-opacity', nodeOpacity);
+
 		var lineWidth = 5;
 		var lineOpacity = 0.5;
-
-		// this.enteringBatGraphNodes = this.container.selectAll(".enteringBatNode")
-		// 	.data(this.enteringBatData)
-		// this.enteringBatGraphNodes
-		// 	.exit()
-		// 	.remove();
-		// this.enteringBatGraphNodes
-		// 	.attr("class", "enteringBatNode")
-		// 	.attr("r", 5)
-		// 	.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
-		// 	.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-		// 	.attr("fill", "#00FF00")
-		// 	.attr('fill-opacity', 0.7);
-		// this.enteringBatGraphNodes
-		// 	.enter()
-		// 	.append("circle")
-		// 	.attr("class", "enteringBatNode")
-		// 	.attr("r", 5)
-		// 	.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
-		// 	.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-		// 	.attr("fill", "#00FF00")
-		// 	.attr('fill-opacity', 0.7);
-
-		// this.exitingBatGraphNodes = this.container.selectAll(".exitingBatNode")
-		// 	.data(this.exitingBatData)
-		// this.exitingBatGraphNodes
-		// 	.exit()
-		// 	.remove();
-		// this.exitingBatGraphNodes
-		// 	.attr("class", "exitingBatNode")
-		// 	.attr("r", 5)
-		// 	.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
-		// 	.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-		// 	.attr("fill", "#FF0000")
-		// 	.attr('fill-opacity', 0.7);
-		// this.exitingBatGraphNodes
-		// 	.enter()
-		// 	.append("circle")
-		// 	.attr("class", "exitingBatNode")
-		// 	.attr("r", 5)
-		// 	.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
-		// 	.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-		// 	.attr("fill", "#FF0000")
-		// 	.attr('fill-opacity', 0.7);
 
 		this.enteringBatGraphLines = this.container.selectAll(".enteringBatLine")
 			.data(this.enteringBatData);
@@ -177,18 +183,19 @@ class PopulationGraph {
 		this.enteringBatData = [];
 		this.exitingBatData = [];
 
-		this.secondsPerInterval = 1;
+		console.log(this.batData.total);
+		this.secondsPerInterval = 60;
 		this.framesPerInterval = this.batData.fps * this.secondsPerInterval;
 		this.enteringExitingBatDataSize = Math.ceil(this.batData.total/this.framesPerInterval);
 		
 		this.enteringBatData.push({ "f1": 0, "f2": 0, "bats": [] });
 		this.exitingBatData.push ({ "f1": 0, "f2": 0, "bats": [] });
 		for(var i = 0; i < this.enteringExitingBatDataSize - 1; i++) {
-			this.enteringBatData.push({ "f1": i * this.batData.fps * this.secondsPerInterval, "f2": (i+1) * this.batData.fps * this.secondsPerInterval, "bats": [] });
-			this.exitingBatData.push ({ "f1": i * this.batData.fps * this.secondsPerInterval, "f2": (i+1) * this.batData.fps * this.secondsPerInterval, "bats": [] });
+			this.enteringBatData.push({ "f1": i * this.framesPerInterval, "f2": (i+1) * this.framesPerInterval, "bats": [] });
+			this.exitingBatData.push ({ "f1": i * this.framesPerInterval, "f2": (i+1) * this.framesPerInterval, "bats": [] });
 		}
-		this.enteringBatData.push({ "f1": Math.min(this.batData.total, (this.enteringExitingBatDataSize - 1) * this.batData.fps * this.secondsPerInterval), "f2": Math.min(this.batData.total, this.enteringExitingBatDataSize * this.batData.fps * this.secondsPerInterval), "bats": [] });
-		this.exitingBatData.push ({ "f1": Math.min(this.batData.total, (this.enteringExitingBatDataSize - 1) * this.batData.fps * this.secondsPerInterval), "f2": Math.min(this.batData.total, this.enteringExitingBatDataSize * this.batData.fps * this.secondsPerInterval), "bats": [] });
+		this.enteringBatData.push({ "f1": (this.enteringExitingBatDataSize - 1) * this.framesPerInterval, "f2": this.batData.total, "bats": [] });
+		this.exitingBatData.push ({ "f1": (this.enteringExitingBatDataSize - 1) * this.framesPerInterval, "f2": this.batData.total, "bats": [] });
 		
 		for (var i = 0; i < this.batData.bats.length; i++) {
         	var bat = this.batData.bats[i];
@@ -208,13 +215,13 @@ class PopulationGraph {
 	}
 
 	filterEnteringBat(bat) {
-		return (this.calibratorCells[this.getCalibratorCellIdByPos(bat.x1, bat.y1)].status == "entrance" &&
-				this.calibratorCells[this.getCalibratorCellIdByPos(bat.x2, bat.y2)].status == "exit");
+		return (this.calibratorCells[this.getCalibratorCellIdByPos(bat.x1, bat.y1)].status == "exit" &&
+				this.calibratorCells[this.getCalibratorCellIdByPos(bat.x2, bat.y2)].status == "entrance");
 	}
 
 	filterExitingBat(bat) {
-		return (this.calibratorCells[this.getCalibratorCellIdByPos(bat.x1, bat.y1)].status == "exit" &&
-				this.calibratorCells[this.getCalibratorCellIdByPos(bat.x2, bat.y2)].status == "entrance");
+		return (this.calibratorCells[this.getCalibratorCellIdByPos(bat.x1, bat.y1)].status == "entrance" &&
+				this.calibratorCells[this.getCalibratorCellIdByPos(bat.x2, bat.y2)].status == "exit");
 	}
 
 	getCalibratorCellIdByPos(x,y) {
