@@ -102,8 +102,8 @@ class Scene{
   	}
 
   	fillBatScene(bats, frame){
-	    drawBats(bats, frame);
-	    
+	    this.drawBats(bats, frame);
+
 	}
 
 	drawBats(bats, frame){
