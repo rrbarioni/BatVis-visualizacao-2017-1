@@ -16,15 +16,15 @@
   <body>
 
 
-    <script src="../libs/stats.min.js"></script>
-    <script src="../libs/three.min.js"></script>
-    <script src="../d3.v4.min.js"></script>
-    <script src="scene.js"></script>
+    <script src="lib/stats.min.js"></script>
+    <script src="lib/three.min.js"></script>
+    <script src="lib/d3.v4.min.js"></script>
+    <script src="3DViewer/scene.js"></script>
 
     <script>
       var batTracks;
 
-      d3.json("../../files/3dsim.json", function(error, data) {
+      d3.json("files/3dsim.json", function(error, data) {
         if (error) { throw error; }
         batTracks = data;
 
