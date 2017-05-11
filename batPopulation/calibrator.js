@@ -54,7 +54,9 @@ class Calibrator {
 			.attr("y",      function(d) { return d.y;      })
 			.attr("width",  function(d) { return d.width;  })
 			.attr("height", function(d) { return d.height; })
-			.call(d3.drag().on("drag",  this.dragLine.bind(this)));	
+			.call(d3.drag()
+				.on("drag", this.dragLine.bind(this))
+				.on("end",  this.releaseLine.bind(this)));
 	}
 
 	dragLine(d) {
@@ -64,6 +66,9 @@ class Calibrator {
 			case "topLine":    { this.linesContainer.select("#topLine").attr   ("y", d.y = Math.max(0, Math.min(this.linesValues[this.getLineIndexById("bottomLine")].y,d3.event.y)));                               this.updateCells(); break; }
 			case "bottomLine": { this.linesContainer.select("#bottomLine").attr("y", d.y = Math.max(this.linesValues[this.getLineIndexById("topLine")].y, Math.min((this.height - this.lineThickness),d3.event.y))); this.updateCells(); break; }
 		}
+	}
+
+	releaseLine(d) {
 		this.sendData();
 	}
 
