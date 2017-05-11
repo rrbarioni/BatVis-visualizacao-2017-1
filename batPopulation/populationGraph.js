@@ -21,6 +21,7 @@ class PopulationGraph {
 		this.batData, this.enteringBatData, this.exitingBatData;
 
 		this.enteringBatGraphNodes, this.exitingBatGraphNodes;
+		this.enteringBatGraphLines, this.exitingBatGraphLines;
 		this.loadBatFile("files/simulation.json");
 	}
 
@@ -33,19 +34,19 @@ class PopulationGraph {
 
 	setAxisDomain() {
 		this.xScale.domain([0, this.batData.total]);
-  		this.yScale.domain([0, d3.max(this.enteringBatData, function(d) { return d.bats.length; })]);
+  		this.yScale.domain([0, Math.max(1, d3.max(this.enteringBatData.concat(this.exitingBatData), function(d) { return d.bats.length; }))]);
 	}
 
 	drawAxis() {
 		this.setAxisDomain();
 
 		this.container.selectAll(".xAxis")
-			.transition(this.transition)
+			// .transition(this.transition)
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
 	        .call(d3.axisBottom(this.xScale));
 
 	    this.container.selectAll(".yAxis")
-	    	.transition(this.transition)
+	    	// .transition(this.transition)
 	        .attr("transform", "translate(" + this.margin.left + ",0)")
 	        .call(d3.axisLeft(this.yScale));
 	}
@@ -53,46 +54,101 @@ class PopulationGraph {
 	drawGraph() {
 		this.drawAxis();
 
-		this.enteringBatGraphNodes = this.container.selectAll(".enteringBatNode")
-			.data(this.enteringBatData)
-		this.enteringBatGraphNodes
-			.exit()
-			.remove();
-		this.enteringBatGraphNodes
-			.attr("class", "enteringBatNode")
-			.attr("r", 5)
-			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
-			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-			.attr("fill", "#00FF00");
-		this.enteringBatGraphNodes
-			.enter()
-			.append("circle")
-			.attr("class", "enteringBatNode")
-			.attr("r", 5)
-			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
-			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-			.attr("fill", "#00FF00");
+		// this.enteringBatGraphNodes = this.container.selectAll(".enteringBatNode")
+		// 	.data(this.enteringBatData)
+		// this.enteringBatGraphNodes
+		// 	.exit()
+		// 	.remove();
+		// this.enteringBatGraphNodes
+		// 	.attr("class", "enteringBatNode")
+		// 	.attr("r", 5)
+		// 	.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+		// 	.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+		// 	.attr("fill", "#00FF00")
+		// 	.attr('fill-opacity', 0.7);
+		// this.enteringBatGraphNodes
+		// 	.enter()
+		// 	.append("circle")
+		// 	.attr("class", "enteringBatNode")
+		// 	.attr("r", 5)
+		// 	.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+		// 	.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+		// 	.attr("fill", "#00FF00")
+		// 	.attr('fill-opacity', 0.7);
 
-		this.exitingBatGraphNodes = this.container.selectAll(".exitingBatNode")
-			.data(this.exitingBatData)
-		this.exitingBatGraphNodes
+		// this.exitingBatGraphNodes = this.container.selectAll(".exitingBatNode")
+		// 	.data(this.exitingBatData)
+		// this.exitingBatGraphNodes
+		// 	.exit()
+		// 	.remove();
+		// this.exitingBatGraphNodes
+		// 	.attr("class", "exitingBatNode")
+		// 	.attr("r", 5)
+		// 	.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+		// 	.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+		// 	.attr("fill", "#FF0000")
+		// 	.attr('fill-opacity', 0.7);
+		// this.exitingBatGraphNodes
+		// 	.enter()
+		// 	.append("circle")
+		// 	.attr("class", "exitingBatNode")
+		// 	.attr("r", 5)
+		// 	.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+		// 	.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+		// 	.attr("fill", "#FF0000")
+		// 	.attr('fill-opacity', 0.7);
+
+		this.enteringBatGraphLines = this.container.selectAll(".enteringBatLine")
+			.data(this.enteringBatData)
+		this.enteringBatGraphLines
 			.exit()
 			.remove();
-		this.exitingBatGraphNodes
-			.attr("class", "exitingBatNode")
-			.attr("r", 5)
-			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
-			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-			.attr("fill", "#FF0000");
-		this.exitingBatGraphNodes
+		this.enteringBatGraphLines
+			.attr("class", "enteringBatLine")
+			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.enteringBatData[i-1].f2);          }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.enteringBatData[i-1].bats.length); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.enteringBatData[i].f2);            }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.enteringBatData[i].bats.length);   }.bind(this))
+			.attr("stroke", "#00FF00")
+			.attr("stroke-width", 3)
+			.attr('stroke-opacity', 0.7);
+		this.enteringBatGraphLines
 			.enter()
-			.append("circle")
-			.attr("class", "exitingBatNode")
-			.attr("r", 5)
-			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
-			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-			.attr("fill", "#FF0000");
-		
+			.append("line")
+			.attr("class", "enteringBatLine")
+			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.enteringBatData[i-1].f2);          }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.enteringBatData[i-1].bats.length); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.enteringBatData[i].f2);            }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.enteringBatData[i].bats.length);   }.bind(this))
+			.attr("stroke", "#00FF00")
+			.attr("stroke-width", 3)
+			.attr('stroke-opacity', 0.7);
+
+		this.exitingBatGraphLines = this.container.selectAll(".exitingBatLine")
+			.data(this.exitingBatData)
+		this.exitingBatGraphLines
+			.exit()
+			.remove();
+		this.exitingBatGraphLines
+			.attr("class", "exitingBatLine")
+			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.exitingBatData[i-1].f2);          }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.exitingBatData[i-1].bats.length); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.exitingBatData[i].f2);            }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.exitingBatData[i].bats.length);   }.bind(this))
+			.attr("stroke", "#FF0000")
+			.attr("stroke-width", 3)
+			.attr('stroke-opacity', 0.7);
+		this.exitingBatGraphLines
+			.enter()
+			.append("line")
+			.attr("class", "exitingBatLine")
+			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.exitingBatData[i-1].f2);          }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.exitingBatData[i-1].bats.length); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.exitingBatData[i].f2);            }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.exitingBatData[i].bats.length);   }.bind(this))
+			.attr("stroke", "#FF0000")
+			.attr("stroke-width", 3)
+			.attr('stroke-opacity', 0.7);
 	}
 
 	receivedCalibratorData(lines, cells, screenScale) {
