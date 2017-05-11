@@ -183,8 +183,7 @@ class PopulationGraph {
 		this.enteringBatData = [];
 		this.exitingBatData = [];
 
-		console.log(this.batData.total);
-		this.secondsPerInterval = 60;
+		this.secondsPerInterval = 1;
 		this.framesPerInterval = this.batData.fps * this.secondsPerInterval;
 		this.enteringExitingBatDataSize = Math.ceil(this.batData.total/this.framesPerInterval);
 		
