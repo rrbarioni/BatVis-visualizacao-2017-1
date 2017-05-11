@@ -4,9 +4,13 @@ class PopulationGraph {
 		this.width =  width - this.margin.left - this.margin.right;
 		this.height = height - this.margin.top - this.margin.bottom;
 
+		this.transition = d3.transition().duration(1);
+		this.zoom = d3.zoom().on("zoom", this.zoomGraph.bind(this));
+
 		this.svg = d3.select("#populationGraph")
 			.attr("width",  this.width + this.margin.left + this.margin.right)
-			.attr("height", this.height + this.margin.top + this.margin.bottom);
+			.attr("height", this.height + this.margin.top + this.margin.bottom)
+			.call(this.zoom);
 		this.container = this.svg.append("g")
 			.attr("class", "container");
 
@@ -14,7 +18,7 @@ class PopulationGraph {
 		this.yScale = d3.scaleLinear().range([this.height + this.margin.top, this.margin.top]);
 		this.container.append("g").attr("class", "xAxis");
 		this.container.append("g").attr("class", "yAxis");
-		this.transition = d3.transition().duration(1);
+		
 
 		this.calibratorLines, this.calibratorCells, this.calibratorScreenScale;
 		
@@ -31,6 +35,10 @@ class PopulationGraph {
 			if (error) { throw error; }
 			this.batData = batData;
 		}.bind(this));
+	}
+
+	zoomGraph(d) {
+		this.container.attr("transform", "translate(" + d3.event.transform.x + "," + d3.event.transform.y + ") scale(" + d3.event.transform.k + ")");
 	}
 
 	setAxisDomain() {
