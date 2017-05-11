@@ -63,11 +63,31 @@ class PopulationGraph {
 			.attr("r", 5)
 			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
 			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-			.attr("fill", "#FF0000");
+			.attr("fill", "#00FF00");
 		this.enteringBatGraphNodes
 			.enter()
 			.append("circle")
 			.attr("class", "enteringBatNode")
+			.attr("r", 5)
+			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+			.attr("fill", "#00FF00");
+
+		this.exitingBatGraphNodes = this.container.selectAll(".exitingBatNode")
+			.data(this.exitingBatData)
+		this.exitingBatGraphNodes
+			.exit()
+			.remove();
+		this.exitingBatGraphNodes
+			.attr("class", "exitingBatNode")
+			.attr("r", 5)
+			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+			.attr("fill", "#FF0000");
+		this.exitingBatGraphNodes
+			.enter()
+			.append("circle")
+			.attr("class", "exitingBatNode")
 			.attr("r", 5)
 			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
 			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
