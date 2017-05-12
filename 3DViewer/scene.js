@@ -108,6 +108,7 @@ class Scene{
   		this.scene = null;
 	    this.scene = new THREE.Scene();
   		this.drawCave();
+	    this.drawGrid();
 	    this.drawBats(bats, frame);
 
 	    var dragControls = new THREE.DragControls( this.objects, this.camera, this.renderer.domElement );
@@ -145,7 +146,29 @@ class Scene{
 
 		this.objects.push( leftWall );
 		this.objects.push( rightWall );
+	}
 
+	drawGrid(){
+		//size of the grid cube
+		var gridCubeSize = 200;
+		//how many grid cubes we will plot in each axis
+		var nCubes = 50;
+		var y = this.cave.yMin;
+		for(var i=-nCubes/2; i<(nCubes/2)+1; i++){
+			//Horizontal
+			var geometryH = new THREE.Geometry();
+			geometryH.vertices.push(new THREE.Vector3( -gridCubeSize*nCubes/2,  y, i*gridCubeSize));
+			geometryH.vertices.push(new THREE.Vector3( gridCubeSize*nCubes/2,  y, i*gridCubeSize));
+			var lineH = new THREE.Line(geometryH, new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } ));
+			this.scene.add( lineH );
+
+			//Vertical
+			var geometryV = new THREE.Geometry();
+			geometryV.vertices.push(new THREE.Vector3( i*gridCubeSize,  y, -gridCubeSize*nCubes/2));
+			geometryV.vertices.push(new THREE.Vector3( i*gridCubeSize, y, gridCubeSize*nCubes/2));
+			var lineV = new THREE.Line(geometryV, new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } ));
+			this.scene.add( lineV );
+		}
 	}
 
 	drawBats(bats, frame){
@@ -200,7 +223,7 @@ class Scene{
 		this.camera.updateProjectionMatrix();
 		this.renderer.setSize( window.innerWidth, window.innerHeight );
 	}
-	//
+	
 	animate() {
 		requestAnimationFrame( this.animate.bind(this) );
 		this.render();
