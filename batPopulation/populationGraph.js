@@ -4,21 +4,22 @@ class PopulationGraph {
 		this.width =  width - this.margin.left - this.margin.right;
 		this.height = height - this.margin.top - this.margin.bottom;
 
-		this.transition = d3.transition().duration(1);
-		this.zoom = d3.zoom().on("zoom", this.zoomGraph.bind(this));
+		this.transition = d3.transition().duration(100);
+		//this.zoom = d3.zoom().on("zoom", this.zoomGraph.bind(this));
+		this.brush = d3.brush().on("end", this.brushEnded.bind(this));
 
 		this.svg = d3.select("#populationGraph")
 			.attr("width",  this.width + this.margin.left + this.margin.right)
 			.attr("height", this.height + this.margin.top + this.margin.bottom)
-			.call(this.zoom);
+			//.call(this.zoom);
+			.call(this.brush);
 		this.container = this.svg.append("g")
 			.attr("class", "container");
 
 		this.xScale = d3.scaleLinear().range([this.margin.left, this.width + this.margin.left]);
 		this.yScale = d3.scaleLinear().range([this.height + this.margin.top, this.margin.top]);
-		this.container.append("g").attr("class", "xAxis");
-		this.container.append("g").attr("class", "yAxis");
-		
+		this.svg.append("g").attr("class", "xAxis");
+		this.svg.append("g").attr("class", "yAxis");
 
 		this.calibratorLines, this.calibratorCells, this.calibratorScreenScale;
 		
@@ -41,6 +42,8 @@ class PopulationGraph {
 		this.container.attr("transform", "translate(" + d3.event.transform.x + "," + d3.event.transform.y + ") scale(" + d3.event.transform.k + ")");
 	}
 
+	brushEnded() {}
+
 	setAxisDomain() {
 		this.maxEntranceOrExitingOnInterval = Math.max(1, d3.max(this.enteringBatData.concat(this.exitingBatData), function(d) { return d.bats.length; }))
 
@@ -51,19 +54,21 @@ class PopulationGraph {
 	drawAxis() {
 		this.setAxisDomain();
 
-		this.container.selectAll(".xAxis")
+		this.svg.selectAll(".xAxis")
 			// .transition(this.transition)
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
 	        .call(d3.axisBottom(this.xScale)
 	        		.tickValues((d3.range(0, this.framesPerInterval * this.enteringExitingBatDataSize, this.framesPerInterval)).concat([this.batData.total]))
-	        		.tickFormat(d3.format(".0f")));
+	        		.tickFormat(d3.format(".0f"))
+	        		);
 
-	    this.container.selectAll(".yAxis")
+	    this.svg.selectAll(".yAxis")
 	    	// .transition(this.transition)
 	        .attr("transform", "translate(" + this.margin.left + ",0)")
 	        .call(d3.axisLeft(this.yScale)
 	        		.tickValues(d3.range(0, this.maxEntranceOrExitingOnInterval + 1, 1))
-	        		.tickFormat(d3.format(".0f")));
+	        		.tickFormat(d3.format(".0f"))
+	        		);
 	}
 
 	drawGraph() {
@@ -72,51 +77,51 @@ class PopulationGraph {
 		var nodeRadius = 5;
 		var nodeOpacity = 0.8;
 
-		this.enteringBatGraphNodes = this.container.selectAll(".enteringBatNode")
-			.data(this.enteringBatData.slice(1, this.enteringBatData.length));
-		this.enteringBatGraphNodes
-			.exit()
-			.remove();
-		this.enteringBatGraphNodes
-			// .transition(this.transition)
-			.attr("class", "enteringBatNode")
-			.attr("r", nodeRadius)
-			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
-			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-			.attr("fill", "#00FF00")
-			.attr('fill-opacity', nodeOpacity);
-		this.enteringBatGraphNodes
-			.enter()
-			.append("circle")
-			// .transition(this.transition)
-			.attr("class", "enteringBatNode")
-			.attr("r", nodeRadius)
-			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
-			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-			.attr("fill", "#00FF00")
-			.attr('fill-opacity', nodeOpacity);
+		// this.enteringBatGraphNodes = this.container.selectAll(".enteringBatNode")
+		// 	.data(this.enteringBatData.slice(1, this.enteringBatData.length));
+		// this.enteringBatGraphNodes
+		// 	.exit()
+		// 	.remove();
+		// this.enteringBatGraphNodes
+		// 	// .transition(this.transition)
+		// 	.attr("class", "enteringBatNode")
+		// 	.attr("r", nodeRadius)
+		// 	.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+		// 	.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+		// 	.attr("fill", "#00FF00")
+		// 	.attr('fill-opacity', nodeOpacity);
+		// this.enteringBatGraphNodes
+		// 	.enter()
+		// 	.append("circle")
+		// 	// .transition(this.transition)
+		// 	.attr("class", "enteringBatNode")
+		// 	.attr("r", nodeRadius)
+		// 	.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+		// 	.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+		// 	.attr("fill", "#00FF00")
+		// 	.attr('fill-opacity', nodeOpacity);
 
-		this.exitingBatGraphNodes = this.container.selectAll(".exitingBatNode")
-			.data(this.exitingBatData.slice(1, this.exitingBatData.length))
-		this.exitingBatGraphNodes
-			.exit()
-			.remove();
-		this.exitingBatGraphNodes
-			.attr("class", "exitingBatNode")
-			.attr("r", nodeRadius)
-			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
-			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-			.attr("fill", "#FF0000")
-			.attr('fill-opacity', nodeOpacity);
-		this.exitingBatGraphNodes
-			.enter()
-			.append("circle")
-			.attr("class", "exitingBatNode")
-			.attr("r", nodeRadius)
-			.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
-			.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
-			.attr("fill", "#FF0000")
-			.attr('fill-opacity', nodeOpacity);
+		// this.exitingBatGraphNodes = this.container.selectAll(".exitingBatNode")
+		// 	.data(this.exitingBatData.slice(1, this.exitingBatData.length))
+		// this.exitingBatGraphNodes
+		// 	.exit()
+		// 	.remove();
+		// this.exitingBatGraphNodes
+		// 	.attr("class", "exitingBatNode")
+		// 	.attr("r", nodeRadius)
+		// 	.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+		// 	.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+		// 	.attr("fill", "#FF0000")
+		// 	.attr('fill-opacity', nodeOpacity);
+		// this.exitingBatGraphNodes
+		// 	.enter()
+		// 	.append("circle")
+		// 	.attr("class", "exitingBatNode")
+		// 	.attr("r", nodeRadius)
+		// 	.attr("cx", function(d) { return this.xScale(d.f2); }.bind(this))
+		// 	.attr("cy", function(d) { return this.yScale(d.bats.length); }.bind(this))
+		// 	.attr("fill", "#FF0000")
+		// 	.attr('fill-opacity', nodeOpacity);
 
 		var lineWidth = 5;
 		var lineOpacity = 0.5;
@@ -191,9 +196,11 @@ class PopulationGraph {
 		this.enteringBatData = [];
 		this.exitingBatData = [];
 
-		this.secondsPerInterval = 1;
-		this.framesPerInterval = this.batData.fps * this.secondsPerInterval;
-		this.enteringExitingBatDataSize = Math.ceil(this.batData.total/this.framesPerInterval);
+		// this.secondsPerInterval = 1;
+		// this.framesPerInterval = this.batData.fps * this.secondsPerInterval;
+		// this.enteringExitingBatDataSize = Math.ceil(this.batData.total/this.framesPerInterval);
+		this.enteringExitingBatDataSize = 5;
+		this.framesPerInterval = this.batData.total/this.enteringExitingBatDataSize;
 		
 		this.enteringBatData.push({ "f1": 0, "f2": 0, "bats": [] });
 		this.exitingBatData.push ({ "f1": 0, "f2": 0, "bats": [] });
