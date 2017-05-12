@@ -57,7 +57,7 @@ class Scene{
 		info.style.top = '10px';
 		info.style.width = '100%';
 		info.style.textAlign = 'center';
-		info.innerHTML = '<a href="http://threejs.org" target="_blank">three.js</a> webgl - draggable cubes';
+		info.innerHTML = 'BatVis - 3D Flight Simulator';
 		this.container.appendChild( info );
 		this.stats = new Stats();
 		this.container.appendChild( this.stats.dom );
@@ -152,7 +152,7 @@ class Scene{
 		//size of the grid cube
 		var gridCubeSize = 200;
 		//how many grid cubes we will plot in each axis
-		var nCubes = 50;
+		var nCubes = 20;
 		var y = this.cave.yMin;
 		for(var i=-nCubes/2; i<(nCubes/2)+1; i++){
 			//Horizontal
