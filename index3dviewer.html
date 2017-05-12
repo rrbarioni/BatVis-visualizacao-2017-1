@@ -21,19 +21,24 @@
     <script src="lib/TrackballControls.js"></script>
     <script src="lib/d3.v4.min.js"></script>
     <script src="3DViewer/scene.js"></script>
+    <script src="lib/Detector.js"></script>
 
     <script>
       var batTracks;
 
-      d3.json("files/3dsim.json", function(error, data) {
-        if (error) { throw error; }
-        batTracks = data;
+      d3.json("files/3dsim.json", function(error1, data) {
+        if (error1) { throw error1; }
 
-        console.log(batTracks);
+        var loader = new THREE.JSONLoader();
+        loader.load( '3DViewer/Models/geometry.js', function( geometry ) {
+          batTracks = data;
 
-        var scene = new Scene(data);
-        scene.init();
-        scene.animate();
+          console.log(geometry);
+          //debugger;
+          var scene = new Scene(data, geometry);
+          scene.init();
+          scene.animate();
+        });
       });
 
       

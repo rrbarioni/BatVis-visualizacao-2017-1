@@ -1,8 +1,10 @@
 
 class Scene{
 
-	constructor(data){
+	constructor(data, geometry){
 		this.objects = [];
+		this.mixers = [];
+		this.clock = new THREE.Clock();
 
 		this.container;
 	    this.stats;
@@ -16,6 +18,10 @@ class Scene{
 	    this.cave = this.createCave(this.bats);
 
 	    this.batScale = 10;
+
+	    this.batGeometry = geometry;
+	    //debugger;
+	    
 	}
 
 	init() {
@@ -105,6 +111,8 @@ class Scene{
 
   	fillBatScene(bats, frame){
   		this.objects = [];
+		this.mixers = [];
+
   		this.scene = null;
 	    this.scene = new THREE.Scene();
   		this.drawCave();
@@ -200,16 +208,33 @@ class Scene{
 					break;
 				else if((frame == tracks[j].f) || (j+1 < tracks.length && frame >= tracks[j].f && frame <= tracks[j+1].f)){
 
-					object.position.x = tracks[j].x;
-					object.position.y = tracks[j].y;
-					object.position.z = z;//tracks[j].z;
-					object.rotation.x = 0;
-					object.rotation.y = 0;
-					object.rotation.z = 0;
-					object.scale.x = this.batScale;
-					object.scale.y = this.batScale;
-					object.scale.z = this.batScale;
-					this.objects.push( object );
+					var material = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0xffffff, shininess: 20, morphTargets: true, vertexColors: THREE.FaceColors, shading: THREE.FlatShading } );
+					var mesh = new THREE.Mesh( this.batGeometry, material );
+					var s = 0.35;
+					mesh.scale.set( s, s, s );
+
+					mesh.position.x = tracks[j].x;
+					mesh.position.y = tracks[j].y;
+					mesh.position.z = z;//tracks[j].z;
+					mesh.rotation.x = 0;
+					mesh.rotation.y = 0;
+					mesh.rotation.z = 0;
+					//mesh.position.y = 15;
+					//mesh.rotation.y = -1;
+
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
+					this.scene.add( mesh );
+
+					var mixer = new THREE.AnimationMixer( mesh );
+					mixer.clipAction( this.batGeometry.animations[ 0 ] ).setDuration( 1 ).play();
+					this.mixers.push( mixer );
+
+					
+					//object.scale.x = this.batScale;
+					//object.scale.y = this.batScale;
+					//object.scale.z = this.batScale;
+					this.objects.push( mesh );
 				}
 			}
 
@@ -234,6 +259,11 @@ class Scene{
 		this.frame = this.frame < this.bats.total ? this.frame + 1 : 0;
 
 		this.fillBatScene(this.bats, this.frame);
+		var delta = (this.frame%30)/30;
+			for ( var i = 0; i < this.mixers.length; i ++ ) {
+				this.mixers[ i ].update( delta );
+		}	
+
 		this.controls.update();
 		this.renderer.render( this.scene, this.camera );
 	}
