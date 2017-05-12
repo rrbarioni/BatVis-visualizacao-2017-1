@@ -1,9 +1,9 @@
 
-var objects = [];
-
 class Scene{
 
 	constructor(data){
+		this.objects = [];
+
 		this.container;
 	    this.stats;
 	    this.camera;
@@ -13,6 +13,9 @@ class Scene{
 	    
 	    this.frame = 0;
 	    this.bats = data;
+	    this.cave = this.createCave(this.bats);
+
+	    this.batScale = 1;
 	}
 
 	init() {
@@ -21,7 +24,7 @@ class Scene{
 		this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
 		this.camera.position.z = 1000;
 		this.controls = new THREE.TrackballControls( this.camera );
-		this.controls.rotateSpeed = 1.0;
+		this.controls.rotateSpeed = 5.0;
 		this.controls.zoomSpeed = 1.2;
 		this.controls.panSpeed = 0.8;
 		this.controls.noZoom = false;
@@ -38,23 +41,6 @@ class Scene{
 		light.shadow.mapSize.width = 2048;
 		light.shadow.mapSize.height = 2048;
 		this.scene.add( light );
-		var geometry = new THREE.BoxGeometry( 40, 40, 40 );
-		for ( var i = 0; i < 200; i ++ ) {
-			var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
-			object.position.x = Math.random() * 1000 - 500;
-			object.position.y = Math.random() * 600 - 300;
-			object.position.z = Math.random() * 800 - 400;
-			object.rotation.x = Math.random() * 2 * Math.PI;
-			object.rotation.y = Math.random() * 2 * Math.PI;
-			object.rotation.z = Math.random() * 2 * Math.PI;
-			object.scale.x = Math.random() * 2 + 1;
-			object.scale.y = Math.random() * 2 + 1;
-			object.scale.z = Math.random() * 2 + 1;
-			object.castShadow = true;
-			object.receiveShadow = true;
-			this.scene.add( object );
-			objects.push( object );
-		}
 		this.renderer = new THREE.WebGLRenderer( { antialias: true } );
 		this.renderer.setClearColor( 0xf0f0f0 );
 		this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -63,7 +49,7 @@ class Scene{
 		this.renderer.shadowMap.enabled = true;
 		this.renderer.shadowMap.type = THREE.PCFShadowMap;
 		this.container.appendChild( this.renderer.domElement );
-		var dragControls = new THREE.DragControls( objects, this.camera, this.renderer.domElement );
+		var dragControls = new THREE.DragControls( this.objects, this.camera, this.renderer.domElement );
 		dragControls.addEventListener( 'dragstart', function ( event ) { this.controls.enabled = false; }.bind(this) );
 		dragControls.addEventListener( 'dragend', function ( event ) { this.controls.enabled = true; }.bind(this) );
 		var info = document.createElement( 'div' );
@@ -101,14 +87,68 @@ class Scene{
 		}
   	}
 
+  	createCave(bats){
+  		var aMin = 999999;
+  		var aMax = -999999;
+  		
+
+  		for(var i=0; i<bats.bats.length; i++){
+  			var area = bats.bats[i].track[0].a;	
+  			aMin = aMin < area ? aMin : area;
+  			aMax = aMax > area ? aMax : area;
+  		}
+
+  		var cave = {xMin:0, xMax:bats.width, yMin:0, yMax:bats.height, zMin:aMin, zMax:aMax};
+  		console.log(cave);
+  		return cave;
+  	}
+
   	fillBatScene(bats, frame){
+  		this.objects = [];
+  		this.scene = null;
+	    this.scene = new THREE.Scene();
+  		this.drawCave();
 	    this.drawBats(bats, frame);
+
+	    var dragControls = new THREE.DragControls( this.objects, this.camera, this.renderer.domElement );
+		dragControls.addEventListener( 'dragstart', function ( event ) { this.controls.enabled = false; }.bind(this) );
+		dragControls.addEventListener( 'dragend', function ( event ) { this.controls.enabled = true; }.bind(this) );
+	}
+
+	drawCave(){
+	    var geometry = new THREE.BoxBufferGeometry( 20, 20, 20 );
+		var leftWall = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xff0000 } ) );
+		var rightWall = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xff0000 } ) );
+		//debugger;
+		var scaleX = 5;
+		var scaleY = this.cave.yMax-this.cave.yMin;
+		var scaleZ = this.cave.zMax-this.cave.zMin;
+		var maxScale = scaleX > scaleY ? scaleX : scaleY;
+		maxScale = 10;//maxScale > scaleZ ? maxScale : scaleZ;
+
+		leftWall.position.x = this.cave.xMin-scaleX/2-this.batScale/2;
+		leftWall.position.y = this.cave.yMin;
+		leftWall.position.z = this.cave.zMin;
+		leftWall.scale.x = scaleX/maxScale;
+		leftWall.scale.y = scaleY/maxScale;
+		leftWall.scale.z = scaleZ/maxScale;
+
+		rightWall.position.x = this.cave.xMax+scaleX/2+this.batScale/2;
+		rightWall.position.y = this.cave.yMin;
+		rightWall.position.z = this.cave.zMin;
+		rightWall.scale.x = scaleX/maxScale;
+		rightWall.scale.y = scaleY/maxScale;
+		rightWall.scale.z = scaleZ/maxScale;
+
+		this.scene.add( leftWall );
+		this.scene.add( rightWall );
+
+		this.objects.push( leftWall );
+		this.objects.push( rightWall );
 
 	}
 
 	drawBats(bats, frame){
-	    this.scene = null;
-	    this.scene = new THREE.Scene();
 	    var light = new THREE.DirectionalLight( 0xffffff, 1 );
 	    light.position.set( 1, 1, 1 ).normalize();
 	    this.scene.add( light );
@@ -142,9 +182,11 @@ class Scene{
 					object.rotation.x = 0;
 					object.rotation.y = 0;
 					object.rotation.z = 0;
-					object.scale.x = 1;
-					object.scale.y = 1;
-					object.scale.z = 1;
+					object.scale.x = this.batScale;
+					object.scale.y = this.batScale;
+					object.scale.z = this.batScale;
+					this.objects.push( object );
+
 					break;
 				}
 			}
