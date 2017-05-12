@@ -15,7 +15,7 @@ class Scene{
 	    this.bats = data;
 	    this.cave = this.createCave(this.bats);
 
-	    this.batScale = 1;
+	    this.batScale = 10;
 	}
 
 	init() {
@@ -116,7 +116,7 @@ class Scene{
 	}
 
 	drawCave(){
-	    var geometry = new THREE.BoxBufferGeometry( 20, 20, 20 );
+	    var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
 		var leftWall = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xff0000 } ) );
 		var rightWall = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xff0000 } ) );
 		//debugger;
@@ -127,18 +127,18 @@ class Scene{
 		maxScale = 10;//maxScale > scaleZ ? maxScale : scaleZ;
 
 		leftWall.position.x = this.cave.xMin-scaleX/2-this.batScale/2;
-		leftWall.position.y = this.cave.yMin;
-		leftWall.position.z = this.cave.zMin;
-		leftWall.scale.x = scaleX/maxScale;
-		leftWall.scale.y = scaleY/maxScale;
-		leftWall.scale.z = scaleZ/maxScale;
+		leftWall.position.y = this.cave.yMin + scaleY/2;
+		leftWall.position.z = this.cave.zMin + scaleZ/2;
+		leftWall.scale.x = scaleX;
+		leftWall.scale.y = scaleY + this.batScale;
+		leftWall.scale.z = scaleZ + this.batScale;
 
 		rightWall.position.x = this.cave.xMax+scaleX/2+this.batScale/2;
-		rightWall.position.y = this.cave.yMin;
-		rightWall.position.z = this.cave.zMin;
-		rightWall.scale.x = scaleX/maxScale;
-		rightWall.scale.y = scaleY/maxScale;
-		rightWall.scale.z = scaleZ/maxScale;
+		rightWall.position.y = this.cave.yMin + scaleY/2;
+		rightWall.position.z = this.cave.zMin + scaleZ/2;
+		rightWall.scale.x = scaleX;
+		rightWall.scale.y = scaleY + this.batScale;
+		rightWall.scale.z = scaleZ + this.batScale;
 
 		this.scene.add( leftWall );
 		this.scene.add( rightWall );
@@ -152,7 +152,7 @@ class Scene{
 	    var light = new THREE.DirectionalLight( 0xffffff, 1 );
 	    light.position.set( 1, 1, 1 ).normalize();
 	    this.scene.add( light );
-	    var geometry = new THREE.BoxBufferGeometry( 20, 20, 20 );
+	    var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
 	    for ( var i = 0; i < bats.bats.length; i ++ ) {
 			var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: i*0xffffff } ) );
 
@@ -173,8 +173,9 @@ class Scene{
 			  
 			//find the track interval of the current frame
 			for(var j = 0; j < tracks.length; j ++ ){
-
-				if(frame >= tracks[j].f && frame <= tracks[j+1].f){
+				if(frame < tracks[j].f)
+					break;
+				else if((frame == tracks[j].f) || (j+1 < tracks.length && frame >= tracks[j].f && frame <= tracks[j+1].f)){
 
 					object.position.x = tracks[j].x;
 					object.position.y = tracks[j].y;
@@ -186,8 +187,6 @@ class Scene{
 					object.scale.y = this.batScale;
 					object.scale.z = this.batScale;
 					this.objects.push( object );
-
-					break;
 				}
 			}
 
