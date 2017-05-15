@@ -51,25 +51,28 @@ class PopulationGraph {
 			this.currentZoomLevel = 0;
 			this.firstFrame = [0];
 			this.lastFrame = [this.batData.total];
-			this.framesPerInterval = [this.lastFrame[this.currentZoomLevel]/this.enteringExitingBatDataSize];
+			this.framesPerInterval = [(this.lastFrame[this.currentZoomLevel] - this.firstFrame[this.currentZoomLevel])/this.enteringExitingBatDataSize];
 			this.bats = [this.filterBatArrayByFrameInterval(this.batData.bats, this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel])];
-			this.enteringBatData = [[]];
-			this.exitingBatData = [[]];
 
 			this.setEnteringAndExitingBatData();
 			this.drawGraph();
-
 		}.bind(this));
 	}
 
 	zoomIn() {
-		if (this.currentZoomLevel == -1) {
-			return;
-		}
-		this.currentZoomLevel++;
+		var brushRect = d3.event.selection;
+		if (!brushRect) { console.log("eae"); return; }
 
-		var brushRect = d3.event.selection; //[0][0], [1][0], [0][1], [1][1]
-		console.log(brushRect[0][0] + ", " + brushRect[1][1]);
+		if (this.currentZoomLevel == -1) { return; }
+		this.currentZoomLevel++;
+		
+		this.firstFrame.push(this.xScale.invert(brushRect[0][0]));
+		this.lastFrame.push (this.xScale.invert(brushRect[1][0]));
+		this.framesPerInterval.push((this.lastFrame[this.currentZoomLevel] - this.firstFrame[this.currentZoomLevel])/this.enteringExitingBatDataSize);
+		this.bats.push(this.filterBatArrayByFrameInterval(this.batData.bats, this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel]));
+
+		this.setEnteringAndExitingBatData();
+		this.drawGraph();
 	}
 
 	zoomOut() {
@@ -78,12 +81,20 @@ class PopulationGraph {
 		}
 		this.currentZoomLevel--;
 
+		this.firstFrame.pop();
+		this.lastFrame.pop();
+		this.framesPerInterval.pop();
+		this.bats.pop();
 
+		this.setEnteringAndExitingBatData();
+		this.drawGraph();
 	}
 
 	setAxisDomain() {
-  		this.minEntranceOrExitingOnInterval = [            d3.min(this.enteringBatData[this.currentZoomLevel].concat(this.exitingBatData[this.currentZoomLevel]), function(d) { return d.bats.length; })];
-		this.maxEntranceOrExitingOnInterval = [Math.max(1, d3.max(this.enteringBatData[this.currentZoomLevel].concat(this.exitingBatData[this.currentZoomLevel]), function(d) { return d.bats.length; }))];
+		this.minEntranceOrExitingOnInterval[this.currentZoomLevel] =             d3.min(this.enteringBatData[this.currentZoomLevel].concat(this.exitingBatData[this.currentZoomLevel]), function(d) { return d.bats.length; });
+		this.maxEntranceOrExitingOnInterval[this.currentZoomLevel] = Math.max(1, d3.max(this.enteringBatData[this.currentZoomLevel].concat(this.exitingBatData[this.currentZoomLevel]), function(d) { return d.bats.length; }));
+
+		// console.log(this.minEntranceOrExitingOnInterval[this.currentZoomLevel] + ", " + this.maxEntranceOrExitingOnInterval[this.currentZoomLevel]);
 
   		this.xScale.domain([this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel]]);
   		this.yScale.domain([this.minEntranceOrExitingOnInterval[this.currentZoomLevel], this.maxEntranceOrExitingOnInterval[this.currentZoomLevel]]);
@@ -93,7 +104,7 @@ class PopulationGraph {
 		this.setAxisDomain();
 
 		this.svg.selectAll(".xAxis")
-			// .transition(this.transition)
+			.transition(this.transition)
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
 	        .call(d3.axisBottom(this.xScale)
 	        		.tickValues((d3.range(this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel], this.framesPerInterval[this.currentZoomLevel])).concat([this.lastFrame[this.currentZoomLevel]]))
@@ -101,7 +112,7 @@ class PopulationGraph {
 	        		);
 
 	    this.svg.selectAll(".yAxis")
-	    	// .transition(this.transition)
+	    	.transition(this.transition)
 	        .attr("transform", "translate(" + this.margin.left + ",0)")
 	        .call(d3.axisLeft(this.yScale)
 	        		.tickValues((d3.range(this.minEntranceOrExitingOnInterval[this.currentZoomLevel], this.maxEntranceOrExitingOnInterval[this.currentZoomLevel], 1)).concat(this.maxEntranceOrExitingOnInterval[this.currentZoomLevel]))
@@ -124,24 +135,24 @@ class PopulationGraph {
 			.exit()
 			.remove();
 		this.enteringBatGraphLines
-			// .transition(this.transition)
+			.transition(this.transition)
 			.attr("class", "enteringBatLine")
-			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.enteringBatData[this.currentZoomLevel][i-1].f2);          }.bind(this))
-			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.enteringBatData[this.currentZoomLevel][i-1].bats.length); }.bind(this))
-			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.enteringBatData[this.currentZoomLevel][i].f2);            }.bind(this))
-			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.enteringBatData[this.currentZoomLevel][i].bats.length);   }.bind(this))
+			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.enteringBatData[this.currentZoomLevel][i-1].f2);          }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.enteringBatData[this.currentZoomLevel][i-1].bats.length); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.enteringBatData[this.currentZoomLevel][i].f2);            }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.enteringBatData[this.currentZoomLevel][i].bats.length);   }.bind(this))
 			.attr("stroke", "#00FF00")
 			.attr("stroke-width", lineWidth)
 			.attr('stroke-opacity', lineOpacity);
 		this.enteringBatGraphLines
 			.enter()
 			.append("line")
-			// .transition(this.transition)
+			.transition(this.transition)
 			.attr("class", "enteringBatLine")
-			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.enteringBatData[this.currentZoomLevel][i-1].f2);          }.bind(this))
-			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.enteringBatData[this.currentZoomLevel][i-1].bats.length); }.bind(this))
-			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.enteringBatData[this.currentZoomLevel][i].f2);            }.bind(this))
-			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.enteringBatData[this.currentZoomLevel][i].bats.length);   }.bind(this))
+			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.enteringBatData[this.currentZoomLevel][i-1].f2);          }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.enteringBatData[this.currentZoomLevel][i-1].bats.length); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.enteringBatData[this.currentZoomLevel][i].f2);            }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.enteringBatData[this.currentZoomLevel][i].bats.length);   }.bind(this))
 			.attr("stroke", "#00FF00")
 			.attr("stroke-width", lineWidth)
 			.attr('stroke-opacity', lineOpacity);
@@ -152,24 +163,24 @@ class PopulationGraph {
 			.exit()
 			.remove();
 		this.exitingBatGraphLines
-			// .transition(this.transition)
+			.transition(this.transition)
 			.attr("class", "exitingBatLine")
-			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.exitingBatData[this.currentZoomLevel][i-1].f2);          }.bind(this))
-			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.exitingBatData[this.currentZoomLevel][i-1].bats.length); }.bind(this))
-			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.exitingBatData[this.currentZoomLevel][i].f2);            }.bind(this))
-			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.exitingBatData[this.currentZoomLevel][i].bats.length);   }.bind(this))
+			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.exitingBatData[this.currentZoomLevel][i-1].f2);          }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.exitingBatData[this.currentZoomLevel][i-1].bats.length); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.exitingBatData[this.currentZoomLevel][i].f2);            }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.exitingBatData[this.currentZoomLevel][i].bats.length);   }.bind(this))
 			.attr("stroke", "#FF0000")
 			.attr("stroke-width", lineWidth)
 			.attr('stroke-opacity', lineOpacity);
 		this.exitingBatGraphLines
 			.enter()
 			.append("line")
-			// .transition(this.transition)
+			.transition(this.transition)
 			.attr("class", "exitingBatLine")
-			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.exitingBatData[this.currentZoomLevel][i-1].f2);          }.bind(this))
-			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.exitingBatData[this.currentZoomLevel][i-1].bats.length); }.bind(this))
-			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.exitingBatData[this.currentZoomLevel][i].f2);            }.bind(this))
-			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.exitingBatData[this.currentZoomLevel][i].bats.length);   }.bind(this))
+			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.exitingBatData[this.currentZoomLevel][i-1].f2);          }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.exitingBatData[this.currentZoomLevel][i-1].bats.length); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.exitingBatData[this.currentZoomLevel][i].f2);            }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.exitingBatData[this.currentZoomLevel][i].bats.length);   }.bind(this))
 			.attr("stroke", "#FF0000")
 			.attr("stroke-width", lineWidth)
 			.attr('stroke-opacity', lineOpacity);
@@ -197,24 +208,36 @@ class PopulationGraph {
 		this.enteringBatData[this.currentZoomLevel] = [];
 		this.exitingBatData[this.currentZoomLevel] = [];
 
-		this.enteringBatData[this.currentZoomLevel].push({ "f1": 0, "f2": 0, "bats": [] });
-		this.exitingBatData[this.currentZoomLevel].push ({ "f1": 0, "f2": 0, "bats": [] });
+		// this.enteringBatData[this.currentZoomLevel].push({ "f1": 0, "f2": 0, "bats": [] });
+		// this.exitingBatData[this.currentZoomLevel].push ({ "f1": 0, "f2": 0, "bats": [] });
+		// for(var i = 0; i < this.enteringExitingBatDataSize - 1; i++) {
+		// 	this.enteringBatData[this.currentZoomLevel].push({ "f1": i * this.framesPerInterval[this.currentZoomLevel], "f2": (i+1) * this.framesPerInterval[this.currentZoomLevel], "bats": [] });
+		// 	this.exitingBatData[this.currentZoomLevel].push ({ "f1": i * this.framesPerInterval[this.currentZoomLevel], "f2": (i+1) * this.framesPerInterval[this.currentZoomLevel], "bats": [] });
+		// }
+		// this.enteringBatData[this.currentZoomLevel].push({ "f1": (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "bats": [] });
+		// this.exitingBatData[this.currentZoomLevel].push ({ "f1": (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "bats": [] });
+		
+		this.enteringBatData[this.currentZoomLevel].push({ "f1": this.firstFrame[this.currentZoomLevel], "f2": this.firstFrame[this.currentZoomLevel], "bats": [] });
+		this.exitingBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel], "f2": this.firstFrame[this.currentZoomLevel], "bats": [] });
 		for(var i = 0; i < this.enteringExitingBatDataSize - 1; i++) {
-			this.enteringBatData[this.currentZoomLevel].push({ "f1": i * this.framesPerInterval[this.currentZoomLevel], "f2": (i+1) * this.framesPerInterval[this.currentZoomLevel], "bats": [] });
-			this.exitingBatData[this.currentZoomLevel].push ({ "f1": i * this.framesPerInterval[this.currentZoomLevel], "f2": (i+1) * this.framesPerInterval[this.currentZoomLevel], "bats": [] });
+			this.enteringBatData[this.currentZoomLevel].push({ "f1": this.firstFrame[this.currentZoomLevel] + (i * this.framesPerInterval[this.currentZoomLevel]), "f2": this.firstFrame[this.currentZoomLevel] + ((i+1) * this.framesPerInterval[this.currentZoomLevel]), "bats": [] });
+			this.exitingBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel] + (i * this.framesPerInterval[this.currentZoomLevel]), "f2": this.firstFrame[this.currentZoomLevel] + ((i+1) * this.framesPerInterval[this.currentZoomLevel]), "bats": [] });
 		}
-		this.enteringBatData[this.currentZoomLevel].push({ "f1": (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "bats": [] });
-		this.exitingBatData[this.currentZoomLevel].push ({ "f1": (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "bats": [] });
+		this.enteringBatData[this.currentZoomLevel].push({ "f1": this.firstFrame[this.currentZoomLevel] + (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "bats": [] });
+		this.exitingBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel] + (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "bats": [] });
 		
 		if (!this.firstCalibrationDone) { return; }
 
 		for (var i = 0; i < this.bats[this.currentZoomLevel].length; i++) {
         	var bat = this.bats[this.currentZoomLevel][i];
         	if (this.filterEnteringBat(bat)) {
-        		this.enteringBatData[this.currentZoomLevel][Math.floor(bat.f2/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
+        		// this.enteringBatData[this.currentZoomLevel][Math.floor(bat.f2/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
+        		this.enteringBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
         	}
         	else if (this.filterExitingBat(bat)) {
-        		this.exitingBatData[this.currentZoomLevel][Math.floor(bat.f2/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
+        		// this.exitingBatData[this.currentZoomLevel][Math.floor(bat.f2/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
+        		this.exitingBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
+
         	}
         }
 	}
