@@ -55,6 +55,8 @@ class PopulationGraph {
 			this.lastFrame = [this.batData.total];
 			this.framesPerInterval = [(this.lastFrame[this.currentZoomLevel] - this.firstFrame[this.currentZoomLevel])/this.enteringExitingBatDataSize];
 			this.bats = [this.filterBatArrayByFrameInterval(this.batData.bats, this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel])];
+			this.enteringBatData = [];
+			this.exitingBatData = [];
 
 			this.setEnteringAndExitingBatData();
 			this.drawGraph();
@@ -97,7 +99,7 @@ class PopulationGraph {
 		else {
 			this.setEnteringAndExitingBatData();
 		}
-		
+
 		this.drawGraph();
 
 		if(this.currentZoomLevel == 0) {
