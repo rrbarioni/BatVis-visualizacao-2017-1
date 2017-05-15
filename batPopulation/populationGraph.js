@@ -4,8 +4,9 @@ class PopulationGraph {
 		this.width =  width - this.margin.left - this.margin.right;
 		this.height = height - this.margin.top - this.margin.bottom;
 
-		//this.transition = d3.transition().duration(100);
 		this.firstCalibrationDone = false;
+		this.receivedCalibrationOnZoom = false;
+
 		this.currentZoomLevel = -1;
 		this.brush = d3.brush()
 			.on("end", this.zoomIn.bind(this))
@@ -14,7 +15,8 @@ class PopulationGraph {
 		this.svg = d3.select("#populationGraph")
 			.attr("width",  this.width + this.margin.left + this.margin.right)
 			.attr("height", this.height + this.margin.top + this.margin.bottom)
-			.call(this.brush);
+			.call(this.brush)
+			.on("contextmenu", this.zoomOut.bind(this));
 			
 		this.container = this.svg.append("g")
 			.attr("class", "container");
@@ -61,7 +63,7 @@ class PopulationGraph {
 
 	zoomIn() {
 		var brushRect = d3.event.selection;
-		if (!brushRect) { console.log("eae"); return; }
+		if (!brushRect) { return; }
 
 		if (this.currentZoomLevel == -1) { return; }
 		this.currentZoomLevel++;
@@ -76,6 +78,8 @@ class PopulationGraph {
 	}
 
 	zoomOut() {
+		d3.event.preventDefault();
+
 		if(this.currentZoomLevel == 0) {
 			return;
 		}
@@ -86,15 +90,24 @@ class PopulationGraph {
 		this.framesPerInterval.pop();
 		this.bats.pop();
 
-		this.setEnteringAndExitingBatData();
+		if (!this.receivedCalibrationOnZoom) {
+			this.enteringBatData.pop();
+			this.exitingBatData.pop();
+		}
+		else {
+			this.setEnteringAndExitingBatData();
+		}
+		
 		this.drawGraph();
+
+		if(this.currentZoomLevel == 0) {
+			this.receivedCalibrationOnZoom = false;
+		}
 	}
 
 	setAxisDomain() {
 		this.minEntranceOrExitingOnInterval[this.currentZoomLevel] =             d3.min(this.enteringBatData[this.currentZoomLevel].concat(this.exitingBatData[this.currentZoomLevel]), function(d) { return d.bats.length; });
 		this.maxEntranceOrExitingOnInterval[this.currentZoomLevel] = Math.max(1, d3.max(this.enteringBatData[this.currentZoomLevel].concat(this.exitingBatData[this.currentZoomLevel]), function(d) { return d.bats.length; }));
-
-		// console.log(this.minEntranceOrExitingOnInterval[this.currentZoomLevel] + ", " + this.maxEntranceOrExitingOnInterval[this.currentZoomLevel]);
 
   		this.xScale.domain([this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel]]);
   		this.yScale.domain([this.minEntranceOrExitingOnInterval[this.currentZoomLevel], this.maxEntranceOrExitingOnInterval[this.currentZoomLevel]]);
@@ -104,7 +117,7 @@ class PopulationGraph {
 		this.setAxisDomain();
 
 		this.svg.selectAll(".xAxis")
-			.transition(this.transition)
+			.transition()
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
 	        .call(d3.axisBottom(this.xScale)
 	        		.tickValues((d3.range(this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel], this.framesPerInterval[this.currentZoomLevel])).concat([this.lastFrame[this.currentZoomLevel]]))
@@ -112,7 +125,7 @@ class PopulationGraph {
 	        		);
 
 	    this.svg.selectAll(".yAxis")
-	    	.transition(this.transition)
+	    	.transition()
 	        .attr("transform", "translate(" + this.margin.left + ",0)")
 	        .call(d3.axisLeft(this.yScale)
 	        		.tickValues((d3.range(this.minEntranceOrExitingOnInterval[this.currentZoomLevel], this.maxEntranceOrExitingOnInterval[this.currentZoomLevel], 1)).concat(this.maxEntranceOrExitingOnInterval[this.currentZoomLevel]))
@@ -135,7 +148,7 @@ class PopulationGraph {
 			.exit()
 			.remove();
 		this.enteringBatGraphLines
-			.transition(this.transition)
+			.transition()
 			.attr("class", "enteringBatLine")
 			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.enteringBatData[this.currentZoomLevel][i-1].f2);          }.bind(this))
 			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.enteringBatData[this.currentZoomLevel][i-1].bats.length); }.bind(this))
@@ -147,7 +160,7 @@ class PopulationGraph {
 		this.enteringBatGraphLines
 			.enter()
 			.append("line")
-			.transition(this.transition)
+			.transition()
 			.attr("class", "enteringBatLine")
 			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.enteringBatData[this.currentZoomLevel][i-1].f2);          }.bind(this))
 			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.enteringBatData[this.currentZoomLevel][i-1].bats.length); }.bind(this))
@@ -163,7 +176,7 @@ class PopulationGraph {
 			.exit()
 			.remove();
 		this.exitingBatGraphLines
-			.transition(this.transition)
+			.transition()
 			.attr("class", "exitingBatLine")
 			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.exitingBatData[this.currentZoomLevel][i-1].f2);          }.bind(this))
 			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.exitingBatData[this.currentZoomLevel][i-1].bats.length); }.bind(this))
@@ -175,7 +188,7 @@ class PopulationGraph {
 		this.exitingBatGraphLines
 			.enter()
 			.append("line")
-			.transition(this.transition)
+			.transition()
 			.attr("class", "exitingBatLine")
 			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.exitingBatData[this.currentZoomLevel][i-1].f2);          }.bind(this))
 			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.exitingBatData[this.currentZoomLevel][i-1].bats.length); }.bind(this))
@@ -199,6 +212,7 @@ class PopulationGraph {
 		this.calibratorScreenScale = screenScale;
 
 		this.firstCalibrationDone = true;
+		if (this.currentZoomLevel > 0) { this.receivedCalibrationOnZoom = true; }
 		
 		this.setEnteringAndExitingBatData();
 		this.drawGraph();
@@ -208,15 +222,6 @@ class PopulationGraph {
 		this.enteringBatData[this.currentZoomLevel] = [];
 		this.exitingBatData[this.currentZoomLevel] = [];
 
-		// this.enteringBatData[this.currentZoomLevel].push({ "f1": 0, "f2": 0, "bats": [] });
-		// this.exitingBatData[this.currentZoomLevel].push ({ "f1": 0, "f2": 0, "bats": [] });
-		// for(var i = 0; i < this.enteringExitingBatDataSize - 1; i++) {
-		// 	this.enteringBatData[this.currentZoomLevel].push({ "f1": i * this.framesPerInterval[this.currentZoomLevel], "f2": (i+1) * this.framesPerInterval[this.currentZoomLevel], "bats": [] });
-		// 	this.exitingBatData[this.currentZoomLevel].push ({ "f1": i * this.framesPerInterval[this.currentZoomLevel], "f2": (i+1) * this.framesPerInterval[this.currentZoomLevel], "bats": [] });
-		// }
-		// this.enteringBatData[this.currentZoomLevel].push({ "f1": (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "bats": [] });
-		// this.exitingBatData[this.currentZoomLevel].push ({ "f1": (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "bats": [] });
-		
 		this.enteringBatData[this.currentZoomLevel].push({ "f1": this.firstFrame[this.currentZoomLevel], "f2": this.firstFrame[this.currentZoomLevel], "bats": [] });
 		this.exitingBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel], "f2": this.firstFrame[this.currentZoomLevel], "bats": [] });
 		for(var i = 0; i < this.enteringExitingBatDataSize - 1; i++) {
@@ -231,11 +236,9 @@ class PopulationGraph {
 		for (var i = 0; i < this.bats[this.currentZoomLevel].length; i++) {
         	var bat = this.bats[this.currentZoomLevel][i];
         	if (this.filterEnteringBat(bat)) {
-        		// this.enteringBatData[this.currentZoomLevel][Math.floor(bat.f2/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
         		this.enteringBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
         	}
         	else if (this.filterExitingBat(bat)) {
-        		// this.exitingBatData[this.currentZoomLevel][Math.floor(bat.f2/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
         		this.exitingBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
 
         	}
