@@ -29,10 +29,8 @@ class PopulationGraph {
 		this.batData;
 		this.enteringExitingBatDataSize = 6;
 
-		this.domain = []; //(xMin, yMin, xMax, yMax)
-		// this.minEntranceOrExitingOnInterval, this.maxEntranceOrExitingOnInterval, this.framesPerInterval, this.enteringBatData, this.exitingBatData;
-		this.firstFrame = [];
-		this.lastFrame = [];
+		this.firstFrame = [];					  //xMin
+		this.lastFrame = [];					  //xMax
 		this.minEntranceOrExitingOnInterval = []; //yMin
 		this.maxEntranceOrExitingOnInterval = []; //yMax
 		this.framesPerInterval = [];
@@ -68,24 +66,22 @@ class PopulationGraph {
 		if (this.currentZoomLevel == -1) {
 			return;
 		}
-		var brushRect = d3.event.selection; //[0][0], [1][0], [0][1], [1][1]
-
 		this.currentZoomLevel++;
+
+		var brushRect = d3.event.selection; //[0][0], [1][0], [0][1], [1][1]
+		console.log(brushRect[0][0] + ", " + brushRect[1][1]);
 	}
 
 	zoomOut() {
 		if(this.currentZoomLevel == 0) {
 			return;
 		}
-
 		this.currentZoomLevel--;
+
+
 	}
 
 	setAxisDomain() {
-		// this.maxEntranceOrExitingOnInterval = Math.max(1, d3.max(this.enteringBatData.concat(this.exitingBatData), function(d) { return d.bats.length; }))
-		// this.xScale.domain([0, this.batData.total]);
-  		// this.yScale.domain([0, this.maxEntranceOrExitingOnInterval]);
-
   		this.minEntranceOrExitingOnInterval = [            d3.min(this.enteringBatData[this.currentZoomLevel].concat(this.exitingBatData[this.currentZoomLevel]), function(d) { return d.bats.length; })];
 		this.maxEntranceOrExitingOnInterval = [Math.max(1, d3.max(this.enteringBatData[this.currentZoomLevel].concat(this.exitingBatData[this.currentZoomLevel]), function(d) { return d.bats.length; }))];
 
@@ -111,6 +107,11 @@ class PopulationGraph {
 	        		.tickValues((d3.range(this.minEntranceOrExitingOnInterval[this.currentZoomLevel], this.maxEntranceOrExitingOnInterval[this.currentZoomLevel], 1)).concat(this.maxEntranceOrExitingOnInterval[this.currentZoomLevel]))
 	        		.tickFormat(d3.format(".0f"))
 	        		);
+	}
+
+	drawNodes() {
+		var nodeRadius = 5;
+		var nodeOpacity = 0.8;
 	}
 
 	drawLines() {
@@ -177,9 +178,7 @@ class PopulationGraph {
 	drawGraph() {
 		this.drawAxis();
 
-		var nodeRadius = 5;
-		var nodeOpacity = 0.8;
-
+		this.drawNodes();
 		this.drawLines();
 	}
 
