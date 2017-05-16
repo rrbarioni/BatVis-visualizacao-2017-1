@@ -184,35 +184,40 @@ class Scene{
 			//if this bat should not be renderer in
 			//this frame continue to the next bat
 			if(frame < tracks[0].f || frame > tracks[tracks.length-1].f)
-			continue;
-
+				continue;
 
 			var z = 0;
 			for(var k=0; k < tracks.length; k++){
 				z += tracks[k].a;
 			}
-
 			z /= tracks.length;
 			  
 			//find the track interval of the current frame
 			for(var j = 0; j < tracks.length; j ++ ){
-				if(frame < tracks[j].f)
-					break;
-				else if((frame == tracks[j].f) || (j+1 < tracks.length && frame >= tracks[j].f && frame <= tracks[j+1].f)){
+				
+				object.position.x = tracks[j].x;
+				object.position.y = tracks[j].y;
+				object.position.z = z;//tracks[j].z;
+				object.rotation.x = 0;
+				object.rotation.y = 0;
+				object.rotation.z = 0;
+				object.scale.x = this.batScale;
+				object.scale.y = this.batScale;
+				object.scale.z = this.batScale;
 
-					object.position.x = tracks[j].x;
-					object.position.y = tracks[j].y;
-					object.position.z = z;//tracks[j].z;
-					object.rotation.x = 0;
-					object.rotation.y = 0;
-					object.rotation.z = 0;
-					object.scale.x = this.batScale;
-					object.scale.y = this.batScale;
-					object.scale.z = this.batScale;
-					this.objects.push( object );
+				if((frame == tracks[j].f) || (j+1 < tracks.length && frame >= tracks[j].f && frame <= tracks[j+1].f))
+					break;
+				else
+				{
+					var pathLine = new THREE.Geometry();
+					pathLine.vertices.push(new THREE.Vector3( tracks[j].x, tracks[j].y, z));
+					pathLine.vertices.push(new THREE.Vector3( tracks[j+1].x, tracks[j+1].y, z));
+					var line = new THREE.Line(pathLine, new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } ));
+					this.scene.add( line );
 				}
 			}
-
+			
+			this.objects.push( object );
 			this.scene.add( object );
 	    }
 	}
@@ -231,7 +236,7 @@ class Scene{
 	}
 	
 	render() {
-		this.frame = this.frame < this.bats.total ? this.frame + 1 : 0;
+		this.frame = this.frame < this.bats.total ? (this.frame + 0.5) : 0;
 
 		this.fillBatScene(this.bats, this.frame);
 		this.controls.update();
