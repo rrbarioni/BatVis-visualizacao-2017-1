@@ -16,6 +16,9 @@ class Scene{
 	    this.cave = this.createCave(this.bats);
 
 	    this.batScale = 10;
+	    this.lastMilisec = new Date().getMilliseconds();
+	    this.diff = 0;
+	    this.frameRenderInterval = 1000/data.fps;
 	}
 
 	init() {
@@ -61,7 +64,6 @@ class Scene{
 		this.container.appendChild( info );
 		this.stats = new Stats();
 		this.container.appendChild( this.stats.dom );
-		//
 		window.addEventListener( 'resize', this.onWindowResize, false );
 	}
 
@@ -171,27 +173,32 @@ class Scene{
 		}
 	}
 
-	drawBats(bats, frame){
+	drawBats(data, frame){
 	    var light = new THREE.DirectionalLight( 0xffffff, 1 );
 	    light.position.set( 1, 1, 1 ).normalize();
 	    this.scene.add( light );
 	    var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
-	    for ( var i = 0; i < bats.bats.length; i ++ ) {
-			var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: i*0xffffff } ) );
-
-			var tracks = bats.bats[i].track;
+	    var labels = [];
+	    for ( var i = 0; i < data.bats.length; i ++ ) {
+			
+			var tracks = data.bats[i].track;
+			if(frame < tracks[0].f)
+				break;
 
 			//if this bat should not be renderer in
 			//this frame continue to the next bat
 			if(frame < tracks[0].f || frame > tracks[tracks.length-1].f)
 				continue;
 
+			var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: i*0xffffff } ) );
+
 			var z = 0;
 			for(var k=0; k < tracks.length; k++){
 				z += tracks[k].a;
 			}
 			z /= tracks.length;
-			  
+			labels.push(data.bats[i].label);
+
 			//find the track interval of the current frame
 			for(var j = 0; j < tracks.length; j ++ ){
 				
@@ -205,7 +212,7 @@ class Scene{
 				object.scale.y = this.batScale;
 				object.scale.z = this.batScale;
 
-				if((frame == tracks[j].f) || (j+1 < tracks.length && frame >= tracks[j].f && frame <= tracks[j+1].f))
+				if((frame == tracks[j].f) || (j+1 < tracks.length && frame < tracks[j+1].f))
 					break;
 				else
 				{
@@ -214,6 +221,7 @@ class Scene{
 					pathLine.vertices.push(new THREE.Vector3( tracks[j+1].x, tracks[j+1].y, z));
 					var line = new THREE.Line(pathLine, new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } ));
 					this.scene.add( line );
+					this.objects.push(line);
 				}
 			}
 			
@@ -236,9 +244,14 @@ class Scene{
 	}
 	
 	render() {
-		this.frame = this.frame < this.bats.total ? (this.frame + 0.5) : 0;
-
-		this.fillBatScene(this.bats, this.frame);
+		var d = new Date();
+    	var n = d.getMilliseconds();
+		if(n < this.lastMilisec || (this.lastMilisec + this.frameRenderInterval)%1000 <= n){
+			this.lastMilisec = n;
+			this.frame = this.frame < this.bats.total ? (this.frame + 1) : 0;
+			this.fillBatScene(this.bats, this.frame);
+		}
+		
 		this.controls.update();
 		this.renderer.render( this.scene, this.camera );
 	}
