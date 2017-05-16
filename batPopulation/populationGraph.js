@@ -29,7 +29,7 @@ class PopulationGraph {
 		this.calibratorLines, this.calibratorCells, this.calibratorScreenScale;
 		
 		this.batData;
-		this.enteringExitingBatDataSize = 6;
+		this.enteringExitingBatDataSize = 60;
 
 		this.firstFrame = [];					  //xMin
 		this.lastFrame = [];					  //xMax
@@ -42,7 +42,9 @@ class PopulationGraph {
 
 		this.enteringBatGraphNodes, this.exitingBatGraphNodes;
 		this.enteringBatGraphLines, this.exitingBatGraphLines;
-		this.loadBatFile("files/simulation.json");
+		// this.loadBatFile("files/simulation.json");
+		this.loadBatFile("files/20141003_tracking.json");
+		
 	}
 
 	loadBatFile(batFilePath) {
@@ -130,7 +132,7 @@ class PopulationGraph {
 	    	.transition()
 	        .attr("transform", "translate(" + this.margin.left + ",0)")
 	        .call(d3.axisLeft(this.yScale)
-	        		.tickValues((d3.range(this.minEntranceOrExitingOnInterval[this.currentZoomLevel], this.maxEntranceOrExitingOnInterval[this.currentZoomLevel], 1)).concat(this.maxEntranceOrExitingOnInterval[this.currentZoomLevel]))
+	        		// .tickValues((d3.range(this.minEntranceOrExitingOnInterval[this.currentZoomLevel], this.maxEntranceOrExitingOnInterval[this.currentZoomLevel], 1)).concat(this.maxEntranceOrExitingOnInterval[this.currentZoomLevel]))
 	        		.tickFormat(d3.format(".0f"))
 	        		);
 	}
@@ -208,7 +210,7 @@ class PopulationGraph {
 		this.drawLines();
 	}
 
-	receivedCalibratorData(lines, cells, screenScale) {
+	receiveCalibratorData(lines, cells, screenScale) {
 		this.calibratorLines = lines;
 		this.calibratorCells = cells;
 		this.calibratorScreenScale = screenScale;
@@ -218,6 +220,8 @@ class PopulationGraph {
 		
 		this.setEnteringAndExitingBatData();
 		this.drawGraph();
+
+		this.sendData();
 	}
 
 	setEnteringAndExitingBatData() {
@@ -242,7 +246,6 @@ class PopulationGraph {
         	}
         	else if (this.filterExitingBat(bat)) {
         		this.exitingBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
-
         	}
         }
 	}
@@ -270,6 +273,16 @@ class PopulationGraph {
 		if (y >= this.calibratorCells[3].y / this.calibratorScreenScale) { cellId += 3; }
 		if (y >= this.calibratorCells[6].y / this.calibratorScreenScale) { cellId += 3; }
 		return cellId;
+	}
+
+	sendData() {
+		this.dispatch.call(
+			"batListChanged",
+			{
+				"id": "populationGraph",
+				"bats": this.bats[this.currentZoomLevel].filter(function(bat) { return this.filterEnteringBat(bat) || this.filterExitingBat(bat); }.bind(this))
+			}
+		);
 	}
 
 }
