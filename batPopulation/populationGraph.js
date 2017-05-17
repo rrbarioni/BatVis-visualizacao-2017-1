@@ -280,16 +280,12 @@ class PopulationGraph {
 	}
 
 	sendData() {
-		var enteringBats = this.bats[this.currentZoomLevel].filter(function(bat) { return this.filterEnteringBat(bat); }.bind(this));
-		enteringBats.forEach(function(d) { d.entering = true; d.exiting = false; });
-		var exitingBats = this.bats[this.currentZoomLevel].filter(function(bat)  { return this.filterExitingBat(bat);  }.bind(this));
-		exitingBats.forEach(function(d)  { d.entering = false; d.exiting = true; });
-
 		this.dispatch.call(
 			"batListChanged",
 			{
 				"id": "populationGraph",
-				"bats": enteringBats.concat(exitingBats)
+				"enteringBats": this.bats[this.currentZoomLevel].filter(function(bat) { return this.filterEnteringBat(bat); }.bind(this)),
+				"exitingBats":  this.bats[this.currentZoomLevel].filter(function(bat) { return this.filterExitingBat(bat);  }.bind(this))
 			}
 		);
 	}

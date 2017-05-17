@@ -10,51 +10,64 @@ class FlightsHistogram {
 		this.container = this.svg.append("g")
 			.attr("class", "container");
 
-		this.xScale = d3.scaleLinear().range([this.margin.left, this.width + this.margin.left]);
+		this.xScale = d3.scaleLinear().range([this.margin.left * 2, this.width + this.margin.left]);
 		this.yScale = d3.scaleLinear().range([this.height + this.margin.top, this.margin.top]);
 		this.svg.append("g").attr("class", "xAxis");
 		this.svg.append("g").attr("class", "yAxis");
 
-		this.bats, this.batsByFlightDuration;
+		this.enteringBats, this.exitingBats;
 		this.enteringBatsByFlightDuration, this.exitingBatsByFlightDuration;
-
 		this.enteringBatsByFlightDurationNodes, this.exitingBatsByFlightDurationNodes;
 	}
 
-	receiveBatListData(bats) {
-		// console.log(bats.length);
-		this.bats = bats;
-		this.batsByFlightDuration = [];
+	receiveBatListData(enteringBats, exitingBats) {
+		this.enteringBats = enteringBats;
+		this.exitingBats = exitingBats;
 
-		for(var i = 0; i < this.bats.length; i++) {
-			if (this.batFlightDuration(this.bats[i]) < 1) { continue; }
+		this.enteringBatsByFlightDuration = [];
+		this.exitingBatsByFlightDuration = [];
 
-			if (this.batsByFlightDuration[this.batFlightDuration(this.bats[i])] === undefined) {
-				this.batsByFlightDuration[this.batFlightDuration(this.bats[i])] = [this.bats[i]];
+		for(var i = 0; i < this.enteringBats.length; i++) {
+			if (this.batFlightDuration(this.enteringBats[i]) < 1) { continue; }
+
+			if (this.enteringBatsByFlightDuration[this.batFlightDuration(this.enteringBats[i])] === undefined) {
+				this.enteringBatsByFlightDuration[this.batFlightDuration(this.enteringBats[i])] = [this.enteringBats[i]];
 			}
 			else {
-				this.batsByFlightDuration[this.batFlightDuration(this.bats[i])].push(this.bats[i]);
+				this.enteringBatsByFlightDuration[this.batFlightDuration(this.enteringBats[i])].push(this.enteringBats[i]);
 			}
 		}
 
-		for(var i = 0; i < this.batsByFlightDuration.length; i++) {
-			if (this.batsByFlightDuration[i] === undefined) {
-				this.batsByFlightDuration[i] = [];
+		for(var i = 0; i < this.exitingBats.length; i++) {
+			if (this.batFlightDuration(this.exitingBats[i]) < 1) { continue; }
+
+			if (this.exitingBatsByFlightDuration[this.batFlightDuration(this.exitingBats[i])] === undefined) {
+				this.exitingBatsByFlightDuration[this.batFlightDuration(this.exitingBats[i])] = [this.exitingBats[i]];
+			}
+			else {
+				this.exitingBatsByFlightDuration[this.batFlightDuration(this.exitingBats[i])].push(this.exitingBats[i]);
 			}
 		}
 
-		this.enteringBatsByFlightDuration = this.batsByFlightDuration;
-		this.enteringBatsByFlightDuration.forEach(function(d1) { d1 = d1.filter(function(d2) { return d2.entering; }); });
-		this.exitingBatsByFlightDuration = this.batsByFlightDuration;
-		this.exitingBatsByFlightDuration.forEach(function(d1) { d1 = d1.filter(function(d2) { return d2.exiting; }); });
+		for(var i = 0; i < Math.max(this.enteringBatsByFlightDuration.length, this.exitingBatsByFlightDuration.length); i++) {
+			if (this.enteringBatsByFlightDuration[i] === undefined) { this.enteringBatsByFlightDuration[i] = []; }
+			if (this.exitingBatsByFlightDuration[i] === undefined)  { this.exitingBatsByFlightDuration[i] = [];  }
+		}
 
-		console.log(this.batsByFlightDuration);
+		console.log(this.enteringBatsByFlightDuration);
+		console.log(this.exitingBatsByFlightDuration);
+
 		this.drawHistogram();
 	}
 
 	setAxisDomain() {
-		this.xScale.domain([0, this.batsByFlightDuration.length]);
-		this.yScale.domain([0, d3.max(this.batsByFlightDuration, function(d) { return d.length; })]);
+		var maxBatCountByFlightDuration = 0;
+		for(var i = 0; i < Math.max(this.enteringBatsByFlightDuration.length, this.exitingBatsByFlightDuration.length); i++) {
+			maxBatCountByFlightDuration = Math.max(maxBatCountByFlightDuration, this.enteringBatsByFlightDuration[i].concat(this.exitingBatsByFlightDuration[i]).length)
+		}
+
+		this.xScale.domain([0, Math.max(this.enteringBatsByFlightDuration.length, this.exitingBatsByFlightDuration.length)]);
+		this.yScale.domain([0, maxBatCountByFlightDuration]);
 	}
 
 	drawAxis() {
@@ -82,18 +95,20 @@ class FlightsHistogram {
 		this.enteringBatsByFlightDurationNodes
 			.transition()
 			.attr("class", "enteringBatByFlightDurationNode")
-			.attr("r", 5)
-			.attr("cx", function(d,i) { return this.xScale(i);        }.bind(this))
-			.attr("cy", function(d,i) { return this.yScale(d.length); }.bind(this))
+			.attr("x",      function(d,i) { return this.xScale(i - 0.5); }.bind(this))
+			.attr("y",      function(d,i) { return this.yScale(d.length); }.bind(this))
+			.attr("width",  this.xScale(1) - this.xScale(0))
+			.attr("height", function(d,i) { return this.yScale(0) - this.yScale(d.length); }.bind(this))
 			.attr("fill", "green");
 		this.enteringBatsByFlightDurationNodes
 			.enter()
-			.append("circle")
+			.append("rect")
 			.transition()
 			.attr("class", "enteringBatByFlightDurationNode")
-			.attr("r", 5)
-			.attr("cx", function(d,i) { return this.xScale(i);        }.bind(this))
-			.attr("cy", function(d,i) { return this.yScale(d.length); }.bind(this))
+			.attr("x",      function(d,i) { return this.xScale(i - 0.5); }.bind(this))
+			.attr("y",      function(d,i) { return this.yScale(d.length); }.bind(this))
+			.attr("width",  this.xScale(1) - this.xScale(0))
+			.attr("height", function(d,i) { return this.yScale(0) - this.yScale(d.length); }.bind(this))
 			.attr("fill", "green");
 
 		this.exitingBatsByFlightDurationNodes = this.container.selectAll(".exitingBatByFlightDurationNode")
@@ -104,18 +119,20 @@ class FlightsHistogram {
 		this.exitingBatsByFlightDurationNodes
 			.transition()
 			.attr("class", "exitingBatByFlightDurationNode")
-			.attr("r", 5)
-			.attr("cx", function(d,i) { return this.xScale(i);        }.bind(this))
-			.attr("cy", function(d,i) { return this.yScale(d.length); }.bind(this))
+			.attr("x",      function(d,i) { return this.xScale(i - 0.5); }.bind(this))
+			.attr("y",      function(d,i) { return this.yScale(d.length + this.enteringBatsByFlightDuration[i].length); }.bind(this))
+			.attr("width",  this.xScale(1) - this.xScale(0))
+			.attr("height", function(d,i) { return this.yScale(0) - this.yScale(d.length); }.bind(this))
 			.attr("fill", "red");
 		this.exitingBatsByFlightDurationNodes
 			.enter()
-			.append("circle")
+			.append("rect")
 			.transition()
 			.attr("class", "exitingBatByFlightDurationNode")
-			.attr("r", 5)
-			.attr("cx", function(d,i) { return this.xScale(i);        }.bind(this))
-			.attr("cy", function(d,i) { return this.yScale(d.length); }.bind(this))
+			.attr("x",      function(d,i) { return this.xScale(i - 0.5); }.bind(this))
+			.attr("y",      function(d,i) { return this.yScale(d.length + this.enteringBatsByFlightDuration[i].length); }.bind(this))
+			.attr("width",  this.xScale(1) - this.xScale(0))
+			.attr("height", function(d,i) { return this.yScale(0) - this.yScale(d.length); }.bind(this))
 			.attr("fill", "red");
 	}
 

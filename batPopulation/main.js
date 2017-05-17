@@ -23,7 +23,7 @@ calibratorChangeDispatch.on("calibratorChanged", function() {
 
 var batListDispatch = d3.dispatch("batListChanged");
 batListDispatch.on("batListChanged", function() {
-	flightsHistogram.receiveBatListData(this.bats);
+	flightsHistogram.receiveBatListData(this.enteringBats, this.exitingBats);
 });
 
 calibrator.dispatch      = calibratorChangeDispatch;
