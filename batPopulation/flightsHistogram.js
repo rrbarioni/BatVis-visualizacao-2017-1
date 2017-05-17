@@ -54,9 +54,6 @@ class FlightsHistogram {
 			if (this.exitingBatsByFlightDuration[i] === undefined)  { this.exitingBatsByFlightDuration[i] = [];  }
 		}
 
-		console.log(this.enteringBatsByFlightDuration);
-		console.log(this.exitingBatsByFlightDuration);
-
 		this.drawHistogram();
 	}
 
