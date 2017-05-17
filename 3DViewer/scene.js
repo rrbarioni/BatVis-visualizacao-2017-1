@@ -11,7 +11,9 @@ class Scene{
 	    this.scene;
 	    this.renderer;
 	    
-	    this.frame = 0;
+	    this.initialFrame = 30000;
+	    this.frame = this.initialFrame;
+	    this.finalFrame = data.total;
 	    this.bats = data;
 	    this.cave = this.createCave(this.bats);
 
@@ -248,7 +250,7 @@ class Scene{
     	var n = d.getMilliseconds();
 		if(n < this.lastMilisec || (this.lastMilisec + this.frameRenderInterval)%1000 <= n){
 			this.lastMilisec = n;
-			this.frame = this.frame < this.bats.total ? (this.frame + 1) : 0;
+			this.frame = this.frame < this.finalFrame ? (this.frame + 1) : this.initialFrame;
 			this.fillBatScene(this.bats, this.frame);
 		}
 		

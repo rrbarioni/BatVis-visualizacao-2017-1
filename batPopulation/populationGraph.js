@@ -39,9 +39,10 @@ class PopulationGraph {
 		this.bats = [];
 		this.enteringBatData = [];
 		this.exitingBatData = [];
+		this.populationBatData = [];
 
 		this.enteringBatGraphNodes, this.exitingBatGraphNodes;
-		this.enteringBatGraphLines, this.exitingBatGraphLines;
+		this.enteringBatGraphLines, this.exitingBatGraphLines, this.populationBatGraphLines;
 		// this.loadBatFile("files/simulation.json");
 		this.loadBatFile("files/20141003_tracking.json");
 		
@@ -59,6 +60,8 @@ class PopulationGraph {
 			this.bats = [this.filterBatArrayByFrameInterval(this.batData.bats, this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel])];
 			this.enteringBatData = [];
 			this.exitingBatData = [];
+			this.populationBatData = [];
+
 
 			this.setEnteringAndExitingBatData();
 			this.drawGraph();
@@ -99,6 +102,8 @@ class PopulationGraph {
 		if (!this.receivedCalibrationOnZoom) {
 			this.enteringBatData.pop();
 			this.exitingBatData.pop();
+			this.populationBatData.pop();
+
 		}
 		else {
 			this.setEnteringAndExitingBatData();
@@ -114,8 +119,14 @@ class PopulationGraph {
 	}
 
 	setAxisDomain() {
+		var minPop = d3.min(this.populationBatData[this.currentZoomLevel], function(d) { return d.population; });
+		var maxPop = d3.max(this.populationBatData[this.currentZoomLevel], function(d) { return d.population; });
+
 		this.minEntranceOrExitingOnInterval[this.currentZoomLevel] =             d3.min(this.enteringBatData[this.currentZoomLevel].concat(this.exitingBatData[this.currentZoomLevel]), function(d) { return d.bats.length; });
 		this.maxEntranceOrExitingOnInterval[this.currentZoomLevel] = Math.max(1, d3.max(this.enteringBatData[this.currentZoomLevel].concat(this.exitingBatData[this.currentZoomLevel]), function(d) { return d.bats.length; }));
+
+		this.minEntranceOrExitingOnInterval[this.currentZoomLevel] = Math.min(this.minEntranceOrExitingOnInterval[this.currentZoomLevel], minPop);
+		this.maxEntranceOrExitingOnInterval[this.currentZoomLevel] = Math.max(this.maxEntranceOrExitingOnInterval[this.currentZoomLevel], maxPop);
 
   		this.xScale.domain([this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel]]);
   		this.yScale.domain([this.minEntranceOrExitingOnInterval[this.currentZoomLevel], this.maxEntranceOrExitingOnInterval[this.currentZoomLevel]]);
@@ -205,6 +216,34 @@ class PopulationGraph {
 			.attr("stroke", "#FF0000")
 			.attr("stroke-width", lineWidth)
 			.attr('stroke-opacity', lineOpacity);
+
+		this.populationBatGraphLines = this.container.selectAll(".populationBatLine")
+			.data(this.populationBatData[this.currentZoomLevel]);
+		this.populationBatGraphLines
+			.exit()
+			.remove();
+		this.populationBatGraphLines
+			.transition()
+			.attr("class", "populationBatLine")
+			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.populationBatData[this.currentZoomLevel][i-1].f2); }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.populationBatData[this.currentZoomLevel][i-1].population); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.populationBatData[this.currentZoomLevel][i].f2); }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.populationBatData[this.currentZoomLevel][i].population); }.bind(this))
+			.attr("stroke", "#FFFF00")
+			.attr("stroke-width", lineWidth)
+			.attr('stroke-opacity', lineOpacity);
+		this.populationBatGraphLines
+			.enter()
+			.append("line")
+			.transition()
+			.attr("class", "populationBatLine")
+			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.populationBatData[this.currentZoomLevel][i-1].f2); }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.populationBatData[this.currentZoomLevel][i-1].population); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.populationBatData[this.currentZoomLevel][i].f2); }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.populationBatData[this.currentZoomLevel][i].population); }.bind(this))
+			.attr("stroke", "#FFFF00")
+			.attr("stroke-width", lineWidth)
+			.attr('stroke-opacity', lineOpacity);
 	}
 
 	drawGraph() {
@@ -231,15 +270,20 @@ class PopulationGraph {
 	setEnteringAndExitingBatData() {
 		this.enteringBatData[this.currentZoomLevel] = [];
 		this.exitingBatData[this.currentZoomLevel] = [];
+		this.populationBatData[this.currentZoomLevel] = [];
+
 
 		this.enteringBatData[this.currentZoomLevel].push({ "f1": this.firstFrame[this.currentZoomLevel], "f2": this.firstFrame[this.currentZoomLevel], "bats": [] });
 		this.exitingBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel], "f2": this.firstFrame[this.currentZoomLevel], "bats": [] });
+		this.populationBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel], "f2": this.firstFrame[this.currentZoomLevel], "population": 0 });
 		for(var i = 0; i < this.enteringExitingBatDataSize - 1; i++) {
 			this.enteringBatData[this.currentZoomLevel].push({ "f1": this.firstFrame[this.currentZoomLevel] + (i * this.framesPerInterval[this.currentZoomLevel]), "f2": this.firstFrame[this.currentZoomLevel] + ((i+1) * this.framesPerInterval[this.currentZoomLevel]), "bats": [] });
 			this.exitingBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel] + (i * this.framesPerInterval[this.currentZoomLevel]), "f2": this.firstFrame[this.currentZoomLevel] + ((i+1) * this.framesPerInterval[this.currentZoomLevel]), "bats": [] });
+			this.populationBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel] + (i * this.framesPerInterval[this.currentZoomLevel]), "f2": this.firstFrame[this.currentZoomLevel] + ((i+1) * this.framesPerInterval[this.currentZoomLevel]), "population": 0 });
 		}
 		this.enteringBatData[this.currentZoomLevel].push({ "f1": this.firstFrame[this.currentZoomLevel] + (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "bats": [] });
 		this.exitingBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel] + (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "bats": [] });
+		this.populationBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel] + (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "population": 0 });
 		
 		if (!this.firstCalibrationDone) { return; }
 
@@ -247,11 +291,19 @@ class PopulationGraph {
         	var bat = this.bats[this.currentZoomLevel][i];
         	if (this.filterEnteringBat(bat)) {
         		this.enteringBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
+        		this.populationBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].population--;
         	}
         	else if (this.filterExitingBat(bat)) {
         		this.exitingBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
+        		this.populationBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].population++;
         	}
         }
+
+        for(var i = 1; i < this.populationBatData[this.currentZoomLevel].length; i++) {
+        	this.populationBatData[this.currentZoomLevel][i].population += this.populationBatData[this.currentZoomLevel][i-1].population;
+        }
+
+        //console.log(this.populationBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1]);
 	}
 
 	filterBatArrayByFrameInterval(bats, f1, f2) {
