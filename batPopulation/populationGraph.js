@@ -79,6 +79,8 @@ class PopulationGraph {
 
 		this.setEnteringAndExitingBatData();
 		this.drawGraph();
+
+		this.sendData();
 	}
 
 	zoomOut() {
@@ -107,6 +109,8 @@ class PopulationGraph {
 		if(this.currentZoomLevel == 0) {
 			this.receivedCalibrationOnZoom = false;
 		}
+
+		this.sendData();
 	}
 
 	setAxisDomain() {
@@ -124,7 +128,7 @@ class PopulationGraph {
 			.transition()
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
 	        .call(d3.axisBottom(this.xScale)
-	        		.tickValues((d3.range(this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel], this.framesPerInterval[this.currentZoomLevel])).concat([this.lastFrame[this.currentZoomLevel]]))
+	        		.tickValues((d3.range(this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel], this.framesPerInterval[this.currentZoomLevel] * 10)).concat([this.lastFrame[this.currentZoomLevel]]))
 	        		.tickFormat(d3.format(".0f"))
 	        		);
 
@@ -276,11 +280,16 @@ class PopulationGraph {
 	}
 
 	sendData() {
+		var enteringBats = this.bats[this.currentZoomLevel].filter(function(bat) { return this.filterEnteringBat(bat); }.bind(this));
+		enteringBats.forEach(function(d) { d.entering = true; d.exiting = false; });
+		var exitingBats = this.bats[this.currentZoomLevel].filter(function(bat)  { return this.filterExitingBat(bat);  }.bind(this));
+		exitingBats.forEach(function(d)  { d.entering = false; d.exiting = true; });
+
 		this.dispatch.call(
 			"batListChanged",
 			{
 				"id": "populationGraph",
-				"bats": this.bats[this.currentZoomLevel].filter(function(bat) { return this.filterEnteringBat(bat) || this.filterExitingBat(bat); }.bind(this))
+				"bats": enteringBats.concat(exitingBats)
 			}
 		);
 	}
