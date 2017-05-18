@@ -35,7 +35,8 @@ class PopulationGraph {
 
 		this.calibratorLines, this.calibratorCells, this.calibratorScreenScale;
 		
-		this.batData;
+		this.batData, this.fps, this.startTime;
+
 		this.enteringExitingBatDataSize = 60;
 
 		this.firstFrame = [];
@@ -59,6 +60,12 @@ class PopulationGraph {
 		d3.json(batFilePath, function(error, batData) {
 			if (error) { throw error; }
 			this.batData = batData;
+			this.fps = this.batData.fps;
+			this.startTime = {
+				"h": parseInt(this.batData.start.substring(0, 2)),
+				"m": parseInt(this.batData.start.substring(3, 5)),
+				"s": parseInt(this.batData.start.substring(6, 8))
+			}
 
 			this.firstFrame[0] = [0];                                                                                    this.firstFrame[1] = this.firstFrame[0];
 			this.lastFrame[0] = this.batData.total;                                                                      this.lastFrame[1] = this.lastFrame[0];
@@ -87,6 +94,7 @@ class PopulationGraph {
 		this.setEnteringAndExitingBatData(1);
 		this.drawGraph();
 
+		if (!this.firstCalibrationDone) { return; }
 		this.sendData();
 	}
 
@@ -110,7 +118,7 @@ class PopulationGraph {
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
 	        .call(d3.axisBottom(this.xScale)
 	        		.tickValues(this.xScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
-	        		.tickFormat(d3.format(".0f")));
+	        		.tickFormat(function(d) { return this.convertFrameToHHMMSS(d); }.bind(this)));
 
 	    this.svg.selectAll(".yAxis")
 	    	.transition()
@@ -234,7 +242,7 @@ class PopulationGraph {
 	        .attr("transform", "translate(0," + (this.miniHeight + this.miniMargin.top) + ")")
 	        .call(d3.axisBottom(this.miniXScale)
 	        	.tickValues(this.miniXScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
-	        	.tickFormat(d3.format(".0f")));
+	        	.tickFormat(function(d) { return this.convertFrameToHHMMSS(d); }.bind(this)));
 	}
 
 	drawMiniLines() {
@@ -405,6 +413,28 @@ class PopulationGraph {
 		if (y >= this.calibratorCells[3].y / this.calibratorScreenScale) { cellId += 3; }
 		if (y >= this.calibratorCells[6].y / this.calibratorScreenScale) { cellId += 3; }
 		return cellId;
+	}
+
+	convertFrameToHHMMSS(d) {
+		var flightDurationInSeconds = Math.ceil(d/this.fps);
+		var flightEndTimeSeconds =  this.startTime.s + flightDurationInSeconds;
+		var flightEndTimeMinutes =  this.startTime.m;
+		var flightEndTimeHours =  this.startTime.h;
+
+		if (flightEndTimeSeconds >= 60) {
+			flightEndTimeMinutes += Math.floor(flightEndTimeSeconds/60);
+			flightEndTimeSeconds -= Math.floor(flightEndTimeSeconds/60) * 60;
+		}
+		if (flightEndTimeMinutes >= 60) {
+			flightEndTimeHours += Math.floor(flightEndTimeMinutes/60);
+			flightEndTimeMinutes -= Math.floor(flightEndTimeMinutes/60) * 60;
+		}
+
+		if (flightEndTimeSeconds < 10) { flightEndTimeSeconds = "0" + flightEndTimeSeconds; }
+		if (flightEndTimeMinutes < 10) { flightEndTimeMinutes = "0" + flightEndTimeMinutes; }
+		if (flightEndTimeHours < 10)   { flightEndTimeHours = "0" + flightEndTimeHours; }
+
+		return flightEndTimeHours + ":" + flightEndTimeMinutes + ":" + flightEndTimeSeconds;
 	}
 
 	sendData() {
