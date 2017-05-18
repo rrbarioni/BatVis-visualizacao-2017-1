@@ -13,25 +13,33 @@ class PopulationGraph {
 		this.firstCalibrationDone = false;
 
 		this.horizontalBrush = d3.brushX()
-			.on("end", this.brushArea.bind(this))
+			.on("end", this.brushMiniArea.bind(this))
 			.extent([[this.miniMargin.left,this.miniMargin.top], [this.miniWidth + this.miniMargin.left,this.miniHeight + this.miniMargin.top]]);
+		this.verticalZoom = d3.zoom()
+			.on("zoom", this.zoomArea.bind(this));
 
 		this.svg = d3.select("#populationGraph")
 			.attr("width",  this.width + this.margin.left + this.margin.right)
 			.attr("height", this.height + this.margin.top + this.margin.bottom)
-			.call(this.horizontalBrush);
+			.call(this.horizontalBrush)
+			.call(this.verticalZoom);
 			
 		this.container = this.svg.append("g")
 			.attr("class", "container");
+		this.miniContainer = this.svg.append("g")
+			.attr("class", "miniContainer");
 
 		this.xScale = d3.scaleLinear().range([this.margin.left, this.width + this.margin.left]);
 		this.yScale = d3.scaleLinear().range([this.height + this.margin.top, this.margin.top]);
-		this.svg.append("g").attr("class", "xAxis");
-		this.svg.append("g").attr("class", "yAxis");
+		this.xAxis = d3.axisBottom(this.xScale);
+		this.yAxis = d3.axisLeft(this.yScale);
+		this.xAxisLine = this.svg.append("g").attr("class", "xAxis");
+		this.yAxisLine = this.svg.append("g").attr("class", "yAxis");
 
 		this.miniXScale = d3.scaleLinear().range([this.miniMargin.left, this.miniWidth + this.miniMargin.left]);
 		this.miniYScale = d3.scaleLinear().range([this.miniHeight + this.miniMargin.top, this.miniMargin.top]);
-		this.svg.append("g").attr("class", "miniXAxis");
+		this.miniXAxis;
+		this.miniXAxisLine = this.svg.append("g").attr("class", "miniXAxis");
 
 		this.calibratorLines, this.calibratorCells, this.calibratorScreenScale;
 		
@@ -54,7 +62,6 @@ class PopulationGraph {
 		this.enteringBatGraphMiniLines, this.exitingBatGraphMiniLines, this.neutralBatGraphMiniLines, this.populationBatGraphMiniLines;
 		
 		this.loadBatFile("files/20141003_tracking.json");
-		
 	}
 
 	loadBatFile(batFilePath) {
@@ -84,7 +91,41 @@ class PopulationGraph {
 		}.bind(this));
 	}
 
-	brushArea() {
+	zoomArea() {
+		// re-scale y axis during zoom; ref [2]
+        // y_axis.transition()
+        //       .duration(50)
+        //       .call(yAxis.scale(d3.event.transform.rescaleY(yScale)));
+
+        // // re-draw circles using new y-axis scale; ref [3]
+        // var new_yScale = d3.event.transform.rescaleY(yScale);
+        // circles.attr("cy", function(d) { return new_yScale(d[1]); });
+
+        return;
+
+        var newYScale = d3.event.transform.rescaleY(this.yScale);
+        this.yAxis
+	        .tickValues(newYScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
+	        .tickFormat(d3.format(".0f"));
+    	this.yAxisLine
+    		.transition()
+    		.call(this.yAxis.scale(newYScale));
+
+    	this.enteringBatGraphLines
+    		.attr("y1", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.enteringBatData[1][i-1].bats.length); }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.enteringBatData[1][i].bats.length);   }.bind(this));
+		this.exitingBatGraphLines
+    		.attr("y1", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.exitingBatData[1][i-1].bats.length); }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.exitingBatData[1][i].bats.length);   }.bind(this));
+		this.neutralBatGraphLines
+    		.attr("y1", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.neutralBatData[1][i-1].bats.length); }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.neutralBatData[1][i].bats.length);   }.bind(this));
+		this.populationBatGraphLines
+    		.attr("y1", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.populationBatData[1][i-1].population); }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.populationBatData[1][i].population);   }.bind(this));
+	}
+
+	brushMiniArea() {
 		var brushRect = d3.event.selection;
 		if (!brushRect) { return; }
 
@@ -97,6 +138,7 @@ class PopulationGraph {
 		this.drawGraph();
 
 		if (!this.firstCalibrationDone) { return; }
+
 		this.sendData();
 	}
 
@@ -115,19 +157,21 @@ class PopulationGraph {
 	drawAxis() {
 		this.setAxisDomain();
 
-		this.svg.selectAll(".xAxis")
+		this.xAxis
+	        .tickValues(this.xScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
+	        .tickFormat(function(d) { return this.convertFrameToHHMMSS(d); }.bind(this));
+		this.xAxisLine
 			.transition()
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
-	        .call(d3.axisBottom(this.xScale)
-	        		.tickValues(this.xScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
-	        		.tickFormat(function(d) { return this.convertFrameToHHMMSS(d); }.bind(this)));
+	        .call(this.xAxis);
 
-	    this.svg.selectAll(".yAxis")
+	    this.yAxis
+	        .tickValues(this.yScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
+	        .tickFormat(d3.format(".0f"));
+	    this.yAxisLine
 	    	.transition()
 	        .attr("transform", "translate(" + this.margin.left + ",0)")
-	        .call(d3.axisLeft(this.yScale)
-	        		.tickValues(this.yScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
-	        		.tickFormat(d3.format(".0f")));
+	        .call(this.yAxis);
 	}
 
 	drawLines() {
@@ -267,19 +311,20 @@ class PopulationGraph {
 	drawMiniAxis() {
 		this.setMiniAxisDomain();
 
-		this.svg.selectAll(".miniXAxis")
+		this.miniXAxis = d3.axisBottom(this.miniXScale)
+	        .tickValues(this.miniXScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
+	        .tickFormat(function(d) { return this.convertFrameToHHMMSS(d); }.bind(this));
+		this.miniXAxisLine
 			.transition()
 	        .attr("transform", "translate(0," + (this.miniHeight + this.miniMargin.top) + ")")
-	        .call(d3.axisBottom(this.miniXScale)
-	        	.tickValues(this.miniXScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
-	        	.tickFormat(function(d) { return this.convertFrameToHHMMSS(d); }.bind(this)));
+	        .call(this.miniXAxis);
 	}
 
 	drawMiniLines() {
 		var miniLineWidth = 5;
 		var miniLineOpacity = 0.5;
 
-		this.enteringBatGraphMiniLines = this.container.selectAll(".enteringBatMiniLine")
+		this.enteringBatGraphMiniLines = this.miniContainer.selectAll(".enteringBatMiniLine")
 			.data(this.enteringBatData[0]);
 		this.enteringBatGraphMiniLines
 			.exit()
@@ -307,7 +352,7 @@ class PopulationGraph {
 			.attr("stroke-width", miniLineWidth)
 			.attr('stroke-opacity', miniLineOpacity);
 
-		this.exitingBatGraphMiniLines = this.container.selectAll(".exitingBatMiniLine")
+		this.exitingBatGraphMiniLines = this.miniContainer.selectAll(".exitingBatMiniLine")
 			.data(this.exitingBatData[0]);
 		this.exitingBatGraphMiniLines
 			.exit()
@@ -335,7 +380,7 @@ class PopulationGraph {
 			.attr("stroke-width", miniLineWidth)
 			.attr('stroke-opacity', miniLineOpacity);
 
-		this.neutralBatGraphMiniLines = this.container.selectAll(".neutralBatMiniLine")
+		this.neutralBatGraphMiniLines = this.miniContainer.selectAll(".neutralBatMiniLine")
 			.data(this.neutralBatData[0]);
 		this.neutralBatGraphMiniLines
 			.exit()
@@ -363,7 +408,7 @@ class PopulationGraph {
 			.attr("stroke-width", miniLineWidth)
 			.attr('stroke-opacity', miniLineOpacity);
 
-		this.populationBatGraphMiniLines = this.container.selectAll(".populationBatMiniLine")
+		this.populationBatGraphMiniLines = this.miniContainer.selectAll(".populationBatMiniLine")
 			.data(this.populationBatData[0]);
 		this.populationBatGraphMiniLines
 			.exit()
@@ -507,9 +552,16 @@ class PopulationGraph {
 			"batListChanged",
 			{
 				"id": "populationGraph",
-				"enteringBats": this.bats[1].filter(function(bat) { return this.filterEnteringBat(bat);                                  }.bind(this)),
-				"exitingBats":  this.bats[1].filter(function(bat) { return this.filterExitingBat(bat);                                   }.bind(this)),
-				"neutralBats":  this.bats[1].filter(function(bat) { return !this.filterEnteringBat(bat) && !this.filterExitingBat(bat);  }.bind(this))
+				"sendToFlightsHistogram": {
+					"enteringBats": this.bats[1].filter(function(bat) { return this.filterEnteringBat(bat);                                  }.bind(this)),
+					"exitingBats":  this.bats[1].filter(function(bat) { return this.filterExitingBat(bat);                                   }.bind(this)),
+					"neutralBats":  this.bats[1].filter(function(bat) { return !this.filterEnteringBat(bat) && !this.filterExitingBat(bat);  }.bind(this))
+				},
+				"sendToAverageFlightTimeGraph": {
+					"enteringBats": this.enteringBatData[1],
+					"exitingBats":  this.exitingBatData[1],
+					"neutralBats":  this.neutralBatData[1]
+				}
 			}
 		);
 	}

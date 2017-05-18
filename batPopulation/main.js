@@ -22,12 +22,25 @@ var averageFlightTimeGraph = new AverageFlightTimeGraph(averageFlightTimeGraphWi
 
 var calibratorChangeDispatch = d3.dispatch("calibratorChanged");
 calibratorChangeDispatch.on("calibratorChanged", function() {
-	populationGraph.receiveCalibratorData(this.lines, this.cells, this.screenScale);
+	populationGraph.receiveCalibratorData(
+		this.lines,
+		this.cells,
+		this.screenScale
+	);
 });
 
 var batListDispatch = d3.dispatch("batListChanged");
 batListDispatch.on("batListChanged", function() {
-	flightsHistogram.receiveBatListData(this.enteringBats, this.exitingBats, this.neutralBats);
+	flightsHistogram.receiveBatListData(
+		this.sendToFlightsHistogram.enteringBats,
+		this.sendToFlightsHistogram.exitingBats,
+		this.sendToFlightsHistogram.neutralBats
+	);
+	averageFlightTimeGraph.receiveBatListData(
+		this.sendToAverageFlightTimeGraph.enteringBats,
+		this.sendToAverageFlightTimeGraph.exitingBats,
+		this.sendToAverageFlightTimeGraph.neutralBats
+	);
 });
 
 calibrator.dispatch      = calibratorChangeDispatch;
