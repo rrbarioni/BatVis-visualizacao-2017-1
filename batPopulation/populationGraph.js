@@ -21,8 +21,8 @@ class PopulationGraph {
 		this.svg = d3.select("#populationGraph")
 			.attr("width",  this.width + this.margin.left + this.margin.right)
 			.attr("height", this.height + this.margin.top + this.margin.bottom)
-			.call(this.horizontalBrush)
-			.call(this.verticalZoom);
+			.call(this.horizontalBrush);
+			// .call(this.verticalZoom);
 			
 		this.container = this.svg.append("g")
 			.attr("class", "container");
