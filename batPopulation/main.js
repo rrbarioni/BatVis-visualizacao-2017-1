@@ -8,8 +8,8 @@ var caveDMYSelectorHeight = 300;
 var populationGraphWidth = 900;
 var populationGraphHeight = 600;
 
-var flightsHistogramWidth = 900;
-var flightsHistogramHeight = 600;
+var flightsHistogramWidth = 600;
+var flightsHistogramHeight = 450;
 
 var calibrator = new Calibrator(deviceWidth,deviceHeight,calibratorScale);
 var caveDMYSelector = new CaveDMYSelector(caveDMYSelectorWidth,caveDMYSelectorHeight);

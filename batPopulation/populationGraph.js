@@ -1,8 +1,14 @@
 class PopulationGraph {
 	constructor(width,height) {
-		this.margin = { top: 20, right: 20, bottom: 30, left: 50 };
+		var miniHeight = height/5;
+
+		this.margin = { top: 20, right: 20, bottom: 60 + miniHeight, left: 50 };
 		this.width =  width - this.margin.left - this.margin.right;
 		this.height = height - this.margin.top - this.margin.bottom;
+
+		this.miniMargin = { top: 60 + this.height, right: this.margin.right, bottom: 30, left: this.margin.left };
+		this.miniWidth =  width - this.miniMargin.left - this.miniMargin.right;
+		this.miniHeight = height - this.miniMargin.top - this.miniMargin.bottom;
 
 		this.firstCalibrationDone = false;
 		this.receivedCalibrationOnZoom = false;
@@ -10,7 +16,7 @@ class PopulationGraph {
 		this.currentZoomLevel = -1;
 		this.brush = d3.brush()
 			.on("end", this.zoomIn.bind(this))
-			.extent([[this.margin.left,this.margin.top], [this.width + this.margin.left,this.height + this.margin.top]]);
+			.extent([[this.miniMargin.left,this.miniMargin.top], [this.miniWidth + this.miniMargin.left,this.miniHeight + this.miniMargin.top]]);
 
 		this.svg = d3.select("#populationGraph")
 			.attr("width",  this.width + this.margin.left + this.margin.right)
@@ -26,24 +32,28 @@ class PopulationGraph {
 		this.svg.append("g").attr("class", "xAxis");
 		this.svg.append("g").attr("class", "yAxis");
 
+		this.miniXScale = d3.scaleLinear().range([this.miniMargin.left, this.miniWidth + this.miniMargin.left]);
+		this.miniYScale = d3.scaleLinear().range([this.miniHeight + this.miniMargin.top, this.miniMargin.top]);
+		this.svg.append("g").attr("class", "miniXAxis");
+
 		this.calibratorLines, this.calibratorCells, this.calibratorScreenScale;
 		
 		this.batData;
 		this.enteringExitingBatDataSize = 60;
 
-		this.firstFrame = [];					  //xMin
-		this.lastFrame = [];					  //xMax
-		this.minEntranceOrExitingOnInterval = []; //yMin
-		this.maxEntranceOrExitingOnInterval = []; //yMax
+		this.firstFrame = [];
+		this.lastFrame = [];
+		this.minEntranceOrExitingOnInterval = [];
+		this.maxEntranceOrExitingOnInterval = [];
 		this.framesPerInterval = [];
 		this.bats = [];
 		this.enteringBatData = [];
 		this.exitingBatData = [];
 		this.populationBatData = [];
 
-		this.enteringBatGraphNodes, this.exitingBatGraphNodes;
 		this.enteringBatGraphLines, this.exitingBatGraphLines, this.populationBatGraphLines;
-		// this.loadBatFile("files/simulation.json");
+		this.enteringBatGraphMiniLines, this.exitingBatGraphMiniLines, this.populationBatGraphMiniLines;
+		
 		this.loadBatFile("files/20141003_tracking.json");
 		
 	}
@@ -63,8 +73,10 @@ class PopulationGraph {
 			this.populationBatData = [];
 
 
-			this.setEnteringAndExitingBatData();
+			this.setEnteringAndExitingBatData(this.currentZoomLevel);
 			this.drawGraph();
+			this.setEnteringAndExitingBatData(0);
+			this.drawMiniGraph();
 		}.bind(this));
 	}
 
@@ -80,7 +92,7 @@ class PopulationGraph {
 		this.framesPerInterval.push((this.lastFrame[this.currentZoomLevel] - this.firstFrame[this.currentZoomLevel])/this.enteringExitingBatDataSize);
 		this.bats.push(this.filterBatArrayByFrameInterval(this.batData.bats, this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel]));
 
-		this.setEnteringAndExitingBatData();
+		this.setEnteringAndExitingBatData(this.currentZoomLevel);
 		this.drawGraph();
 
 		this.sendData();
@@ -106,12 +118,12 @@ class PopulationGraph {
 
 		}
 		else {
-			this.setEnteringAndExitingBatData();
+			this.setEnteringAndExitingBatData(this.currentZoomLevel);
 		}
 
 		this.drawGraph();
 
-		if(this.currentZoomLevel == 0) {
+		if (this.currentZoomLevel == 0) {
 			this.receivedCalibrationOnZoom = false;
 		}
 
@@ -140,7 +152,7 @@ class PopulationGraph {
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
 	        .call(d3.axisBottom(this.xScale)
 	        		.tickValues((d3.range(this.firstFrame[this.currentZoomLevel], this.lastFrame[this.currentZoomLevel], this.framesPerInterval[this.currentZoomLevel] * 10)).concat([this.lastFrame[this.currentZoomLevel]]))
-	        		.tickFormat(d3.format(".0f"))
+	        		.tickFormat(d3.format("d"))
 	        		);
 
 	    this.svg.selectAll(".yAxis")
@@ -148,13 +160,10 @@ class PopulationGraph {
 	        .attr("transform", "translate(" + this.margin.left + ",0)")
 	        .call(d3.axisLeft(this.yScale)
 	        		// .tickValues((d3.range(this.minEntranceOrExitingOnInterval[this.currentZoomLevel], this.maxEntranceOrExitingOnInterval[this.currentZoomLevel], 1)).concat(this.maxEntranceOrExitingOnInterval[this.currentZoomLevel]))
-	        		.tickFormat(d3.format(".0f"))
+	        		.tickFormat(d3.format("d"))
 	        		);
-	}
 
-	drawNodes() {
-		var nodeRadius = 5;
-		var nodeOpacity = 0.8;
+	    // 
 	}
 
 	drawLines() {
@@ -225,10 +234,10 @@ class PopulationGraph {
 		this.populationBatGraphLines
 			.transition()
 			.attr("class", "populationBatLine")
-			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.populationBatData[this.currentZoomLevel][i-1].f2); }.bind(this))
+			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.populationBatData[this.currentZoomLevel][i-1].f2);         }.bind(this))
 			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.populationBatData[this.currentZoomLevel][i-1].population); }.bind(this))
-			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.populationBatData[this.currentZoomLevel][i].f2); }.bind(this))
-			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.populationBatData[this.currentZoomLevel][i].population); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.populationBatData[this.currentZoomLevel][i].f2);           }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.populationBatData[this.currentZoomLevel][i].population);   }.bind(this))
 			.attr("stroke", "#FFFF00")
 			.attr("stroke-width", lineWidth)
 			.attr('stroke-opacity', lineOpacity);
@@ -237,10 +246,10 @@ class PopulationGraph {
 			.append("line")
 			.transition()
 			.attr("class", "populationBatLine")
-			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.populationBatData[this.currentZoomLevel][i-1].f2); }.bind(this))
+			.attr("x1", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.populationBatData[this.currentZoomLevel][i-1].f2);         }.bind(this))
 			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.populationBatData[this.currentZoomLevel][i-1].population); }.bind(this))
-			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.populationBatData[this.currentZoomLevel][i].f2); }.bind(this))
-			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.populationBatData[this.currentZoomLevel][i].population); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[this.currentZoomLevel]); } return this.xScale(this.populationBatData[this.currentZoomLevel][i].f2);           }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[this.currentZoomLevel]); } return this.yScale(this.populationBatData[this.currentZoomLevel][i].population);   }.bind(this))
 			.attr("stroke", "#FFFF00")
 			.attr("stroke-width", lineWidth)
 			.attr('stroke-opacity', lineOpacity);
@@ -248,9 +257,134 @@ class PopulationGraph {
 
 	drawGraph() {
 		this.drawAxis();
-
-		this.drawNodes();
 		this.drawLines();
+	}
+
+	setMiniAxisDomain() {
+		var minPop = d3.min(this.populationBatData[0], function(d) { return d.population; });
+		var maxPop = d3.max(this.populationBatData[0], function(d) { return d.population; });
+
+		this.minEntranceOrExitingOnInterval[0] =             d3.min(this.enteringBatData[0].concat(this.exitingBatData[0]), function(d) { return d.bats.length; });
+		this.maxEntranceOrExitingOnInterval[0] = Math.max(1, d3.max(this.enteringBatData[0].concat(this.exitingBatData[0]), function(d) { return d.bats.length; }));
+
+		this.minEntranceOrExitingOnInterval[0] = Math.min(this.minEntranceOrExitingOnInterval[0], minPop);
+		this.maxEntranceOrExitingOnInterval[0] = Math.max(this.maxEntranceOrExitingOnInterval[0], maxPop);
+
+  		this.miniXScale.domain([this.firstFrame[0], this.lastFrame[0]]);
+  		this.miniYScale.domain([this.minEntranceOrExitingOnInterval[0], this.maxEntranceOrExitingOnInterval[0]]);
+	}
+
+	drawMiniAxis() {
+		this.setMiniAxisDomain();
+
+		this.svg.selectAll(".miniXAxis")
+			.transition()
+	        .attr("transform", "translate(0," + (this.miniHeight + this.miniMargin.top) + ")")
+	        .call(d3.axisBottom(this.miniXScale)
+	        		.tickValues((d3.range(this.firstFrame[0], this.lastFrame[0], this.framesPerInterval[0] * 10)).concat([this.lastFrame[0]]))
+	        		.tickFormat(d3.format("d"))
+	        		);
+	}
+
+	drawMiniLines() {
+		// this.svg.append("rect")
+		// 	.attr("x", this.miniMargin.left)
+		// 	.attr("y", this.miniMargin.top)
+		// 	.attr("width", this.miniWidth)
+		// 	.attr("height", this.miniHeight)
+		// 	.attr("fill", "#00FF00");
+
+		var miniLineWidth = 5;
+		var miniLineOpacity = 0.5;
+
+		this.enteringBatGraphMiniLines = this.container.selectAll(".enteringBatMiniLine")
+			.data(this.enteringBatData[0]);
+		this.enteringBatGraphMiniLines
+			.exit()
+			.remove();
+		this.enteringBatGraphMiniLines
+			.transition()
+			.attr("class", "enteringBatMiniLine")
+			.attr("x1", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.enteringBatData[0][i-1].f2);          }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.enteringBatData[0][i-1].bats.length); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.enteringBatData[0][i].f2);            }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.enteringBatData[0][i].bats.length);   }.bind(this))
+			.attr("stroke", "#00FF00")
+			.attr("stroke-width", miniLineWidth)
+			.attr('stroke-opacity', miniLineOpacity);
+		this.enteringBatGraphMiniLines
+			.enter()
+			.append("line")
+			.transition()
+			.attr("class", "enteringBatMiniLine")
+			.attr("x1", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.enteringBatData[0][i-1].f2);          }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.enteringBatData[0][i-1].bats.length); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.enteringBatData[0][i].f2);            }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.enteringBatData[0][i].bats.length);   }.bind(this))
+			.attr("stroke", "#00FF00")
+			.attr("stroke-width", miniLineWidth)
+			.attr('stroke-opacity', miniLineOpacity);
+
+		this.exitingBatGraphMiniLines = this.container.selectAll(".exitingBatMiniLine")
+			.data(this.exitingBatData[0]);
+		this.exitingBatGraphMiniLines
+			.exit()
+			.remove();
+		this.exitingBatGraphMiniLines
+			.transition()
+			.attr("class", "exitingBatMiniLine")
+			.attr("x1", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.exitingBatData[0][i-1].f2);          }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.exitingBatData[0][i-1].bats.length); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.exitingBatData[0][i].f2);            }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.exitingBatData[0][i].bats.length);   }.bind(this))
+			.attr("stroke", "#FF0000")
+			.attr("stroke-width", miniLineWidth)
+			.attr('stroke-opacity', miniLineOpacity);
+		this.exitingBatGraphMiniLines
+			.enter()
+			.append("line")
+			.transition()
+			.attr("class", "exitingBatMiniLine")
+			.attr("x1", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.exitingBatData[0][i-1].f2);          }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.exitingBatData[0][i-1].bats.length); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.exitingBatData[0][i].f2);            }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.exitingBatData[0][i].bats.length);   }.bind(this))
+			.attr("stroke", "#FF0000")
+			.attr("stroke-width", miniLineWidth)
+			.attr('stroke-opacity', miniLineOpacity);
+
+		this.populationBatGraphMiniLines = this.container.selectAll(".populationBatMiniLine")
+			.data(this.populationBatData[0]);
+		this.populationBatGraphMiniLines
+			.exit()
+			.remove();
+		this.populationBatGraphMiniLines
+			.transition()
+			.attr("class", "populationBatMiniLine")
+			.attr("x1", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.populationBatData[0][i-1].f2);         }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.populationBatData[0][i-1].population); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.populationBatData[0][i].f2);           }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.populationBatData[0][i].population);   }.bind(this))
+			.attr("stroke", "#FFFF00")
+			.attr("stroke-width", miniLineWidth)
+			.attr('stroke-opacity', miniLineOpacity);
+		this.populationBatGraphMiniLines
+			.enter()
+			.append("line")
+			.transition()
+			.attr("class", "populationBatMiniLine")
+			.attr("x1", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.populationBatData[0][i-1].f2);         }.bind(this))
+			.attr("y1", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.populationBatData[0][i-1].population); }.bind(this))
+			.attr("x2", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.populationBatData[0][i].f2);           }.bind(this))
+			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.populationBatData[0][i].population);   }.bind(this))
+			.attr("stroke", "#FFFF00")
+			.attr("stroke-width", miniLineWidth)
+			.attr('stroke-opacity', miniLineOpacity);
+	}
+
+	drawMiniGraph() {
+		this.drawMiniAxis();
+		this.drawMiniLines();
 	}
 
 	receiveCalibratorData(lines, cells, screenScale) {
@@ -261,49 +395,49 @@ class PopulationGraph {
 		this.firstCalibrationDone = true;
 		if (this.currentZoomLevel > 0) { this.receivedCalibrationOnZoom = true; }
 		
-		this.setEnteringAndExitingBatData();
+		this.setEnteringAndExitingBatData(this.currentZoomLevel);
 		this.drawGraph();
+		this.setEnteringAndExitingBatData(0);
+		this.drawMiniGraph();
 
 		this.sendData();
 	}
 
-	setEnteringAndExitingBatData() {
-		this.enteringBatData[this.currentZoomLevel] = [];
-		this.exitingBatData[this.currentZoomLevel] = [];
-		this.populationBatData[this.currentZoomLevel] = [];
+	setEnteringAndExitingBatData(zoomLevel) {
+		this.enteringBatData[zoomLevel] = [];
+		this.exitingBatData[zoomLevel] = [];
+		this.populationBatData[zoomLevel] = [];
 
 
-		this.enteringBatData[this.currentZoomLevel].push({ "f1": this.firstFrame[this.currentZoomLevel], "f2": this.firstFrame[this.currentZoomLevel], "bats": [] });
-		this.exitingBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel], "f2": this.firstFrame[this.currentZoomLevel], "bats": [] });
-		this.populationBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel], "f2": this.firstFrame[this.currentZoomLevel], "population": 0 });
+		this.enteringBatData[zoomLevel].push({ "f1": this.firstFrame[zoomLevel], "f2": this.firstFrame[zoomLevel], "bats": [] });
+		this.exitingBatData[zoomLevel].push ({ "f1": this.firstFrame[zoomLevel], "f2": this.firstFrame[zoomLevel], "bats": [] });
+		this.populationBatData[zoomLevel].push ({ "f1": this.firstFrame[zoomLevel], "f2": this.firstFrame[zoomLevel], "population": 0 });
 		for(var i = 0; i < this.enteringExitingBatDataSize - 1; i++) {
-			this.enteringBatData[this.currentZoomLevel].push({ "f1": this.firstFrame[this.currentZoomLevel] + (i * this.framesPerInterval[this.currentZoomLevel]), "f2": this.firstFrame[this.currentZoomLevel] + ((i+1) * this.framesPerInterval[this.currentZoomLevel]), "bats": [] });
-			this.exitingBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel] + (i * this.framesPerInterval[this.currentZoomLevel]), "f2": this.firstFrame[this.currentZoomLevel] + ((i+1) * this.framesPerInterval[this.currentZoomLevel]), "bats": [] });
-			this.populationBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel] + (i * this.framesPerInterval[this.currentZoomLevel]), "f2": this.firstFrame[this.currentZoomLevel] + ((i+1) * this.framesPerInterval[this.currentZoomLevel]), "population": 0 });
+			this.enteringBatData[zoomLevel].push({ "f1": this.firstFrame[zoomLevel] + (i * this.framesPerInterval[zoomLevel]), "f2": this.firstFrame[zoomLevel] + ((i+1) * this.framesPerInterval[zoomLevel]), "bats": [] });
+			this.exitingBatData[zoomLevel].push ({ "f1": this.firstFrame[zoomLevel] + (i * this.framesPerInterval[zoomLevel]), "f2": this.firstFrame[zoomLevel] + ((i+1) * this.framesPerInterval[zoomLevel]), "bats": [] });
+			this.populationBatData[zoomLevel].push ({ "f1": this.firstFrame[zoomLevel] + (i * this.framesPerInterval[zoomLevel]), "f2": this.firstFrame[zoomLevel] + ((i+1) * this.framesPerInterval[zoomLevel]), "population": 0 });
 		}
-		this.enteringBatData[this.currentZoomLevel].push({ "f1": this.firstFrame[this.currentZoomLevel] + (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "bats": [] });
-		this.exitingBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel] + (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "bats": [] });
-		this.populationBatData[this.currentZoomLevel].push ({ "f1": this.firstFrame[this.currentZoomLevel] + (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[this.currentZoomLevel], "f2": this.lastFrame[this.currentZoomLevel], "population": 0 });
+		this.enteringBatData[zoomLevel].push({ "f1": this.firstFrame[zoomLevel] + (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[zoomLevel], "f2": this.lastFrame[zoomLevel], "bats": [] });
+		this.exitingBatData[zoomLevel].push ({ "f1": this.firstFrame[zoomLevel] + (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[zoomLevel], "f2": this.lastFrame[zoomLevel], "bats": [] });
+		this.populationBatData[zoomLevel].push ({ "f1": this.firstFrame[zoomLevel] + (this.enteringExitingBatDataSize - 1) * this.framesPerInterval[zoomLevel], "f2": this.lastFrame[zoomLevel], "population": 0 });
 		
 		if (!this.firstCalibrationDone) { return; }
 
-		for (var i = 0; i < this.bats[this.currentZoomLevel].length; i++) {
-        	var bat = this.bats[this.currentZoomLevel][i];
+		for (var i = 0; i < this.bats[zoomLevel].length; i++) {
+        	var bat = this.bats[zoomLevel][i];
         	if (this.filterEnteringBat(bat)) {
-        		this.enteringBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
-        		this.populationBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].population--;
+        		this.enteringBatData[zoomLevel][Math.floor((bat.f2 - this.firstFrame[zoomLevel])/this.framesPerInterval[zoomLevel]) + 1].bats.push(bat);
+        		this.populationBatData[zoomLevel][Math.floor((bat.f2 - this.firstFrame[zoomLevel])/this.framesPerInterval[zoomLevel]) + 1].population--;
         	}
         	else if (this.filterExitingBat(bat)) {
-        		this.exitingBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].bats.push(bat);
-        		this.populationBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1].population++;
+        		this.exitingBatData[zoomLevel][Math.floor((bat.f2 - this.firstFrame[zoomLevel])/this.framesPerInterval[zoomLevel]) + 1].bats.push(bat);
+        		this.populationBatData[zoomLevel][Math.floor((bat.f2 - this.firstFrame[zoomLevel])/this.framesPerInterval[zoomLevel]) + 1].population++;
         	}
         }
 
-        for(var i = 1; i < this.populationBatData[this.currentZoomLevel].length; i++) {
-        	this.populationBatData[this.currentZoomLevel][i].population += this.populationBatData[this.currentZoomLevel][i-1].population;
+        for(var i = 1; i < this.populationBatData[zoomLevel].length; i++) {
+        	this.populationBatData[zoomLevel][i].population += this.populationBatData[zoomLevel][i-1].population;
         }
-
-        //console.log(this.populationBatData[this.currentZoomLevel][Math.floor((bat.f2 - this.firstFrame[this.currentZoomLevel])/this.framesPerInterval[this.currentZoomLevel]) + 1]);
 	}
 
 	filterBatArrayByFrameInterval(bats, f1, f2) {
