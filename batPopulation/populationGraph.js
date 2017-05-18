@@ -12,14 +12,14 @@ class PopulationGraph {
 
 		this.firstCalibrationDone = false;
 
-		this.brush = d3.brushX()
+		this.horizontalBrush = d3.brushX()
 			.on("end", this.brushArea.bind(this))
 			.extent([[this.miniMargin.left,this.miniMargin.top], [this.miniWidth + this.miniMargin.left,this.miniHeight + this.miniMargin.top]]);
 
 		this.svg = d3.select("#populationGraph")
 			.attr("width",  this.width + this.margin.left + this.margin.right)
 			.attr("height", this.height + this.margin.top + this.margin.bottom)
-			.call(this.brush);
+			.call(this.horizontalBrush);
 			
 		this.container = this.svg.append("g")
 			.attr("class", "container");
@@ -109,17 +109,15 @@ class PopulationGraph {
 			.transition()
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
 	        .call(d3.axisBottom(this.xScale)
-	        		.tickValues((d3.range(this.firstFrame[1], this.lastFrame[1], this.framesPerInterval[1] * 10)).concat([this.lastFrame[1]]))
-	        		.tickFormat(d3.format("d"))
-	        		);
+	        		.tickValues(this.xScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
+	        		.tickFormat(d3.format(".0f")));
 
 	    this.svg.selectAll(".yAxis")
 	    	.transition()
 	        .attr("transform", "translate(" + this.margin.left + ",0)")
 	        .call(d3.axisLeft(this.yScale)
-	        		// .tickValues((d3.range(this.minEntranceOrExitingOnInterval[1], this.maxEntranceOrExitingOnInterval[1], 1)).concat(this.maxEntranceOrExitingOnInterval[1]))
-	        		.tickFormat(d3.format("d"))
-	        		);
+	        		.tickValues(this.yScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
+	        		.tickFormat(d3.format(".0f")));
 	}
 
 	drawLines() {
@@ -235,19 +233,11 @@ class PopulationGraph {
 			.transition()
 	        .attr("transform", "translate(0," + (this.miniHeight + this.miniMargin.top) + ")")
 	        .call(d3.axisBottom(this.miniXScale)
-	        		.tickValues((d3.range(this.firstFrame[0], this.lastFrame[0], this.framesPerInterval[0] * 10)).concat([this.lastFrame[0]]))
-	        		.tickFormat(d3.format("d"))
-	        		);
+	        	.tickValues(this.miniXScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
+	        	.tickFormat(d3.format(".0f")));
 	}
 
 	drawMiniLines() {
-		// this.svg.append("rect")
-		// 	.attr("x", this.miniMargin.left)
-		// 	.attr("y", this.miniMargin.top)
-		// 	.attr("width", this.miniWidth)
-		// 	.attr("height", this.miniHeight)
-		// 	.attr("fill", "#00FF00");
-
 		var miniLineWidth = 5;
 		var miniLineOpacity = 0.5;
 

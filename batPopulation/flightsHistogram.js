@@ -18,6 +18,8 @@ class FlightsHistogram {
 		this.enteringBats, this.exitingBats;
 		this.enteringBatsByFlightDuration, this.exitingBatsByFlightDuration;
 		this.enteringBatsByFlightDurationNodes, this.exitingBatsByFlightDurationNodes;
+
+		this.receiveBatListData([], []);
 	}
 
 	receiveBatListData(enteringBats, exitingBats) {
@@ -63,8 +65,8 @@ class FlightsHistogram {
 			maxBatCountByFlightDuration = Math.max(maxBatCountByFlightDuration, this.enteringBatsByFlightDuration[i].concat(this.exitingBatsByFlightDuration[i]).length)
 		}
 
-		this.xScale.domain([0, Math.max(this.enteringBatsByFlightDuration.length, this.exitingBatsByFlightDuration.length)]);
-		this.yScale.domain([0, maxBatCountByFlightDuration]);
+		this.xScale.domain([0, Math.max(1, Math.max(this.enteringBatsByFlightDuration.length, this.exitingBatsByFlightDuration.length))]);
+		this.yScale.domain([0, Math.max(1, maxBatCountByFlightDuration)]);
 	}
 
 	drawAxis() {
@@ -73,12 +75,16 @@ class FlightsHistogram {
 		this.svg.selectAll(".xAxis")
 			.transition()
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
-	        .call(d3.axisBottom(this.xScale));
+	        .call(d3.axisBottom(this.xScale)
+	        	.tickValues(this.xScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
+	        	.tickFormat(d3.format(".0f")));
 
 	    this.svg.selectAll(".yAxis")
 	    	.transition()
 	        .attr("transform", "translate(" + this.margin.left + ",0)")
-	        .call(d3.axisLeft(this.yScale));
+	        .call(d3.axisLeft(this.yScale)
+	        	.tickValues(this.yScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
+	        	.tickFormat(d3.format(".0f")));
 	}
 
 	drawHistogram() {

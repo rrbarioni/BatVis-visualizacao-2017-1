@@ -1,6 +1,6 @@
 var deviceWidth = 320;
 var deviceHeight = 240;
-var calibratorScale = 2;
+var calibratorScale = 1.5;
 
 var caveDMYSelectorWidth = 600;
 var caveDMYSelectorHeight = 300;
@@ -9,7 +9,7 @@ var populationGraphWidth = 900;
 var populationGraphHeight = 600;
 
 var flightsHistogramWidth = 600;
-var flightsHistogramHeight = 450;
+var flightsHistogramHeight = 600;
 
 var calibrator = new Calibrator(deviceWidth,deviceHeight,calibratorScale);
 var caveDMYSelector = new CaveDMYSelector(caveDMYSelectorWidth,caveDMYSelectorHeight);
