@@ -61,7 +61,7 @@ class PopulationGraph {
 		this.enteringBatGraphLines, this.exitingBatGraphLines, this.neutralBatGraphLines, this.populationBatGraphLines;
 		this.enteringBatGraphMiniLines, this.exitingBatGraphMiniLines, this.neutralBatGraphMiniLines, this.populationBatGraphMiniLines;
 		
-		this.loadBatFile("files/20141003_tracking.json");
+		//this.loadBatFile("files/20141003_tracking.json");
 	}
 
 	loadBatFile(batFilePath) {
@@ -565,6 +565,10 @@ class PopulationGraph {
 					"enteringBats": this.enteringBatData[1],
 					"exitingBats":  this.exitingBatData[1],
 					"neutralBats":  this.neutralBatData[1]
+				},
+				"sendToBatViewer": {
+					"firstFrame":   this.firstFrame[1],
+					"lastFrame":    this.lastFrame[1]
 				}
 			}
 		);

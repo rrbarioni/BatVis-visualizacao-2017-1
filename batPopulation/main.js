@@ -49,9 +49,14 @@ batListDispatch.on("batListChanged", function() {
 		this.sendToAverageFlightTimeGraph.exitingBats,
 		this.sendToAverageFlightTimeGraph.neutralBats
 	);
+	batViewer.setInterval(
+		this.sendToBatViewer.firstFrame,
+		this.sendToBatViewer.lastFrame
+	);
 });
 
 calibrator.dispatch      = calibratorChangeDispatch;
 populationGraph.dispatch = batListDispatch;
 
+populationGraph.loadBatFile("files/20141003_tracking.json");
 batViewer.loadFile("files/20141003_s3dr.json");
