@@ -30,5 +30,12 @@ class BatViewer{
 		this.scene.initialFrame = f1;
 		this.scene.finalFrame = f2;
 		this.scene.frame = f1;
+		this.scene.renderBatsUsingFrameInterval = true;
+	}
+
+	receiveBatLabels(labels){
+		this.scene.labels = labels;
+		this.scene.labelIndex = 0;
+		this.scene.renderBatsUsingFrameInterval = false;
 	}
 }
