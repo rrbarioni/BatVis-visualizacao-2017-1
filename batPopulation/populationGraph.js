@@ -127,10 +127,15 @@ class PopulationGraph {
 
 	brushMiniArea() {
 		var brushRect = d3.event.selection;
-		if (!brushRect) { return; }
+		if (!brushRect) { 
+			this.firstFrame[1] = this.firstFrame[0];
+			this.lastFrame[1] = this.lastFrame[0];
+		}
+		else {
+			this.firstFrame[1] = this.miniXScale.invert(brushRect[0]);
+			this.lastFrame[1] = this.miniXScale.invert(brushRect[1]);
+		}
 
-		this.firstFrame[1] = this.miniXScale.invert(brushRect[0]);
-		this.lastFrame[1] = this.miniXScale.invert(brushRect[1]);
 		this.framesPerInterval[1] = (this.lastFrame[1] - this.firstFrame[1])/this.enteringExitingBatDataSize;
 		this.bats[1] = this.filterBatArrayByFrameInterval(this.batData.bats, this.firstFrame[1], this.lastFrame[1]);
 
