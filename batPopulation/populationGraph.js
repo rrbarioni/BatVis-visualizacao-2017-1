@@ -158,7 +158,7 @@ class PopulationGraph {
 		this.setAxisDomain();
 
 		this.xAxis
-	        .tickValues(this.xScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
+	        .tickValues(this.xScale.ticks(6).filter(function(d) { return Number.isInteger(d); }))
 	        .tickFormat(function(d) { return this.convertFrameToHHMMSS(d); }.bind(this));
 		this.xAxisLine
 			.transition()
