@@ -17,12 +17,19 @@ class Scene{
 	    this.frame = this.initialFrame;
 	    this.finalFrame = data.total;
 	    this.bats = data;
-	    this.cave = this.createCave(this.bats);
+	    this.cave = this.createCave();
 
 	    this.batScale = 10;
 	    this.lastMilisec = new Date().getMilliseconds();
 	    this.diff = 0;
 	    this.frameRenderInterval = 1000/data.fps;
+
+	    this.renderBatsUsingFrameInterval = true;
+
+	    this.labels = [];
+	    this.labelIndex = 0;
+	    this.trackIndex = 0;
+	    this.labelDictionary = {};
 	}
 
 	init() {
@@ -59,6 +66,9 @@ class Scene{
 		var dragControls = new THREE.DragControls( this.objects, this.camera, this.renderer.domElement );
 		dragControls.addEventListener( 'dragstart', function ( event ) { this.controls.enabled = false; }.bind(this) );
 		dragControls.addEventListener( 'dragend', function ( event ) { this.controls.enabled = true; }.bind(this) );
+
+		for ( var i = 0; i < this.bats.bats.length; i ++ )
+	    	this.labelDictionary[this.bats.bats[i].label] = this.bats.bats[i];
 	}
 
   	createCave(){
@@ -167,12 +177,19 @@ class Scene{
 	}
 
 	drawBats(){
+		if(this.renderBatsUsingFrameInterval)
+	    	this.drawBatsInsideFrameInterval();
+	    else
+	    	this.drawBatsUsingLabels();
+	}
+
+	drawBatsInsideFrameInterval(){
 		var data = this.bats;
 	    var light = new THREE.DirectionalLight( 0xffffff, 1 );
 	    light.position.set( 1, 1, 1 ).normalize();
 	    this.scene.add( light );
 	    var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
-	    var labels = [];
+	   
 	    for ( var i = 0; i < data.bats.length; i ++ ) {
 			
 			var tracks = data.bats[i].track;
@@ -191,7 +208,6 @@ class Scene{
 				z += tracks[k].a;
 			}
 			z /= tracks.length;
-			labels.push(data.bats[i].label);
 
 			//find the track interval of the current frame
 			for(var j = 0; j < tracks.length; j ++ ){
@@ -224,6 +240,60 @@ class Scene{
 	    }
 	}
 	
+	drawBatsUsingLabels(){
+
+		if(labelIndex >= this.labels.length){
+			return;
+		}
+
+	    var light = new THREE.DirectionalLight( 0xffffff, 1 );
+	    light.position.set( 1, 1, 1 ).normalize();
+	    this.scene.add( light );
+	    var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
+	    
+	    var bat = this.labelDictionary[this.labels[labelIndex]];
+
+	    if(this.trackIndex >= bat.track.length){
+	    	labelIndex++;
+	    	this.trackIndex = 0;
+	    	return;
+	    }
+
+		var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: i*0xffffff } ) );
+
+		var z = 0;
+		for(var k=0; k < bat.track.length; k++){
+			z += bat.track[k].a;
+		}
+		z /= bat.track.length;
+
+
+		object.position.x = bat.track[this.trackIndex].x;
+		object.position.y = bat.track[this.trackIndex].y;
+		object.position.z = z;
+		object.rotation.x = 0;
+		object.rotation.y = 0;
+		object.rotation.z = 0;
+		object.scale.x = this.batScale;
+		object.scale.y = this.batScale;
+		object.scale.z = this.batScale;
+
+		for(var j=0; j<this.trackIndex; j++){
+			var pathLine = new THREE.Geometry();
+			pathLine.vertices.push(new THREE.Vector3( tracks[j].x, tracks[j].y, z));
+			pathLine.vertices.push(new THREE.Vector3( tracks[j+1].x, tracks[j+1].y, z));
+			var line = new THREE.Line(pathLine, new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } ));
+			this.scene.add( line );
+			this.objects.push(line);
+		}
+	
+		
+		this.objects.push( object );
+		this.scene.add( object );
+
+		this.trackIndex++;
+	}
+
 	animate() {
 		requestAnimationFrame( this.animate.bind(this) );
 		this.render();
