@@ -1,11 +1,13 @@
 
 class Scene{
 
-	constructor(data){
+	constructor(data, width, height){
+		this.width = width;
+		this.height = height;
+
 		this.objects = [];
 
 		this.container;
-	    this.stats;
 	    this.camera;
 	    this.controls;
 	    this.scene;
@@ -25,8 +27,9 @@ class Scene{
 
 	init() {
 		this.container = document.createElement( 'div' );
+		console.log(this.container)
 		document.body.appendChild( this.container );
-		this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+		this.camera = new THREE.PerspectiveCamera( 70, this.width / this.height, 1, 10000 );//new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
 		this.camera.position.z = 1000;
 		this.controls = new THREE.TrackballControls( this.camera );
 		this.controls.rotateSpeed = 5.0;
@@ -49,7 +52,7 @@ class Scene{
 		this.renderer = new THREE.WebGLRenderer( { antialias: true } );
 		this.renderer.setClearColor( 0xf0f0f0 );
 		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
+		this.renderer.setSize(this.width, this.height);//( window.innerWidth, window.innerHeight );
 		this.renderer.sortObjects = false;
 		this.renderer.shadowMap.enabled = true;
 		this.renderer.shadowMap.type = THREE.PCFShadowMap;
@@ -57,15 +60,7 @@ class Scene{
 		var dragControls = new THREE.DragControls( this.objects, this.camera, this.renderer.domElement );
 		dragControls.addEventListener( 'dragstart', function ( event ) { this.controls.enabled = false; }.bind(this) );
 		dragControls.addEventListener( 'dragend', function ( event ) { this.controls.enabled = true; }.bind(this) );
-		var info = document.createElement( 'div' );
-		info.style.position = 'absolute';
-		info.style.top = '10px';
-		info.style.width = '100%';
-		info.style.textAlign = 'center';
-		info.innerHTML = 'BatVis - 3D Flight Simulator';
-		this.container.appendChild( info );
-		this.stats = new Stats();
-		this.container.appendChild( this.stats.dom );
+		
 		window.addEventListener( 'resize', this.onWindowResize, false );
 	}
 
@@ -91,19 +86,39 @@ class Scene{
 		}
   	}
 
-  	createCave(bats){
+  	createCave(data){
   		var aMin = 999999;
   		var aMax = -999999;
-  		
 
-  		for(var i=0; i<bats.bats.length; i++){
-  			var area = bats.bats[i].track[0].a;	
-  			aMin = aMin < area ? aMin : area;
-  			aMax = aMax > area ? aMax : area;
+  		var averageZ = 0;
+
+  		for(var i=0; i<data.bats.length; i++){
+  			var z = 0;
+			for(var k=0; k < data.bats[i].track.length; k++){
+				z += data.bats[i].track[k].a;
+			}
+			z /= data.bats[i].track.length;
+
+			averageZ += z;
   		}
 
-  		var cave = {xMin:0, xMax:bats.width, yMin:0, yMax:bats.height, zMin:aMin, zMax:aMax};
-  		console.log(cave);
+  		averageZ /= data.bats.length;
+
+  		for(var i=0; i<data.bats.length; i++){
+  			var z = 0;
+			for(var k=0; k < data.bats[i].track.length; k++){
+				z += data.bats[i].track[k].a;
+			}
+			z /= data.bats[i].track.length;
+
+			if(z > 4*averageZ)
+				continue;
+
+  			aMin = aMin < z ? aMin : z;
+  			aMax = aMax > z ? aMax : z;
+  		}
+
+  		var cave = {xMin:0, xMax:data.width, yMin:0, yMax:data.height, zMin:aMin, zMax:aMax};
   		return cave;
   	}
 
@@ -234,15 +249,14 @@ class Scene{
 
 	
 	onWindowResize() {
-		this.camera.aspect = window.innerWidth / window.innerHeight;
-		this.camera.updateProjectionMatrix();
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
+		//this.camera.aspect = window.innerWidth / window.innerHeight;
+		//this.camera.updateProjectionMatrix();
+		//this.renderer.setSize( window.innerWidth, window.innerHeight );
 	}
 	
 	animate() {
 		requestAnimationFrame( this.animate.bind(this) );
 		this.render();
-		this.stats.update();
 	}
 	
 	render() {

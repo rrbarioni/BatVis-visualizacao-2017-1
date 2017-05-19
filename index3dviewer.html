@@ -11,6 +11,11 @@
         margin: 0px;
         overflow: hidden;
       }
+      div{
+        width:500px;
+        height:500px;
+        margin:0;
+      }
     </style>
   </head>
   <body>
@@ -21,7 +26,6 @@
     <script src="lib/TrackballControls.js"></script>
     <script src="lib/d3.v4.min.js"></script>
     <script src="3DViewer/scene.js"></script>
-
     <script>
       d3.json("files/20141003_s3dr.json", function(error, data) {
         if (error) { throw error; }
@@ -35,7 +39,7 @@
             return 0;
         });
         
-        var scene = new Scene(data);
+        var scene = new Scene(data, 500, 500);
         scene.init();
         scene.animate();
       });
