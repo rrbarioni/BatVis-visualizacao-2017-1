@@ -26,12 +26,11 @@ class Scene{
 	}
 
 	init() {
-		this.container = document.createElement( 'div' );
-		console.log(this.container)
+		this.container = document.getElementById( 'threejsviewer' );
 		document.body.appendChild( this.container );
 		this.camera = new THREE.PerspectiveCamera( 70, this.width / this.height, 1, 10000 );//new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
 		this.camera.position.z = 1000;
-		this.controls = new THREE.TrackballControls( this.camera );
+		this.controls = new THREE.TrackballControls( this.camera, this.container );
 		this.controls.rotateSpeed = 5.0;
 		this.controls.zoomSpeed = 1.2;
 		this.controls.panSpeed = 0.8;
@@ -60,8 +59,6 @@ class Scene{
 		var dragControls = new THREE.DragControls( this.objects, this.camera, this.renderer.domElement );
 		dragControls.addEventListener( 'dragstart', function ( event ) { this.controls.enabled = false; }.bind(this) );
 		dragControls.addEventListener( 'dragend', function ( event ) { this.controls.enabled = true; }.bind(this) );
-		
-		window.addEventListener( 'resize', this.onWindowResize, false );
 	}
 
 	fillScene(bats, frame){
@@ -245,13 +242,6 @@ class Scene{
 			this.objects.push( object );
 			this.scene.add( object );
 	    }
-	}
-
-	
-	onWindowResize() {
-		//this.camera.aspect = window.innerWidth / window.innerHeight;
-		//this.camera.updateProjectionMatrix();
-		//this.renderer.setSize( window.innerWidth, window.innerHeight );
 	}
 	
 	animate() {

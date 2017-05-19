@@ -49,3 +49,20 @@ batListDispatch.on("batListChanged", function() {
 
 calibrator.dispatch      = calibratorChangeDispatch;
 populationGraph.dispatch = batListDispatch;
+
+d3.json("files/20141003_s3dr.json", function(error, data) {
+	if (error) { throw error; }
+
+	data.bats.sort(function(a, b){
+	  if(a.track[0].f < b.track[0].f)
+	    return -1;
+	  else if(a.track[0].f > b.track[0].f)
+	    return 1;
+	  else 
+	    return 0;
+	});
+
+	var scene = new Scene(data, 500, 500);
+	scene.init();
+	scene.animate();
+});		
