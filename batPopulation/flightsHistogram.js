@@ -21,6 +21,8 @@ class FlightsHistogram {
 		this.enteringBatsByFlightDuration, this.exitingBatsByFlightDuration, this.neutralBatsByFlightDuration;
 		this.enteringBatsByFlightDurationNodes, this.exitingBatsByFlightDurationNodes, this.neutralBatsByFlightDurationNodes;
 
+		// this.selectedHistogramBars, this.selectedBats;
+
 		this.receiveBatListData([], [], []);
 	}
 
@@ -32,6 +34,8 @@ class FlightsHistogram {
 		this.enteringBatsByFlightDuration = [];
 		this.exitingBatsByFlightDuration = [];
 		this.neutralBatsByFlightDuration = [];
+
+		// this.selectedHistogramBars = [];
 
 		for(var i = 0; i < this.enteringBats.length; i++) {
 			if (this.batFlightDuration(this.enteringBats[i]) < 1) { continue; }
@@ -70,6 +74,8 @@ class FlightsHistogram {
 			if (this.enteringBatsByFlightDuration[i] === undefined) { this.enteringBatsByFlightDuration[i] = []; }
 			if (this.exitingBatsByFlightDuration[i] === undefined)  { this.exitingBatsByFlightDuration[i] = [];  }
 			if (this.neutralBatsByFlightDuration[i] === undefined)  { this.neutralBatsByFlightDuration[i] = [];  }
+
+			// this.selectedHistogramBars.push(false);
 		}
 
 		this.drawHistogram();
