@@ -55,8 +55,14 @@ batListDispatch.on("batListChanged", function() {
 	);
 });
 
+var histogramBarsListDispatch = d3.dispatch("histogramBarListChanged");
+histogramBarsListDispatch.on("histogramBarListChanged", function() {
+	// batViewer.receiveBatLabels(this.batLabels);
+});
+
 calibrator.dispatch      = calibratorChangeDispatch;
 populationGraph.dispatch = batListDispatch;
+flightsHistogram.dispatch = histogramBarsListDispatch;
 
 populationGraph.loadBatFile("files/20141003_tracking.json");
 batViewer.loadFile("files/20141003_s3dr.json");
