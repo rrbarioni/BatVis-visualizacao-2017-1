@@ -61,29 +61,8 @@ class Scene{
 		dragControls.addEventListener( 'dragend', function ( event ) { this.controls.enabled = true; }.bind(this) );
 	}
 
-	fillScene(bats, frame){
-		this.scene = null;
-		this.scene = new THREE.Scene();
-		var light = new THREE.DirectionalLight( 0xffffff, 1 );
-		light.position.set( 1, 1, 1 ).normalize();
-		this.scene.add( light );
-		var geometry = new THREE.BoxBufferGeometry( 20, 20, 20 );
-		for ( var i = 0; i < 2000; i ++ ) {
-			var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
-			object.position.x = Math.random() * 800 - 400;
-			object.position.y = Math.random() * 800 - 400;
-			object.position.z = Math.random() * 800 - 400;
-			object.rotation.x = Math.random() * 2 * Math.PI;
-			object.rotation.y = Math.random() * 2 * Math.PI;
-			object.rotation.z = Math.random() * 2 * Math.PI;
-			object.scale.x = Math.random() + 0.5;
-			object.scale.y = Math.random() + 0.5;
-			object.scale.z = Math.random() + 0.5;
-			this.scene.add( object );
-		}
-  	}
-
-  	createCave(data){
+  	createCave(){
+  		var data = this.bats;
   		var aMin = 999999;
   		var aMax = -999999;
 
@@ -119,13 +98,13 @@ class Scene{
   		return cave;
   	}
 
-  	fillBatScene(bats, frame){
+  	fillBatScene(){
   		this.objects = [];
   		this.scene = null;
 	    this.scene = new THREE.Scene();
   		this.drawCave();
 	    this.drawGrid();
-	    this.drawBats(bats, frame);
+	    this.drawBats();
 
 	    var dragControls = new THREE.DragControls( this.objects, this.camera, this.renderer.domElement );
 		dragControls.addEventListener( 'dragstart', function ( event ) { this.controls.enabled = false; }.bind(this) );
@@ -187,7 +166,8 @@ class Scene{
 		}
 	}
 
-	drawBats(data, frame){
+	drawBats(){
+		var data = this.bats;
 	    var light = new THREE.DirectionalLight( 0xffffff, 1 );
 	    light.position.set( 1, 1, 1 ).normalize();
 	    this.scene.add( light );
@@ -196,12 +176,12 @@ class Scene{
 	    for ( var i = 0; i < data.bats.length; i ++ ) {
 			
 			var tracks = data.bats[i].track;
-			if(frame < tracks[0].f)
+			if(this.frame < tracks[0].f)
 				break;
 
 			//if this bat should not be renderer in
 			//this frame continue to the next bat
-			if(frame < tracks[0].f || frame > tracks[tracks.length-1].f)
+			if(this.frame < tracks[0].f || this.frame > tracks[tracks.length-1].f)
 				continue;
 
 			var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: i*0xffffff } ) );
@@ -226,7 +206,7 @@ class Scene{
 				object.scale.y = this.batScale;
 				object.scale.z = this.batScale;
 
-				if((frame == tracks[j].f) || (j+1 < tracks.length && frame < tracks[j+1].f))
+				if((this.frame == tracks[j].f) || (j+1 < tracks.length && this.frame < tracks[j+1].f))
 					break;
 				else
 				{
