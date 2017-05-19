@@ -242,7 +242,7 @@ class Scene{
 	
 	drawBatsUsingLabels(){
 
-		if(labelIndex >= this.labels.length){
+		if(this.labelIndex >= this.labels.length){
 			return;
 		}
 
@@ -251,15 +251,15 @@ class Scene{
 	    this.scene.add( light );
 	    var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
 	    
-	    var bat = this.labelDictionary[this.labels[labelIndex]];
+	    var bat = this.labelDictionary[this.labels[this.labelIndex]];
 
 	    if(this.trackIndex >= bat.track.length){
-	    	labelIndex++;
+	    	this.labelIndex++;
 	    	this.trackIndex = 0;
 	    	return;
 	    }
 
-		var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: i*0xffffff } ) );
+		var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xffffff } ) );
 
 		var z = 0;
 		for(var k=0; k < bat.track.length; k++){
@@ -280,8 +280,8 @@ class Scene{
 
 		for(var j=0; j<this.trackIndex; j++){
 			var pathLine = new THREE.Geometry();
-			pathLine.vertices.push(new THREE.Vector3( tracks[j].x, tracks[j].y, z));
-			pathLine.vertices.push(new THREE.Vector3( tracks[j+1].x, tracks[j+1].y, z));
+			pathLine.vertices.push(new THREE.Vector3( bat.track[j].x, bat.track[j].y, z));
+			pathLine.vertices.push(new THREE.Vector3( bat.track[j+1].x, bat.track[j+1].y, z));
 			var line = new THREE.Line(pathLine, new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } ));
 			this.scene.add( line );
 			this.objects.push(line);

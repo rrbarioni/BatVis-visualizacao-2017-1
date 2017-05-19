@@ -57,7 +57,7 @@ batListDispatch.on("batListChanged", function() {
 
 var histogramBarsListDispatch = d3.dispatch("histogramBarListChanged");
 histogramBarsListDispatch.on("histogramBarListChanged", function() {
-	// batViewer.receiveBatLabels(this.batLabels);
+	batViewer.receiveBatLabels(this.batLabels);
 });
 
 calibrator.dispatch      = calibratorChangeDispatch;
