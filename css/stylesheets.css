@@ -74,6 +74,13 @@ body {
   	user-select: none;
 }
 
+#averageFlightTimeGraph > .xAxis > *,
+#averageFlightTimeGraph > .xAxis > * > *,
+#averageFlightTimeGraph > .yAxis > *,
+#averageFlightTimeGraph > .yAxis > * > * {
+	stroke: #FFFFFF;
+}
+
 /* ----------- CaveDMYSelector styles ----------- */
 
 #caveDMYSelector {

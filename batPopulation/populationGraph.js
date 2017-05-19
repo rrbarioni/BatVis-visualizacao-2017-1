@@ -38,7 +38,7 @@ class PopulationGraph {
 
 		this.miniXScale = d3.scaleLinear().range([this.miniMargin.left, this.miniWidth + this.miniMargin.left]);
 		this.miniYScale = d3.scaleLinear().range([this.miniHeight + this.miniMargin.top, this.miniMargin.top]);
-		this.miniXAxis;
+		this.miniXAxis = d3.axisBottom(this.miniXScale);
 		this.miniXAxisLine = this.svg.append("g").attr("class", "miniXAxis");
 
 		this.calibratorLines, this.calibratorCells, this.calibratorScreenScale;
@@ -311,7 +311,7 @@ class PopulationGraph {
 	drawMiniAxis() {
 		this.setMiniAxisDomain();
 
-		this.miniXAxis = d3.axisBottom(this.miniXScale)
+		this.miniXAxis
 	        .tickValues(this.miniXScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
 	        .tickFormat(function(d) { return this.convertFrameToHHMMSS(d); }.bind(this));
 		this.miniXAxisLine
@@ -558,6 +558,10 @@ class PopulationGraph {
 					"neutralBats":  this.bats[1].filter(function(bat) { return !this.filterEnteringBat(bat) && !this.filterExitingBat(bat);  }.bind(this))
 				},
 				"sendToAverageFlightTimeGraph": {
+					"firstFrame":   this.firstFrame[1],
+					"lastFrame":    this.lastFrame[1],
+					"fps":          this.fps,
+					"startTime":    this.startTime,
 					"enteringBats": this.enteringBatData[1],
 					"exitingBats":  this.exitingBatData[1],
 					"neutralBats":  this.neutralBatData[1]

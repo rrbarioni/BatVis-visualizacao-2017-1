@@ -5,14 +5,14 @@ var calibratorScale = 1.5;
 var caveDMYSelectorWidth = 600;
 var caveDMYSelectorHeight = 300;
 
-var populationGraphWidth = 600;
-var populationGraphHeight = 600;
+var populationGraphWidth = 550;
+var populationGraphHeight = 550;
 
-var flightsHistogramWidth = 600;
-var flightsHistogramHeight = 600;
+var flightsHistogramWidth = 550;
+var flightsHistogramHeight = 550;
 
-var averageFlightTimeGraphWidth = 600;
-var averageFlightTimeGraphHeight = 600;
+var averageFlightTimeGraphWidth = 550;
+var averageFlightTimeGraphHeight = 550;
 
 var calibrator =             new Calibrator            (deviceWidth,                 deviceHeight,calibratorScale);
 var caveDMYSelector =        new CaveDMYSelector       (caveDMYSelectorWidth,        caveDMYSelectorHeight);
@@ -37,6 +37,10 @@ batListDispatch.on("batListChanged", function() {
 		this.sendToFlightsHistogram.neutralBats
 	);
 	averageFlightTimeGraph.receiveBatListData(
+		this.sendToAverageFlightTimeGraph.firstFrame,
+		this.sendToAverageFlightTimeGraph.lastFrame,
+		this.sendToAverageFlightTimeGraph.fps,
+		this.sendToAverageFlightTimeGraph.startTime,
 		this.sendToAverageFlightTimeGraph.enteringBats,
 		this.sendToAverageFlightTimeGraph.exitingBats,
 		this.sendToAverageFlightTimeGraph.neutralBats

@@ -12,8 +12,10 @@ class FlightsHistogram {
 
 		this.xScale = d3.scaleLinear().range([this.margin.left * 2, this.width + this.margin.left]);
 		this.yScale = d3.scaleLinear().range([this.height + this.margin.top, this.margin.top]);
-		this.xAxis = this.svg.append("g").attr("class", "xAxis");
-		this.yAxis = this.svg.append("g").attr("class", "yAxis");
+		this.xAxis = d3.axisBottom(this.xScale);
+		this.yAxis = d3.axisLeft(this.yScale);
+		this.xAxisLine = this.svg.append("g").attr("class", "xAxis");
+		this.yAxisLine = this.svg.append("g").attr("class", "yAxis");
 
 		this.enteringBats, this.exitingBats, this.neutralBats;
 		this.enteringBatsByFlightDuration, this.exitingBatsByFlightDuration, this.neutralBatsByFlightDuration;
@@ -87,18 +89,20 @@ class FlightsHistogram {
 		this.setAxisDomain();
 
 		this.xAxis
+			.tickValues(this.xScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
+	        .tickFormat(d3.format(".0f"));
+		this.xAxisLine
 			.transition()
 	        .attr("transform", "translate(0," + (this.height + this.margin.top) + ")")
-	        .call(d3.axisBottom(this.xScale)
-	        	.tickValues(this.xScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
-	        	.tickFormat(d3.format(".0f")));
+	        .call(this.xAxis);
 
 	    this.yAxis
+        	.tickValues(this.yScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
+        	.tickFormat(d3.format(".0f"));
+	    this.yAxisLine
 	    	.transition()
 	        .attr("transform", "translate(" + this.margin.left + ",0)")
-	        .call(d3.axisLeft(this.yScale)
-	        	.tickValues(this.yScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
-	        	.tickFormat(d3.format(".0f")));
+	        .call(this.yAxis);
 	}
 
 	drawHistogram() {
