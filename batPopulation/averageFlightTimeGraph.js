@@ -134,6 +134,7 @@ class AverageFlightTimeGraph {
 
 		var lineWidth = 5;
 		var lineOpacity = 0.5;
+		var lineLinecap = "round";
 
 		this.averageEnteringBatsFlightDurationLines = this.container.selectAll(".averageEnteringBatsFlightDurationLine")
 			.data(this.averageEnteringBatsFlightDuration);
@@ -149,7 +150,8 @@ class AverageFlightTimeGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageEnteringBatsFlightDuration[i].average);   }.bind(this))
 			.attr("stroke", "#00FF00")
 			.attr("stroke-width", lineWidth)
-			.attr('stroke-opacity', lineOpacity);
+			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-linecap", lineLinecap);
 		this.averageEnteringBatsFlightDurationLines
 			.enter()
 			.append("line")
@@ -161,7 +163,8 @@ class AverageFlightTimeGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageEnteringBatsFlightDuration[i].average);   }.bind(this))
 			.attr("stroke", "#00FF00")
 			.attr("stroke-width", lineWidth)
-			.attr('stroke-opacity', lineOpacity);
+			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-linecap", lineLinecap);
 
 		this.averageExitingBatsFlightDurationLines = this.container.selectAll(".averageExitingBatsFlightDurationLine")
 			.data(this.averageExitingBatsFlightDuration);
@@ -177,7 +180,8 @@ class AverageFlightTimeGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageExitingBatsFlightDuration[i].average);   }.bind(this))
 			.attr("stroke", "#FF0000")
 			.attr("stroke-width", lineWidth)
-			.attr('stroke-opacity', lineOpacity);
+			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-linecap", lineLinecap);
 		this.averageExitingBatsFlightDurationLines
 			.enter()
 			.append("line")
@@ -189,7 +193,8 @@ class AverageFlightTimeGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageExitingBatsFlightDuration[i].average);   }.bind(this))
 			.attr("stroke", "#FF0000")
 			.attr("stroke-width", lineWidth)
-			.attr('stroke-opacity', lineOpacity);
+			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-linecap", lineLinecap);
 
 		this.averageNeutralBatsFlightDurationLines = this.container.selectAll(".averageNeutralBatsFlightDurationLine")
 			.data(this.averageNeutralBatsFlightDuration);
@@ -205,7 +210,8 @@ class AverageFlightTimeGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageNeutralBatsFlightDuration[i].average);   }.bind(this))
 			.attr("stroke", "#0000FF")
 			.attr("stroke-width", lineWidth)
-			.attr('stroke-opacity', lineOpacity);
+			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-linecap", lineLinecap);
 		this.averageNeutralBatsFlightDurationLines
 			.enter()
 			.append("line")
@@ -217,7 +223,8 @@ class AverageFlightTimeGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageNeutralBatsFlightDuration[i].average);   }.bind(this))
 			.attr("stroke", "#0000FF")
 			.attr("stroke-width", lineWidth)
-			.attr('stroke-opacity', lineOpacity);
+			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-linecap", lineLinecap);
 	}
 
 	batFlightDuration(bat) {

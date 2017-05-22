@@ -28,7 +28,8 @@ body {
   	margin: auto;
   	margin-top: 10px;
   	border: 3px solid gray;
-  	background-color: #222222;
+  	/*background-color: #222222;*/
+  	background-color: #FFFFFF;
   	box-shadow: 5px 5px 5px #BBBBBB;
   	user-select: none;
   	cursor: default;
@@ -40,7 +41,8 @@ body {
 #populationGraph > .yAxis > * > *,
 #populationGraph > .miniXAxis > *,
 #populationGraph > .miniXAxis > * > * {
-	stroke: #FFFFFF;
+	/*stroke: #FFFFFF;*/
+	stroke: #222222;
 }
 
 /* ----------- FlightsHistogram styles ----------- */
@@ -50,7 +52,8 @@ body {
   	margin: auto;
   	margin-top: 10px;
   	border: 3px solid gray;
-  	background-color: #222222;
+  	/*background-color: #222222;*/
+  	background-color: #FFFFFF;
   	box-shadow: 5px 5px 5px #BBBBBB;
   	user-select: none;
 }
@@ -59,7 +62,8 @@ body {
 #flightsHistogram > .xAxis > * > *,
 #flightsHistogram > .yAxis > *,
 #flightsHistogram > .yAxis > * > * {
-	stroke: #FFFFFF;
+	/*stroke: #FFFFFF;*/
+	stroke: #222222;
 }
 
 /* ----------- AverageFlightTimeGraph styles ----------- */
@@ -69,7 +73,8 @@ body {
   	margin: auto;
   	margin-top: 10px;
   	border: 3px solid gray;
-  	background-color: #222222;
+  	/*background-color: #222222;*/
+  	background-color: #FFFFFF;
   	box-shadow: 5px 5px 5px #BBBBBB;
   	user-select: none;
 }
@@ -78,7 +83,8 @@ body {
 #averageFlightTimeGraph > .xAxis > * > *,
 #averageFlightTimeGraph > .yAxis > *,
 #averageFlightTimeGraph > .yAxis > * > * {
-	stroke: #FFFFFF;
+	/*stroke: #FFFFFF;*/
+	stroke: #222222;
 }
 
 /* ----------- CaveDMYSelector styles ----------- */
