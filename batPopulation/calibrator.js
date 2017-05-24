@@ -27,7 +27,7 @@ class Calibrator {
 
 	setBackground() {
 		this.svg
-			.style("background", "url(\"images/cave1.png\") 0 0")
+			.style("background", "url(\"images/20141003.png\") 0 0")
 			.style("background-size", this.width + "px " + this.height + "px");
 	}
 

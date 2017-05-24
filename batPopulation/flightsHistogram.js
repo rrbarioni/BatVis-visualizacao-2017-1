@@ -4,6 +4,8 @@ class FlightsHistogram {
 		this.width =  width - this.margin.left - this.margin.right;
 		this.height = height - this.margin.top - this.margin.bottom;
 
+		this.enteringBatsEnabled, this.exitingBatsEnabled, this.neutralBatsEnabled;
+
 		this.verticalZoom = d3.zoom()
 			.scaleExtent([1,5])
 			.on("zoom", this.zoomArea.bind(this));
@@ -27,7 +29,8 @@ class FlightsHistogram {
 		this.enteringBatsByFlightDurationNodes, this.exitingBatsByFlightDurationNodes, this.neutralBatsByFlightDurationNodes;
 
 		this.selectedHistogramBars, this.selectedBats;
-
+		this.selectedEnteringBats, this.selectedExitingBats, this.selectedNeutralBats;
+		
 		this.receiveBatListData([], [], []);
 	}
 
@@ -42,6 +45,14 @@ class FlightsHistogram {
 
 		this.selectedHistogramBars = [];
 		this.selectedBats = [];
+
+		this.selectedEnteringBats = [];
+		this.selectedExitingBats = [];
+		this.selectedNeutralBats = [];
+
+		this.enteringBatsEnabled = true;
+		this.exitingBatsEnabled = true;
+		this.neutralBatsEnabled = true;
 
 		for(var i = 0; i < this.enteringBats.length; i++) {
 			if (this.batFlightDuration(this.enteringBats[i]) < 1) { continue; }
@@ -247,17 +258,29 @@ class FlightsHistogram {
 
 	selectHistogramBar(i) {
 		if (!this.selectedHistogramBars[i]) {
-			this.selectedBats = this.selectedBats
-				.concat(this.enteringBatsByFlightDuration[i])
-				.concat(this.exitingBatsByFlightDuration[i])
-				.concat(this.neutralBatsByFlightDuration[i]);
+			// this.selectedBats = this.selectedBats
+			// 	.concat(this.enteringBatsByFlightDuration[i])
+			// 	.concat(this.exitingBatsByFlightDuration[i])
+			// 	.concat(this.neutralBatsByFlightDuration[i]);
+
+			this.selectedEnteringBats = this.selectedEnteringBats.concat(this.enteringBatsByFlightDuration[i])
+			this.selectedExitingBats = this.selectedExitingBats.concat(this.exitingBatsByFlightDuration[i])
+			this.selectedNeutralBats = this.selectedNeutralBats.concat(this.neutralBatsByFlightDuration[i]);
 		}
 		else {
-			this.selectedBats = this.selectedBats
-				.filter(function(d) { return this.batFlightDuration(d) != i; }.bind(this));
+			// this.selectedBats = this.selectedBats.filter(function(d) { return this.batFlightDuration(d) != i; }.bind(this));
+			this.selectedEnteringBats = this.selectedEnteringBats.filter(function(d) { return this.batFlightDuration(d) != i; }.bind(this));
+			this.selectedExitingBats = this.selectedExitingBats.filter(function(d) { return this.batFlightDuration(d) != i; }.bind(this));
+			this.selectedNeutralBats = this.selectedNeutralBats.filter(function(d) { return this.batFlightDuration(d) != i; }.bind(this));
 		}
 
 		this.selectedHistogramBars[i] = !this.selectedHistogramBars[i];
+
+		this.selectedBats = [];
+
+		if (this.enteringBatsEnabled) this.selectedBats = this.selectedBats.concat(this.selectedEnteringBats);
+		if (this.exitingBatsEnabled) this.selectedBats = this.selectedBats.concat(this.selectedExitingBats);
+		if (this.neutralBatsEnabled) this.selectedBats = this.selectedBats.concat(this.selectedNeutralBats);
 
 		this.dispatch.call(
 			"histogramBarListChanged",
