@@ -60,8 +60,6 @@ class PopulationGraph {
 
 		this.enteringBatGraphLines, this.exitingBatGraphLines, this.neutralBatGraphLines, this.populationBatGraphLines;
 		this.enteringBatGraphMiniLines, this.exitingBatGraphMiniLines, this.neutralBatGraphMiniLines, this.populationBatGraphMiniLines;
-		
-		//this.loadBatFile("files/20141003_tracking.json");
 	}
 
 	loadBatFile(batFilePath) {
