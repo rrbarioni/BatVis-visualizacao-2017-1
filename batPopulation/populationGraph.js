@@ -60,6 +60,8 @@ class PopulationGraph {
 
 		this.enteringBatGraphLines, this.exitingBatGraphLines, this.neutralBatGraphLines, this.populationBatGraphLines;
 		this.enteringBatGraphMiniLines, this.exitingBatGraphMiniLines, this.neutralBatGraphMiniLines, this.populationBatGraphMiniLines;
+
+		this.drawCaptions();
 	}
 
 	loadBatFile(batFilePath) {
@@ -143,6 +145,39 @@ class PopulationGraph {
 		if (!this.firstCalibrationDone) { return; }
 
 		this.sendData();
+	}
+
+	drawCaptions() {
+		var captionsX = this.width - 85;
+		var captionsY = 30;
+
+		var batTypes = [
+			{"text": "Entering Bats",  "color": "#00AA00"},
+			{"text": "Exiting Bats",   "color": "#FF0000"},
+			{"text": "Neutral Bats",   "color": "#0000FF"},
+			{"text": "Bat Population", "color": "#FF9900"}
+		]
+
+		this.container.selectAll(".captionCircle")
+			.data(batTypes)
+			.enter()
+			.append("circle")
+			.attr("class", "captionCircle")
+			.attr("r", 10)
+			.attr("cx", captionsX)
+			.attr("cy", function(d,i) { return captionsY + i*25; })
+			.attr("fill", function(d) { return d.color; });
+
+		this.container.selectAll(".captionText")
+			.data(batTypes)
+			.enter()
+			.append("text")
+			.attr("class", "captionText")
+			.attr("x", captionsX + 15)
+			.attr("y", function(d,i) { return captionsY + 5 + i*25; })
+			.attr("fill", function(d) { return d.color; })
+			.attr("font-family", "verdana")
+			.text(function(d) { return d.text; });
 	}
 
 	setAxisDomain() {

@@ -64,6 +64,9 @@ calibrator.dispatch      = calibratorChangeDispatch;
 populationGraph.dispatch = batListDispatch;
 flightsHistogram.dispatch = histogramBarsListDispatch;
 
-var currentFileDate = "20141003";
+// var currentFileDate = "20141003";
+var currentFileDate = window.location.href.substring(window.location.href.indexOf('#')+1);
+if (window.location.href.indexOf('#') == -1) { currentFileDate = "20141003"; }
+
 populationGraph.loadBatFile("files/" + currentFileDate + "_tracking.json");
 batViewer.loadFile("files/" + currentFileDate + "_s3dr.json");
