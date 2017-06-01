@@ -148,7 +148,7 @@ class AverageFlightTimeGraph {
 			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageEnteringBatsFlightDuration[i-1].average); }.bind(this))
 			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.averageEnteringBatsFlightDuration[i].f2);        }.bind(this))
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageEnteringBatsFlightDuration[i].average);   }.bind(this))
-			.attr("stroke", "#00FF00")
+			.attr("stroke", "#00AA00")
 			.attr("stroke-width", lineWidth)
 			.attr("stroke-opacity", lineOpacity)
 			.attr("stroke-linecap", lineLinecap);
@@ -161,7 +161,7 @@ class AverageFlightTimeGraph {
 			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageEnteringBatsFlightDuration[i-1].average); }.bind(this))
 			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(0); } return this.xScale(this.averageEnteringBatsFlightDuration[i].f2);        }.bind(this))
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageEnteringBatsFlightDuration[i].average);   }.bind(this))
-			.attr("stroke", "#00FF00")
+			.attr("stroke", "#00AA00")
 			.attr("stroke-width", lineWidth)
 			.attr("stroke-opacity", lineOpacity)
 			.attr("stroke-linecap", lineLinecap);

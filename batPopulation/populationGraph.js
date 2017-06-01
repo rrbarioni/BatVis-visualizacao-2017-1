@@ -194,7 +194,7 @@ class PopulationGraph {
 			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[1]); } return this.yScale(this.enteringBatData[1][i-1].bats.length); }.bind(this))
 			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[1]); } return this.xScale(this.enteringBatData[1][i].f2);            }.bind(this))
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[1]); } return this.yScale(this.enteringBatData[1][i].bats.length);   }.bind(this))
-			.attr("stroke", "#00FF00")
+			.attr("stroke", "#00AA00")
 			.attr("stroke-width", lineWidth)
 			.attr("stroke-opacity", lineOpacity)
 			.attr("stroke-linecap", lineLinecap);
@@ -207,7 +207,7 @@ class PopulationGraph {
 			.attr("y1", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[1]); } return this.yScale(this.enteringBatData[1][i-1].bats.length); }.bind(this))
 			.attr("x2", function(d,i) { if (i == 0) { return this.xScale(this.firstFrame[1]); } return this.xScale(this.enteringBatData[1][i].f2);            }.bind(this))
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[1]); } return this.yScale(this.enteringBatData[1][i].bats.length);   }.bind(this))
-			.attr("stroke", "#00FF00")
+			.attr("stroke", "#00AA00")
 			.attr("stroke-width", lineWidth)
 			.attr("stroke-opacity", lineOpacity)
 			.attr("stroke-linecap", lineLinecap);
@@ -349,7 +349,7 @@ class PopulationGraph {
 			.attr("y1", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.enteringBatData[0][i-1].bats.length); }.bind(this))
 			.attr("x2", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.enteringBatData[0][i].f2);            }.bind(this))
 			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.enteringBatData[0][i].bats.length);   }.bind(this))
-			.attr("stroke", "#00FF00")
+			.attr("stroke", "#00AA00")
 			.attr("stroke-width", miniLineWidth)
 			.attr("stroke-opacity", miniLineOpacity)
 			.attr("stroke-linecap", miniLineLinecap);
@@ -362,7 +362,7 @@ class PopulationGraph {
 			.attr("y1", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.enteringBatData[0][i-1].bats.length); }.bind(this))
 			.attr("x2", function(d,i) { if (i == 0) { return this.miniXScale(this.firstFrame[0]); } return this.miniXScale(this.enteringBatData[0][i].f2);            }.bind(this))
 			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.enteringBatData[0][i].bats.length);   }.bind(this))
-			.attr("stroke", "#00FF00")
+			.attr("stroke", "#00AA00")
 			.attr("stroke-width", miniLineWidth)
 			.attr("stroke-opacity", miniLineOpacity)
 			.attr("stroke-linecap", miniLineLinecap);
