@@ -14,15 +14,15 @@ var flightsHistogramHeight = 550;
 var averageFlightTimeGraphWidth = 550;
 var averageFlightTimeGraphHeight = 550;
 
-var batViewerWidth = 500;
-var batViewerHeight = 500;
+var batViewerWidth = deviceWidth * calibratorScale;
+var batViewerHeight = deviceHeight * calibratorScale;
 
 var calibrator =             new Calibrator            (deviceWidth,                 deviceHeight,calibratorScale);
 var caveDMYSelector =        new CaveDMYSelector       (caveDMYSelectorWidth,        caveDMYSelectorHeight);
 var populationGraph =        new PopulationGraph       (populationGraphWidth,        populationGraphHeight);
 var flightsHistogram =       new FlightsHistogram      (flightsHistogramWidth,       flightsHistogramHeight);
 var averageFlightTimeGraph = new AverageFlightTimeGraph(averageFlightTimeGraphWidth, averageFlightTimeGraphHeight);
-var batViewer = new BatViewer(batViewerWidth, batViewerHeight);
+var batViewer =              new BatViewer             (batViewerWidth, batViewerHeight);
 
 var calibratorChangeDispatch = d3.dispatch("calibratorChanged");
 calibratorChangeDispatch.on("calibratorChanged", function() {

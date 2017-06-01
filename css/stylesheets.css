@@ -1,12 +1,33 @@
 body {
 	user-select: none;
+	display: block;
+}
+
+#calibrator,
+#populationGraph,
+#flightsHistogram,
+#averageFlightTimeGraph,
+#threejsviewer {
+	/*margin: auto;*/
+}
+
+#calibrator {
+	/*display: block;*/
+}
+
+#threejsviewer {
+	/*display: block;*/
+}
+
+#populationGraph,
+#flightsHistogram,
+#averageFlightTimeGraph {
+	/*display: inline;*/
 }
 
 /* ----------- Calibrator styles ----------- */
 
 #calibrator {
-  	display: block;
-  	margin: auto;
   	margin-top: 5px;
   	box-shadow: 5px 5px 5px #555555;
 }
@@ -24,11 +45,8 @@ body {
 /* ----------- Population graph styles ----------- */
 
 #populationGraph {
-	display: inline;
-  	margin: auto;
   	margin-top: 10px;
   	border: 3px solid gray;
-  	/*background-color: #222222;*/
   	background-color: #FFFFFF;
   	box-shadow: 5px 5px 5px #BBBBBB;
   	user-select: none;
@@ -41,18 +59,14 @@ body {
 #populationGraph > .yAxis > * > *,
 #populationGraph > .miniXAxis > *,
 #populationGraph > .miniXAxis > * > * {
-	/*stroke: #FFFFFF;*/
 	stroke: #222222;
 }
 
 /* ----------- FlightsHistogram styles ----------- */
 
 #flightsHistogram {
-	display: inline;
-  	margin: auto;
   	margin-top: 10px;
   	border: 3px solid gray;
-  	/*background-color: #222222;*/
   	background-color: #FFFFFF;
   	box-shadow: 5px 5px 5px #BBBBBB;
   	user-select: none;
@@ -62,18 +76,14 @@ body {
 #flightsHistogram > .xAxis > * > *,
 #flightsHistogram > .yAxis > *,
 #flightsHistogram > .yAxis > * > * {
-	/*stroke: #FFFFFF;*/
 	stroke: #222222;
 }
 
 /* ----------- AverageFlightTimeGraph styles ----------- */
 
 #averageFlightTimeGraph {
-	display: inline;
-  	margin: auto;
   	margin-top: 10px;
   	border: 3px solid gray;
-  	/*background-color: #222222;*/
   	background-color: #FFFFFF;
   	box-shadow: 5px 5px 5px #BBBBBB;
   	user-select: none;
@@ -83,8 +93,17 @@ body {
 #averageFlightTimeGraph > .xAxis > * > *,
 #averageFlightTimeGraph > .yAxis > *,
 #averageFlightTimeGraph > .yAxis > * > * {
-	/*stroke: #FFFFFF;*/
 	stroke: #222222;
+}
+
+/* ----------- 3D Bat Viewer styles ----------- */
+
+#threejsviewer {
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 5px;
+	width:500px;
+    height:500px;	
 }
 
 /* ----------- CaveDMYSelector styles ----------- */
@@ -167,14 +186,4 @@ body {
 .mySelector > .list > .currentMY {
 	cursor: default;
 	text-align: center;
-}
-
-/*-----------------*/
-#threejsviewer{
-	margin: auto;
-	margin-left: 0px;
-	margin-right: 0px;
-	margin-top: 10px;
-	width:500px;
-    height:500px;	
 }
