@@ -20,10 +20,19 @@ class AverageFlightTimeGraph {
 		this.enteringExitingNeutralBatDataSize;
 		this.firstFrame, this.lastFrame, this.fps, this.startTime;
 		this.enteringBats, this.exitingBats, this.neutralBats;
+		this.batsEnabled;
 		this.averageEnteringBatsFlightDuration, this.averageExitingBatsFlightDuration, this.averageNeutralBatsFlightDuration;
 		this.averageEnteringBatsFlightDurationLines, this.averageExitingBatsFlightDurationLines, this.averageNeutralBatsFlightDurationLines;
 
 		this.receiveBatListData(0, 1, 1, { "h": 0, "m": 0, "s": 0 }, { "bats": [] }, { "bats": [] }, { "bats": [] } );
+
+		this.batCaptionTypes = [
+			{"text": "Entering Bats", "color": "#00AA00"},
+			{"text": "Exiting Bats",  "color": "#FF0000"},
+			{"text": "Neutral Bats",  "color": "#0000FF"}
+		];
+
+		this.drawCaptions();
 	}
 
 	receiveBatListData(firstFrame, lastFrame, fps, startTime, enteringBats, exitingBats, neutralBats) {
@@ -35,6 +44,8 @@ class AverageFlightTimeGraph {
 		this.enteringBats = enteringBats;
 		this.exitingBats = exitingBats;
 		this.neutralBats = neutralBats;
+
+		this.batsEnabled = [true, true, true];
 
 		this.enteringExitingNeutralBatDataSize = this.enteringBats.length; //enteringBats.length == exitingBats.length == neutralBats.length
 
@@ -96,6 +107,50 @@ class AverageFlightTimeGraph {
 		this.drawGraph();
 	}
 
+	drawCaptions() {
+		var captionsX = this.width - 85;
+		var captionsY = 30;
+
+		this.container.selectAll(".captionCircle")
+			.data(this.batCaptionTypes)
+			.enter()
+			.append("circle")
+			.attr("class", "captionCircle")
+			.attr("r", 10)
+			.attr("cx", captionsX)
+			.attr("cy", function(d,i) { return captionsY + i*25; })
+			.attr("fill", function(d) { return d.color; })
+			.on("click", function(d,i) { this.selectCaption(i); }.bind(this));
+
+		this.container.selectAll(".captionText")
+			.data(this.batCaptionTypes)
+			.enter()
+			.append("text")
+			.attr("class", "captionText")
+			.attr("x", captionsX + 15)
+			.attr("y", function(d,i) { return captionsY + 5 + i*25; })
+			.attr("fill", function(d) { return d.color; })
+			.attr("font-family", "verdana")
+			.text(function(d) { return d.text; });
+	}
+
+	selectCaption(i) {
+		this.batsEnabled[i] = !this.batsEnabled[i];
+
+		this.container.selectAll(".captionCircle")
+			.attr("fill", function(d,i) { if(this.batsEnabled[i]) { return this.batCaptionTypes[i].color; } else { return "#555555"; } }.bind(this));
+
+		this.container.selectAll(".averageEnteringBatsFlightDurationLine")
+			.transition()
+			.attr("opacity", function(d) { if(this.batsEnabled[0]) { return 1; } else { return 0; } }.bind(this));
+		this.container.selectAll(".averageExitingBatsFlightDurationLine")
+			.transition()
+			.attr("opacity", function(d) { if(this.batsEnabled[1]) { return 1; } else { return 0; } }.bind(this));
+		this.container.selectAll(".averageNeutralBatsFlightDurationLine")
+			.transition()
+			.attr("opacity", function(d) { if(this.batsEnabled[2]) { return 1; } else { return 0; } }.bind(this));
+	}
+
 	setAxisDomain() {
 		var maxAverageFlightDuration = 0;
 		for(var i = 0; i < this.enteringExitingNeutralBatDataSize; i++) {
@@ -133,8 +188,12 @@ class AverageFlightTimeGraph {
 		this.drawAxis();
 
 		var lineWidth = 5;
-		var lineOpacity = 0.5;
+		var lineOpacity = 1;
 		var lineLinecap = "round";
+
+		this.enteringBatsEnabled
+		this.exitingBatsEnabled
+		this.neutralBatsEnabled
 
 		this.averageEnteringBatsFlightDurationLines = this.container.selectAll(".averageEnteringBatsFlightDurationLine")
 			.data(this.averageEnteringBatsFlightDuration);
