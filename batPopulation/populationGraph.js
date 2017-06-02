@@ -170,7 +170,10 @@ class PopulationGraph {
 			.attr("cx", captionsX)
 			.attr("cy", function(d,i) { return captionsY + i*25; })
 			.attr("fill", function(d,i) { return d.color; })
-			.on("click", function(d,i) { this.selectCaption(i); }.bind(this));
+			.on("click", function(d,i) {
+					this.selectCaption(i);
+					// this.drawGraph();
+				}.bind(this));
 
 		this.container.selectAll(".captionText")
 			.data(this.batCaptionTypes)
@@ -225,6 +228,25 @@ class PopulationGraph {
 		this.maxEntranceOrExitingOnInterval[1] = Math.max(1, d3.max(this.enteringBatData[1].concat(this.exitingBatData[1]).concat(this.neutralBatData[1]), function(d) { return d.bats.length; }));
 		this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1], minPop);
 		this.maxEntranceOrExitingOnInterval[1] = Math.max(this.maxEntranceOrExitingOnInterval[1], maxPop);
+
+		// this.minEntranceOrExitingOnInterval[1] = 0;
+		// this.maxEntranceOrExitingOnInterval[1] = 1;
+		// if (this.batEnabled[0]) {
+		// 	this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.enteringBatData[1], function(d) { return d.bats.length; }));
+		// 	this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.enteringBatData[1], function(d) { return d.bats.length; }));
+		// }
+		// if (this.batEnabled[1]) {
+		// 	this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.exitingBatData[1], function(d) { return d.bats.length; }));
+		// 	this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.exitingBatData[1], function(d) { return d.bats.length; }));
+		// }
+		// if (this.batEnabled[2]) {
+		// 	this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.neutralBatData[1], function(d) { return d.bats.length; }));
+		// 	this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.neutralBatData[1], function(d) { return d.bats.length; }));
+		// }
+		// if (this.batEnabled[3]) {
+		// 	this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.populationBatData[1], function(d) { return d.population; }));
+		// 	this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.populationBatData[1], function(d) { return d.population; }));
+		// }
 
   		this.xScale.domain([this.firstFrame[1], this.lastFrame[1]]);
   		this.yScale.domain([this.minEntranceOrExitingOnInterval[1], this.maxEntranceOrExitingOnInterval[1]]);
