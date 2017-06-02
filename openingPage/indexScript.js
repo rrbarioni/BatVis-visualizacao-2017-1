@@ -27,9 +27,11 @@ void 0!==c?e&&"set"in e&&void 0!==(d=e.set(a,c,b))?d:a[b]=c:e&&"get"in e&&null!=
 
 var currentSelectedFile = "";
 
-function selectBatFile(batFile) {
-	currentSelectedFile = batFile;
-}
+function selectBatFile(batFileId) {
+	d3.selectAll(".batFile").attr("selected", "false");
+	currentSelectedFile = batFileId;
+	d3.select("#file_" + batFileId).attr("selected", "true");
+	}
 
 function openBatPopulationWindow() {
 	if (currentSelectedFile == "") { return; }

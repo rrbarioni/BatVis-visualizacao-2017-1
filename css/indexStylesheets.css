@@ -169,6 +169,21 @@ body.loaded #preloader{
     color: #FFFF00;
 }
 
+.batFile {
+    background-color: #37003C;
+    color: #888888;
+}
+
+.batFile:hover[selected="false"] {
+    background-color: #90538F;
+    color: #EEEEEE;
+}
+
+.batFile[selected="true"] {
+    background-color: #FFFF00;
+    color: #000000;
+}
+
 .button span {
     cursor: pointer;
     display: inline-block;
