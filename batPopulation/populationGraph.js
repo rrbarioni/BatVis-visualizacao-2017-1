@@ -20,14 +20,14 @@ class PopulationGraph {
 
 		this.svg = d3.select("#populationGraph")
 			.attr("width",  this.width + this.margin.left + this.margin.right)
-			.attr("height", this.height + this.margin.top + this.margin.bottom)
-			.call(this.horizontalBrush);
+			.attr("height", this.height + this.margin.top + this.margin.bottom);
 			// .call(this.verticalZoom);
 			
 		this.container = this.svg.append("g")
 			.attr("class", "container");
 		this.miniContainer = this.svg.append("g")
-			.attr("class", "miniContainer");
+			.attr("class", "miniContainer")
+			.call(this.horizontalBrush);
 
 		this.xScale = d3.scaleLinear().range([this.margin.left, this.width + this.margin.left]);
 		this.yScale = d3.scaleLinear().range([this.height + this.margin.top, this.margin.top]);
@@ -58,8 +58,18 @@ class PopulationGraph {
 		this.neutralBatData = [];
 		this.populationBatData = [];
 
+		this.batEnabled;
 		this.enteringBatGraphLines, this.exitingBatGraphLines, this.neutralBatGraphLines, this.populationBatGraphLines;
 		this.enteringBatGraphMiniLines, this.exitingBatGraphMiniLines, this.neutralBatGraphMiniLines, this.populationBatGraphMiniLines;
+
+		this.batCaptionTypes = [
+			{"text": "Entering Bats",  "color": "#00AA00"},
+			{"text": "Exiting Bats",   "color": "#FF0000"},
+			{"text": "Neutral Bats",   "color": "#0000FF"},
+			{"text": "Bat Population", "color": "#FF9900"}
+		];
+
+		this.batEnabled = [true, true, true, true];
 
 		this.drawCaptions();
 	}
@@ -151,25 +161,19 @@ class PopulationGraph {
 		var captionsX = this.width - 85;
 		var captionsY = 30;
 
-		var batTypes = [
-			{"text": "Entering Bats",  "color": "#00AA00"},
-			{"text": "Exiting Bats",   "color": "#FF0000"},
-			{"text": "Neutral Bats",   "color": "#0000FF"},
-			{"text": "Bat Population", "color": "#FF9900"}
-		]
-
 		this.container.selectAll(".captionCircle")
-			.data(batTypes)
+			.data(this.batCaptionTypes)
 			.enter()
 			.append("circle")
 			.attr("class", "captionCircle")
 			.attr("r", 10)
 			.attr("cx", captionsX)
 			.attr("cy", function(d,i) { return captionsY + i*25; })
-			.attr("fill", function(d) { return d.color; });
+			.attr("fill", function(d,i) { return d.color; })
+			.on("click", function(d,i) { this.selectCaption(i); }.bind(this));
 
 		this.container.selectAll(".captionText")
-			.data(batTypes)
+			.data(this.batCaptionTypes)
 			.enter()
 			.append("text")
 			.attr("class", "captionText")
@@ -178,6 +182,40 @@ class PopulationGraph {
 			.attr("fill", function(d) { return d.color; })
 			.attr("font-family", "verdana")
 			.text(function(d) { return d.text; });
+	}
+
+	selectCaption(i) {
+		console.log("eae men");
+		this.batEnabled[i] = !this.batEnabled[i];
+
+		this.container.selectAll(".captionCircle")
+			.attr("fill", function(d,i) { if(this.batEnabled[i]) { return this.batCaptionTypes[i].color; } else { return "#555555"; } }.bind(this));
+
+		this.container.selectAll(".enteringBatLine")
+			.transition()
+			.attr("opacity", function(d) { if(this.batEnabled[0]) { return 1; } else { return 0; } }.bind(this));
+		this.container.selectAll(".exitingBatLine")
+			.transition()
+			.attr("opacity", function(d) { if(this.batEnabled[1]) { return 1; } else { return 0; } }.bind(this));
+		this.container.selectAll(".neutralBatLine")
+			.transition()
+			.attr("opacity", function(d) { if(this.batEnabled[2]) { return 1; } else { return 0; } }.bind(this));
+		this.container.selectAll(".populationBatLine")
+			.transition()
+			.attr("opacity", function(d) { if(this.batEnabled[3]) { return 1; } else { return 0; } }.bind(this));
+
+		this.miniContainer.selectAll(".enteringBatMiniLine")
+			.transition()
+			.attr("opacity", function(d) { if(this.batEnabled[0]) { return 1; } else { return 0; } }.bind(this));
+		this.miniContainer.selectAll(".exitingBatMiniLine")
+			.transition()
+			.attr("opacity", function(d) { if(this.batEnabled[1]) { return 1; } else { return 0; } }.bind(this));
+		this.miniContainer.selectAll(".neutralBatMiniLine")
+			.transition()
+			.attr("opacity", function(d) { if(this.batEnabled[2]) { return 1; } else { return 0; } }.bind(this));
+		this.miniContainer.selectAll(".populationBatMiniLine")
+			.transition()
+			.attr("opacity", function(d) { if(this.batEnabled[3]) { return 1; } else { return 0; } }.bind(this));
 	}
 
 	setAxisDomain() {
@@ -214,7 +252,7 @@ class PopulationGraph {
 
 	drawLines() {
 		var lineWidth = 5;
-		var lineOpacity = 0.5;
+		var lineOpacity = 1;
 		var lineLinecap ="round";
 
 		this.enteringBatGraphLines = this.container.selectAll(".enteringBatLine")
@@ -369,7 +407,7 @@ class PopulationGraph {
 
 	drawMiniLines() {
 		var miniLineWidth = 5;
-		var miniLineOpacity = 0.5;
+		var miniLineOpacity = 1;
 		var miniLineLinecap = "round";
 
 		this.enteringBatGraphMiniLines = this.miniContainer.selectAll(".enteringBatMiniLine")

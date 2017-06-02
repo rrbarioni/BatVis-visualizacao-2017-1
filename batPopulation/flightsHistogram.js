@@ -29,6 +29,10 @@ class FlightsHistogram {
 		this.selectedHistogramBars, this.selectedBats;
 		this.selectedEnteringBats, this.selectedExitingBats, this.selectedNeutralBats;
 		
+		this.enteringBatsEnabled = true;
+		this.exitingBatsEnabled = true;
+		this.neutralBatsEnabled = true;
+
 		this.receiveBatListData([], [], []);
 		this.drawCaptions();
 	}
@@ -48,10 +52,6 @@ class FlightsHistogram {
 		this.selectedEnteringBats = [];
 		this.selectedExitingBats = [];
 		this.selectedNeutralBats = [];
-
-		this.enteringBatsEnabled = true;
-		this.exitingBatsEnabled = true;
-		this.neutralBatsEnabled = true;
 
 		for(var i = 0; i < this.enteringBats.length; i++) {
 			if (this.batFlightDuration(this.enteringBats[i]) < 1) { continue; }

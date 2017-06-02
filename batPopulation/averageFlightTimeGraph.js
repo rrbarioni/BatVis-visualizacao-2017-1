@@ -32,6 +32,8 @@ class AverageFlightTimeGraph {
 			{"text": "Neutral Bats",  "color": "#0000FF"}
 		];
 
+		this.batsEnabled = [true, true, true];
+
 		this.drawCaptions();
 	}
 
@@ -44,8 +46,6 @@ class AverageFlightTimeGraph {
 		this.enteringBats = enteringBats;
 		this.exitingBats = exitingBats;
 		this.neutralBats = neutralBats;
-
-		this.batsEnabled = [true, true, true];
 
 		this.enteringExitingNeutralBatDataSize = this.enteringBats.length; //enteringBats.length == exitingBats.length == neutralBats.length
 
@@ -190,10 +190,6 @@ class AverageFlightTimeGraph {
 		var lineWidth = 5;
 		var lineOpacity = 1;
 		var lineLinecap = "round";
-
-		this.enteringBatsEnabled
-		this.exitingBatsEnabled
-		this.neutralBatsEnabled
 
 		this.averageEnteringBatsFlightDurationLines = this.container.selectAll(".averageEnteringBatsFlightDurationLine")
 			.data(this.averageEnteringBatsFlightDuration);
