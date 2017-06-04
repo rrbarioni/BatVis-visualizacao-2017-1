@@ -15,13 +15,10 @@ class PopulationGraph {
 		this.horizontalBrush = d3.brushX()
 			.on("end", this.brushMiniArea.bind(this))
 			.extent([[this.miniMargin.left,this.miniMargin.top], [this.miniWidth + this.miniMargin.left,this.miniHeight + this.miniMargin.top]]);
-		this.verticalZoom = d3.zoom()
-			.on("zoom", this.zoomArea.bind(this));
 
 		this.svg = d3.select("#populationGraph")
 			.attr("width",  this.width + this.margin.left + this.margin.right)
 			.attr("height", this.height + this.margin.top + this.margin.bottom);
-			// .call(this.verticalZoom);
 			
 		this.container = this.svg.append("g")
 			.attr("class", "container");
@@ -101,40 +98,6 @@ class PopulationGraph {
 		}.bind(this));
 	}
 
-	zoomArea() {
-		// re-scale y axis during zoom; ref [2]
-        // y_axis.transition()
-        //       .duration(50)
-        //       .call(yAxis.scale(d3.event.transform.rescaleY(yScale)));
-
-        // // re-draw circles using new y-axis scale; ref [3]
-        // var new_yScale = d3.event.transform.rescaleY(yScale);
-        // circles.attr("cy", function(d) { return new_yScale(d[1]); });
-
-        return;
-
-        var newYScale = d3.event.transform.rescaleY(this.yScale);
-        this.yAxis
-	        .tickValues(newYScale.ticks(10).filter(function(d) { return Number.isInteger(d); }))
-	        .tickFormat(d3.format(".0f"));
-    	this.yAxisLine
-    		.transition()
-    		.call(this.yAxis.scale(newYScale));
-
-    	this.enteringBatGraphLines
-    		.attr("y1", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.enteringBatData[1][i-1].bats.length); }.bind(this))
-			.attr("y2", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.enteringBatData[1][i].bats.length);   }.bind(this));
-		this.exitingBatGraphLines
-    		.attr("y1", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.exitingBatData[1][i-1].bats.length); }.bind(this))
-			.attr("y2", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.exitingBatData[1][i].bats.length);   }.bind(this));
-		this.neutralBatGraphLines
-    		.attr("y1", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.neutralBatData[1][i-1].bats.length); }.bind(this))
-			.attr("y2", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.neutralBatData[1][i].bats.length);   }.bind(this));
-		this.populationBatGraphLines
-    		.attr("y1", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.populationBatData[1][i-1].population); }.bind(this))
-			.attr("y2", function(d,i) { if (i == 0) { return newYScale(this.firstFrame[1]); } return newYScale(this.populationBatData[1][i].population);   }.bind(this));
-	}
-
 	brushMiniArea() {
 		var brushRect = d3.event.selection;
 		if (!brushRect) { 
@@ -188,7 +151,6 @@ class PopulationGraph {
 	}
 
 	selectCaption(i) {
-		console.log("eae men");
 		this.batEnabled[i] = !this.batEnabled[i];
 
 		this.container.selectAll(".captionCircle")
@@ -222,31 +184,31 @@ class PopulationGraph {
 	}
 
 	setAxisDomain() {
-		var minPop = d3.min(this.populationBatData[1], function(d) { return d.population; });
-		var maxPop = d3.max(this.populationBatData[1], function(d) { return d.population; });
-		this.minEntranceOrExitingOnInterval[1] =             d3.min(this.enteringBatData[1].concat(this.exitingBatData[1]).concat(this.neutralBatData[1]), function(d) { return d.bats.length; });
-		this.maxEntranceOrExitingOnInterval[1] = Math.max(1, d3.max(this.enteringBatData[1].concat(this.exitingBatData[1]).concat(this.neutralBatData[1]), function(d) { return d.bats.length; }));
-		this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1], minPop);
-		this.maxEntranceOrExitingOnInterval[1] = Math.max(this.maxEntranceOrExitingOnInterval[1], maxPop);
+		// var minPop = d3.min(this.populationBatData[1], function(d) { return d.population; });
+		// var maxPop = d3.max(this.populationBatData[1], function(d) { return d.population; });
+		// this.minEntranceOrExitingOnInterval[1] =             d3.min(this.enteringBatData[1].concat(this.exitingBatData[1]).concat(this.neutralBatData[1]), function(d) { return d.bats.length; });
+		// this.maxEntranceOrExitingOnInterval[1] = Math.max(1, d3.max(this.enteringBatData[1].concat(this.exitingBatData[1]).concat(this.neutralBatData[1]), function(d) { return d.bats.length; }));
+		// this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1], minPop);
+		// this.maxEntranceOrExitingOnInterval[1] = Math.max(this.maxEntranceOrExitingOnInterval[1], maxPop);
 
-		// this.minEntranceOrExitingOnInterval[1] = 0;
-		// this.maxEntranceOrExitingOnInterval[1] = 1;
-		// if (this.batEnabled[0]) {
-		// 	this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.enteringBatData[1], function(d) { return d.bats.length; }));
-		// 	this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.enteringBatData[1], function(d) { return d.bats.length; }));
-		// }
-		// if (this.batEnabled[1]) {
-		// 	this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.exitingBatData[1], function(d) { return d.bats.length; }));
-		// 	this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.exitingBatData[1], function(d) { return d.bats.length; }));
-		// }
-		// if (this.batEnabled[2]) {
-		// 	this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.neutralBatData[1], function(d) { return d.bats.length; }));
-		// 	this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.neutralBatData[1], function(d) { return d.bats.length; }));
-		// }
-		// if (this.batEnabled[3]) {
-		// 	this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.populationBatData[1], function(d) { return d.population; }));
-		// 	this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.populationBatData[1], function(d) { return d.population; }));
-		// }
+		this.minEntranceOrExitingOnInterval[1] = 0;
+		this.maxEntranceOrExitingOnInterval[1] = 1;
+		if (this.batEnabled[0]) {
+			this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.enteringBatData[1], function(d) { return d.bats.length; }));
+			this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.enteringBatData[1], function(d) { return d.bats.length; }));
+		}
+		if (this.batEnabled[1]) {
+			this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.exitingBatData[1], function(d) { return d.bats.length; }));
+			this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.exitingBatData[1], function(d) { return d.bats.length; }));
+		}
+		if (this.batEnabled[2]) {
+			this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.neutralBatData[1], function(d) { return d.bats.length; }));
+			this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.neutralBatData[1], function(d) { return d.bats.length; }));
+		}
+		if (this.batEnabled[3]) {
+			this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.populationBatData[1], function(d) { return d.population; }));
+			this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.populationBatData[1], function(d) { return d.population; }));
+		}
 
   		this.xScale.domain([this.firstFrame[1], this.lastFrame[1]]);
   		this.yScale.domain([this.minEntranceOrExitingOnInterval[1], this.maxEntranceOrExitingOnInterval[1]]);
