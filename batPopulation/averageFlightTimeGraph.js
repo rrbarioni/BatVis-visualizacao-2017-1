@@ -120,7 +120,10 @@ class AverageFlightTimeGraph {
 			.attr("cx", captionsX)
 			.attr("cy", function(d,i) { return captionsY + i*25; })
 			.attr("fill", function(d) { return d.color; })
-			.on("click", function(d,i) { this.selectCaption(i); }.bind(this));
+			.on("click", function(d,i) {
+					this.selectCaption(i);
+					this.drawGraph();
+				}.bind(this));
 
 		this.container.selectAll(".captionText")
 			.data(this.batCaptionTypes)
@@ -142,13 +145,13 @@ class AverageFlightTimeGraph {
 
 		this.container.selectAll(".averageEnteringBatsFlightDurationLine")
 			.transition()
-			.attr("opacity", function(d) { if(this.batsEnabled[0]) { return 1; } else { return 0; } }.bind(this));
+			.attr("stroke-opacity", function(d) { if(this.batsEnabled[0]) { return 1; } else { return 0; } }.bind(this));
 		this.container.selectAll(".averageExitingBatsFlightDurationLine")
 			.transition()
-			.attr("opacity", function(d) { if(this.batsEnabled[1]) { return 1; } else { return 0; } }.bind(this));
+			.attr("stroke-opacity", function(d) { if(this.batsEnabled[1]) { return 1; } else { return 0; } }.bind(this));
 		this.container.selectAll(".averageNeutralBatsFlightDurationLine")
 			.transition()
-			.attr("opacity", function(d) { if(this.batsEnabled[2]) { return 1; } else { return 0; } }.bind(this));
+			.attr("stroke-opacity", function(d) { if(this.batsEnabled[2]) { return 1; } else { return 0; } }.bind(this));
 	}
 
 	setAxisDomain() {
@@ -188,7 +191,6 @@ class AverageFlightTimeGraph {
 		this.drawAxis();
 
 		var lineWidth = 5;
-		var lineOpacity = 1;
 		var lineLinecap = "round";
 
 		this.averageEnteringBatsFlightDurationLines = this.container.selectAll(".averageEnteringBatsFlightDurationLine")
@@ -205,7 +207,7 @@ class AverageFlightTimeGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageEnteringBatsFlightDuration[i].average);   }.bind(this))
 			.attr("stroke", "#00AA00")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batsEnabled[0]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 		this.averageEnteringBatsFlightDurationLines
 			.enter()
@@ -218,7 +220,7 @@ class AverageFlightTimeGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageEnteringBatsFlightDuration[i].average);   }.bind(this))
 			.attr("stroke", "#00AA00")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batsEnabled[0]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 
 		this.averageExitingBatsFlightDurationLines = this.container.selectAll(".averageExitingBatsFlightDurationLine")
@@ -235,7 +237,7 @@ class AverageFlightTimeGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageExitingBatsFlightDuration[i].average);   }.bind(this))
 			.attr("stroke", "#FF0000")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batsEnabled[1]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 		this.averageExitingBatsFlightDurationLines
 			.enter()
@@ -248,7 +250,7 @@ class AverageFlightTimeGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageExitingBatsFlightDuration[i].average);   }.bind(this))
 			.attr("stroke", "#FF0000")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batsEnabled[1]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 
 		this.averageNeutralBatsFlightDurationLines = this.container.selectAll(".averageNeutralBatsFlightDurationLine")
@@ -265,7 +267,7 @@ class AverageFlightTimeGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageNeutralBatsFlightDuration[i].average);   }.bind(this))
 			.attr("stroke", "#0000FF")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batsEnabled[2]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 		this.averageNeutralBatsFlightDurationLines
 			.enter()
@@ -278,7 +280,7 @@ class AverageFlightTimeGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(0); } return this.yScale(this.averageNeutralBatsFlightDuration[i].average);   }.bind(this))
 			.attr("stroke", "#0000FF")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batsEnabled[2]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 	}
 

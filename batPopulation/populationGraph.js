@@ -135,7 +135,8 @@ class PopulationGraph {
 			.attr("fill", function(d,i) { return d.color; })
 			.on("click", function(d,i) {
 					this.selectCaption(i);
-					// this.drawGraph();
+					this.drawGraph();
+					this.drawMiniGraph();
 				}.bind(this));
 
 		this.container.selectAll(".captionText")
@@ -158,29 +159,29 @@ class PopulationGraph {
 
 		this.container.selectAll(".enteringBatLine")
 			.transition()
-			.attr("opacity", function(d) { if(this.batEnabled[0]) { return 1; } else { return 0; } }.bind(this));
+			.attr("stroke-opacity", function(d) { if(this.batEnabled[0]) { return 1; } else { return 0; } }.bind(this));
 		this.container.selectAll(".exitingBatLine")
 			.transition()
-			.attr("opacity", function(d) { if(this.batEnabled[1]) { return 1; } else { return 0; } }.bind(this));
+			.attr("stroke-opacity", function(d) { if(this.batEnabled[1]) { return 1; } else { return 0; } }.bind(this));
 		this.container.selectAll(".neutralBatLine")
 			.transition()
-			.attr("opacity", function(d) { if(this.batEnabled[2]) { return 1; } else { return 0; } }.bind(this));
+			.attr("stroke-opacity", function(d) { if(this.batEnabled[2]) { return 1; } else { return 0; } }.bind(this));
 		this.container.selectAll(".populationBatLine")
 			.transition()
-			.attr("opacity", function(d) { if(this.batEnabled[3]) { return 1; } else { return 0; } }.bind(this));
+			.attr("stroke-opacity", function(d) { if(this.batEnabled[3]) { return 1; } else { return 0; } }.bind(this));
 
 		this.miniContainer.selectAll(".enteringBatMiniLine")
 			.transition()
-			.attr("opacity", function(d) { if(this.batEnabled[0]) { return 1; } else { return 0; } }.bind(this));
+			.attr("stroke-opacity", function(d) { if(this.batEnabled[0]) { return 1; } else { return 0; } }.bind(this));
 		this.miniContainer.selectAll(".exitingBatMiniLine")
 			.transition()
-			.attr("opacity", function(d) { if(this.batEnabled[1]) { return 1; } else { return 0; } }.bind(this));
+			.attr("stroke-opacity", function(d) { if(this.batEnabled[1]) { return 1; } else { return 0; } }.bind(this));
 		this.miniContainer.selectAll(".neutralBatMiniLine")
 			.transition()
-			.attr("opacity", function(d) { if(this.batEnabled[2]) { return 1; } else { return 0; } }.bind(this));
+			.attr("stroke-opacity", function(d) { if(this.batEnabled[2]) { return 1; } else { return 0; } }.bind(this));
 		this.miniContainer.selectAll(".populationBatMiniLine")
 			.transition()
-			.attr("opacity", function(d) { if(this.batEnabled[3]) { return 1; } else { return 0; } }.bind(this));
+			.attr("stroke-opacity", function(d) { if(this.batEnabled[3]) { return 1; } else { return 0; } }.bind(this));
 	}
 
 	setAxisDomain() {
@@ -195,19 +196,19 @@ class PopulationGraph {
 		this.maxEntranceOrExitingOnInterval[1] = 1;
 		if (this.batEnabled[0]) {
 			this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.enteringBatData[1], function(d) { return d.bats.length; }));
-			this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.enteringBatData[1], function(d) { return d.bats.length; }));
+			this.maxEntranceOrExitingOnInterval[1] = Math.max(this.maxEntranceOrExitingOnInterval[1],d3.max(this.enteringBatData[1], function(d) { return d.bats.length; }));
 		}
 		if (this.batEnabled[1]) {
 			this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.exitingBatData[1], function(d) { return d.bats.length; }));
-			this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.exitingBatData[1], function(d) { return d.bats.length; }));
+			this.maxEntranceOrExitingOnInterval[1] = Math.max(this.maxEntranceOrExitingOnInterval[1],d3.max(this.exitingBatData[1], function(d) { return d.bats.length; }));
 		}
 		if (this.batEnabled[2]) {
 			this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.neutralBatData[1], function(d) { return d.bats.length; }));
-			this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.neutralBatData[1], function(d) { return d.bats.length; }));
+			this.maxEntranceOrExitingOnInterval[1] = Math.max(this.maxEntranceOrExitingOnInterval[1],d3.max(this.neutralBatData[1], function(d) { return d.bats.length; }));
 		}
 		if (this.batEnabled[3]) {
 			this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1],d3.min(this.populationBatData[1], function(d) { return d.population; }));
-			this.maxEntranceOrExitingOnInterval[1] = Math.max(this.minEntranceOrExitingOnInterval[1],d3.max(this.populationBatData[1], function(d) { return d.population; }));
+			this.maxEntranceOrExitingOnInterval[1] = Math.max(this.maxEntranceOrExitingOnInterval[1],d3.max(this.populationBatData[1], function(d) { return d.population; }));
 		}
 
   		this.xScale.domain([this.firstFrame[1], this.lastFrame[1]]);
@@ -236,7 +237,6 @@ class PopulationGraph {
 
 	drawLines() {
 		var lineWidth = 5;
-		var lineOpacity = 1;
 		var lineLinecap ="round";
 
 		this.enteringBatGraphLines = this.container.selectAll(".enteringBatLine")
@@ -253,7 +253,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[1]); } return this.yScale(this.enteringBatData[1][i].bats.length);   }.bind(this))
 			.attr("stroke", "#00AA00")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[0]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 		this.enteringBatGraphLines
 			.enter()
@@ -266,7 +266,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[1]); } return this.yScale(this.enteringBatData[1][i].bats.length);   }.bind(this))
 			.attr("stroke", "#00AA00")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[0]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 
 		this.exitingBatGraphLines = this.container.selectAll(".exitingBatLine")
@@ -283,7 +283,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[1]); } return this.yScale(this.exitingBatData[1][i].bats.length);   }.bind(this))
 			.attr("stroke", "#FF0000")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[1]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 		this.exitingBatGraphLines
 			.enter()
@@ -296,7 +296,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[1]); } return this.yScale(this.exitingBatData[1][i].bats.length);   }.bind(this))
 			.attr("stroke", "#FF0000")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[1]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 
 		this.neutralBatGraphLines = this.container.selectAll(".neutralBatLine")
@@ -313,7 +313,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[1]); } return this.yScale(this.neutralBatData[1][i].bats.length);   }.bind(this))
 			.attr("stroke", "#0000FF")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[2]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 		this.neutralBatGraphLines
 			.enter()
@@ -326,7 +326,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[1]); } return this.yScale(this.neutralBatData[1][i].bats.length);   }.bind(this))
 			.attr("stroke", "#0000FF")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[2]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 
 		this.populationBatGraphLines = this.container.selectAll(".populationBatLine")
@@ -343,7 +343,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[1]); } return this.yScale(this.populationBatData[1][i].population);   }.bind(this))
 			.attr("stroke", "#FF9900")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[3]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 		this.populationBatGraphLines
 			.enter()
@@ -356,7 +356,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.yScale(this.firstFrame[1]); } return this.yScale(this.populationBatData[1][i].population);   }.bind(this))
 			.attr("stroke", "#FF9900")
 			.attr("stroke-width", lineWidth)
-			.attr("stroke-opacity", lineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[3]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", lineLinecap);
 	}
 
@@ -366,12 +366,31 @@ class PopulationGraph {
 	}
 
 	setMiniAxisDomain() {
-		var minPop = d3.min(this.populationBatData[0], function(d) { return d.population; });
-		var maxPop = d3.max(this.populationBatData[0], function(d) { return d.population; });
-		this.minEntranceOrExitingOnInterval[0] =             d3.min(this.enteringBatData[0].concat(this.exitingBatData[0]).concat(this.neutralBatData[0]), function(d) { return d.bats.length; });
-		this.maxEntranceOrExitingOnInterval[0] = Math.max(1, d3.max(this.enteringBatData[0].concat(this.exitingBatData[0]).concat(this.neutralBatData[0]), function(d) { return d.bats.length; }));
-		this.minEntranceOrExitingOnInterval[0] = Math.min(this.minEntranceOrExitingOnInterval[0], minPop);
-		this.maxEntranceOrExitingOnInterval[0] = Math.max(this.maxEntranceOrExitingOnInterval[0], maxPop);
+		// var minPop = d3.min(this.populationBatData[0], function(d) { return d.population; });
+		// var maxPop = d3.max(this.populationBatData[0], function(d) { return d.population; });
+		// this.minEntranceOrExitingOnInterval[0] =             d3.min(this.enteringBatData[0].concat(this.exitingBatData[0]).concat(this.neutralBatData[0]), function(d) { return d.bats.length; });
+		// this.maxEntranceOrExitingOnInterval[0] = Math.max(1, d3.max(this.enteringBatData[0].concat(this.exitingBatData[0]).concat(this.neutralBatData[0]), function(d) { return d.bats.length; }));
+		// this.minEntranceOrExitingOnInterval[0] = Math.min(this.minEntranceOrExitingOnInterval[0], minPop);
+		// this.maxEntranceOrExitingOnInterval[0] = Math.max(this.maxEntranceOrExitingOnInterval[0], maxPop);
+
+		this.minEntranceOrExitingOnInterval[0] = 0;
+		this.maxEntranceOrExitingOnInterval[0] = 1;
+		if (this.batEnabled[0]) {
+			this.minEntranceOrExitingOnInterval[0] = Math.min(this.minEntranceOrExitingOnInterval[0],d3.min(this.enteringBatData[0], function(d) { return d.bats.length; }));
+			this.maxEntranceOrExitingOnInterval[0] = Math.max(this.maxEntranceOrExitingOnInterval[0],d3.max(this.enteringBatData[0], function(d) { return d.bats.length; }));
+		}
+		if (this.batEnabled[1]) {
+			this.minEntranceOrExitingOnInterval[0] = Math.min(this.minEntranceOrExitingOnInterval[0],d3.min(this.exitingBatData[0], function(d) { return d.bats.length; }));
+			this.maxEntranceOrExitingOnInterval[0] = Math.max(this.maxEntranceOrExitingOnInterval[0],d3.max(this.exitingBatData[0], function(d) { return d.bats.length; }));
+		}
+		if (this.batEnabled[2]) {
+			this.minEntranceOrExitingOnInterval[0] = Math.min(this.minEntranceOrExitingOnInterval[0],d3.min(this.neutralBatData[0], function(d) { return d.bats.length; }));
+			this.maxEntranceOrExitingOnInterval[0] = Math.max(this.maxEntranceOrExitingOnInterval[0],d3.max(this.neutralBatData[0], function(d) { return d.bats.length; }));
+		}
+		if (this.batEnabled[3]) {
+			this.minEntranceOrExitingOnInterval[0] = Math.min(this.minEntranceOrExitingOnInterval[0],d3.min(this.populationBatData[0], function(d) { return d.population; }));
+			this.maxEntranceOrExitingOnInterval[0] = Math.max(this.maxEntranceOrExitingOnInterval[0],d3.max(this.populationBatData[0], function(d) { return d.population; }));
+		}
 
   		this.miniXScale.domain([this.firstFrame[0], this.lastFrame[0]]);
   		this.miniYScale.domain([this.minEntranceOrExitingOnInterval[0], this.maxEntranceOrExitingOnInterval[0]]);
@@ -391,7 +410,6 @@ class PopulationGraph {
 
 	drawMiniLines() {
 		var miniLineWidth = 5;
-		var miniLineOpacity = 1;
 		var miniLineLinecap = "round";
 
 		this.enteringBatGraphMiniLines = this.miniContainer.selectAll(".enteringBatMiniLine")
@@ -408,7 +426,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.enteringBatData[0][i].bats.length);   }.bind(this))
 			.attr("stroke", "#00AA00")
 			.attr("stroke-width", miniLineWidth)
-			.attr("stroke-opacity", miniLineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[0]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", miniLineLinecap);
 		this.enteringBatGraphMiniLines
 			.enter()
@@ -421,7 +439,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.enteringBatData[0][i].bats.length);   }.bind(this))
 			.attr("stroke", "#00AA00")
 			.attr("stroke-width", miniLineWidth)
-			.attr("stroke-opacity", miniLineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[0]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", miniLineLinecap);
 
 		this.exitingBatGraphMiniLines = this.miniContainer.selectAll(".exitingBatMiniLine")
@@ -438,7 +456,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.exitingBatData[0][i].bats.length);   }.bind(this))
 			.attr("stroke", "#FF0000")
 			.attr("stroke-width", miniLineWidth)
-			.attr("stroke-opacity", miniLineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[1]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", miniLineLinecap);
 		this.exitingBatGraphMiniLines
 			.enter()
@@ -451,7 +469,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.exitingBatData[0][i].bats.length);   }.bind(this))
 			.attr("stroke", "#FF0000")
 			.attr("stroke-width", miniLineWidth)
-			.attr("stroke-opacity", miniLineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[1]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", miniLineLinecap);
 
 		this.neutralBatGraphMiniLines = this.miniContainer.selectAll(".neutralBatMiniLine")
@@ -468,7 +486,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.neutralBatData[0][i].bats.length);   }.bind(this))
 			.attr("stroke", "#0000FF")
 			.attr("stroke-width", miniLineWidth)
-			.attr("stroke-opacity", miniLineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[2]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", miniLineLinecap);
 		this.neutralBatGraphMiniLines
 			.enter()
@@ -481,7 +499,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.neutralBatData[0][i].bats.length);   }.bind(this))
 			.attr("stroke", "#0000FF")
 			.attr("stroke-width", miniLineWidth)
-			.attr("stroke-opacity", miniLineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[2]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", miniLineLinecap);
 
 		this.populationBatGraphMiniLines = this.miniContainer.selectAll(".populationBatMiniLine")
@@ -498,7 +516,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.populationBatData[0][i].population);   }.bind(this))
 			.attr("stroke", "#FF9900")
 			.attr("stroke-width", miniLineWidth)
-			.attr("stroke-opacity", miniLineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[3]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", miniLineLinecap);
 		this.populationBatGraphMiniLines
 			.enter()
@@ -511,7 +529,7 @@ class PopulationGraph {
 			.attr("y2", function(d,i) { if (i == 0) { return this.miniYScale(this.firstFrame[0]); } return this.miniYScale(this.populationBatData[0][i].population);   }.bind(this))
 			.attr("stroke", "#FF9900")
 			.attr("stroke-width", miniLineWidth)
-			.attr("stroke-opacity", miniLineOpacity)
+			.attr("stroke-opacity", function() { if (this.batEnabled[3]) { return 1; } else { return 0; } }.bind(this))
 			.attr("stroke-linecap", miniLineLinecap);
 	}
 
