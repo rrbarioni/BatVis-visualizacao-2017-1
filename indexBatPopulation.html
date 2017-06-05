@@ -12,11 +12,18 @@
   </head>
   <body>
     <!-- <div id="caveDMYSelector"></div> -->
-    <div class="firstLine" id="threejsviewer"></div>
-    <svg class="firstLine" id="calibrator"></svg>
-    <svg class="secondLine" id="averageFlightTimeGraph"></svg>
-    <svg class="secondLine" id="populationGraph"></svg>
-    <svg class="secondLine" id="flightsHistogram"></svg>
+
+    <div class="pageContainer">
+      <div class="firstElements">
+        <svg id="calibrator"></svg>
+        <div id="threejsviewer"></div>
+      </div>
+      <div class="graphs">
+        <svg id="averageFlightTimeGraph"></svg>
+        <svg id="populationGraph"></svg>
+        <svg id="flightsHistogram"></svg>
+      </div>
+    </div>
 
     <script type="text/javascript" src="batPopulation/calibrator.js"></script>
     <script type="text/javascript" src="batPopulation/caveDMYSelector.js"></script>

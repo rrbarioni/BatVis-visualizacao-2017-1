@@ -1,34 +1,37 @@
 body {
 	user-select: none;
-	display: block;
+	display: flex;
 }
 
-#calibrator,
-#populationGraph,
-#flightsHistogram,
-#averageFlightTimeGraph,
-#threejsviewer {
-	/*margin: auto;*/
+.pageContainer {
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: column;
+	flex-direction: column;
 }
 
-#calibrator {
-	/*display: block;*/
+.graphs {
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: row;
+	flex-direction: row;
+	margin-top: 20px;
+	margin-bottom: 20px;
 }
 
-#threejsviewer {
-	/*display: block;*/
-}
-
-#populationGraph,
-#flightsHistogram,
-#averageFlightTimeGraph {
-	/*display: inline;*/
+.firstElements {
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: row;
+	flex-direction: row;
+	margin-left: 600px;
+	margin-top: 10px;
 }
 
 /* ----------- Calibrator styles ----------- */
 
 #calibrator {
-  	margin-top: 5px;
+  	margin-left: 20px;
   	box-shadow: 5px 5px 5px #555555;
 }
 
@@ -45,7 +48,7 @@ body {
 /* ----------- Population graph styles ----------- */
 
 #populationGraph {
-  	margin-top: 10px;
+  	margin-left: 20px;
   	border: 3px solid gray;
   	background-color: #FFFFFF;
   	box-shadow: 5px 5px 5px #BBBBBB;
@@ -65,7 +68,8 @@ body {
 /* ----------- FlightsHistogram styles ----------- */
 
 #flightsHistogram {
-  	margin-top: 10px;
+  	margin-left: 20px;
+  	margin-right: 10px;
   	border: 3px solid gray;
   	background-color: #FFFFFF;
   	box-shadow: 5px 5px 5px #BBBBBB;
@@ -82,7 +86,7 @@ body {
 /* ----------- AverageFlightTimeGraph styles ----------- */
 
 #averageFlightTimeGraph {
-  	margin-top: 10px;
+  	margin-left: 10px;
   	border: 3px solid gray;
   	background-color: #FFFFFF;
   	box-shadow: 5px 5px 5px #BBBBBB;
@@ -99,17 +103,16 @@ body {
 /* ----------- 3D Bat Viewer styles ----------- */
 
 #threejsviewer {
-	margin-left: 0px;
+	margin-left: 90px;
 	margin-right: 0px;
 	margin-top: 5px;
 	width:500px;
-    height:500px;	
+    height:360px;
 }
 
 /* ----------- CaveDMYSelector styles ----------- */
-
+/*
 #caveDMYSelector {
-	/*width: 100%;*/
 	height: 100%;
 	margin-top: 10px;
   	box-shadow: 5px 5px 5px #555555;
@@ -187,3 +190,4 @@ body {
 	cursor: default;
 	text-align: center;
 }
+*/

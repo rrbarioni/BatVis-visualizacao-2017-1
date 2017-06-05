@@ -34,7 +34,7 @@ class Scene{
 
 	init() {
 		this.container = document.getElementById( 'threejsviewer' );
-		document.body.appendChild( this.container );
+		// document.body.appendChild( this.container );
 		this.camera = new THREE.PerspectiveCamera( 70, this.width / this.height, 1, 10000 );//new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
 		this.camera.position.z = 1000;
 		this.controls = new THREE.TrackballControls( this.camera, this.container );
