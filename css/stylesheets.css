@@ -24,14 +24,14 @@ body {
 	display: flex;
 	-webkit-flex-direction: row;
 	flex-direction: row;
-	margin-left: 600px;
+	margin-left: 150px;
 	margin-top: 10px;
 }
 
 /* ----------- Calibrator styles ----------- */
 
 #calibrator {
-  	margin-left: 20px;
+  	margin-left: 230px;
   	box-shadow: 5px 5px 5px #555555;
 }
 
@@ -108,6 +108,33 @@ body {
 	margin-top: 5px;
 	width:500px;
     height:360px;
+}
+
+/* --- */
+
+.button {
+    border-radius: 8px;
+    border: none;
+    text-align: center;
+    font-size: 32px;
+    padding: 20px;
+    width: 250px;
+    height: 140px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin-top: 100px;
+    box-shadow: 10px 10px 10px #363636;
+    font-family: "Lucida Console";
+}
+
+.exportCSV {
+    background-color: #37003C;
+    color: #888888;
+}
+
+.exportCSV:hover {
+    background-color: #90538F;
+    color: #EEEEEE;
 }
 
 /* ----------- CaveDMYSelector styles ----------- */
