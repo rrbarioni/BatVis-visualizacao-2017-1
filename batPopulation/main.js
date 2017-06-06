@@ -23,6 +23,7 @@ var populationGraph =        new PopulationGraph       (populationGraphWidth,   
 var flightsHistogram =       new FlightsHistogram      (flightsHistogramWidth,       flightsHistogramHeight);
 var averageFlightTimeGraph = new AverageFlightTimeGraph(averageFlightTimeGraphWidth, averageFlightTimeGraphHeight);
 var batViewer =              new BatViewer             (batViewerWidth, batViewerHeight);
+var batCSVGenerator =        new BatCSVGenerator();
 
 var calibratorChangeDispatch = d3.dispatch("calibratorChanged");
 calibratorChangeDispatch.on("calibratorChanged", function() {
@@ -52,6 +53,16 @@ batListDispatch.on("batListChanged", function() {
 	batViewer.setInterval(
 		this.sendToBatViewer.firstFrame,
 		this.sendToBatViewer.lastFrame
+	);
+	batCSVGenerator.receiveBatListData(
+		this.sendToBatCSVGenerator.firstFrame,
+		this.sendToBatCSVGenerator.lastFrame,
+		this.sendToBatCSVGenerator.fps,
+		this.sendToBatCSVGenerator.startTime,
+		this.sendToBatCSVGenerator.batListSegmentationSize,
+		this.sendToBatCSVGenerator.enteringBats,
+		this.sendToBatCSVGenerator.exitingBats,
+		this.sendToBatCSVGenerator.populationBats
 	);
 });
 

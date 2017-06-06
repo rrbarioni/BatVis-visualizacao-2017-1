@@ -649,9 +649,9 @@ class PopulationGraph {
 			{
 				"id": "populationGraph",
 				"sendToFlightsHistogram": {
-					"enteringBats": this.bats[1].filter(function(bat) { return this.filterEnteringBat(bat);                                  }.bind(this)),
-					"exitingBats":  this.bats[1].filter(function(bat) { return this.filterExitingBat(bat);                                   }.bind(this)),
-					"neutralBats":  this.bats[1].filter(function(bat) { return !this.filterEnteringBat(bat) && !this.filterExitingBat(bat);  }.bind(this))
+					"enteringBats": this.bats[1].filter(function(bat) { return this.filterEnteringBat(bat);                                 }.bind(this)),
+					"exitingBats":  this.bats[1].filter(function(bat) { return this.filterExitingBat(bat);                                  }.bind(this)),
+					"neutralBats":  this.bats[1].filter(function(bat) { return !this.filterEnteringBat(bat) && !this.filterExitingBat(bat); }.bind(this))
 				},
 				"sendToAverageFlightTimeGraph": {
 					"firstFrame":   this.firstFrame[1],
@@ -663,8 +663,18 @@ class PopulationGraph {
 					"neutralBats":  this.neutralBatData[1]
 				},
 				"sendToBatViewer": {
-					"firstFrame":   this.firstFrame[1],
-					"lastFrame":    this.lastFrame[1]
+					"firstFrame": this.firstFrame[1],
+					"lastFrame":  this.lastFrame[1]
+				},
+				"sendToBatCSVGenerator": {
+					"firstFrame":              this.firstFrame[1],
+					"lastFrame":               this.lastFrame[1],
+					"fps":                     this.fps,
+					"startTime":               this.startTime,
+					"batListSegmentationSize": this.enteringExitingBatDataSize,
+					"enteringBats":            this.enteringBatData[1].map(function(d)   { return d.bats.length; }),
+					"exitingBats":             this.exitingBatData[1].map(function(d)    { return d.bats.length; }),
+					"populationBats":          this.populationBatData[1].map(function(d) { return d.population; })
 				}
 			}
 		);
