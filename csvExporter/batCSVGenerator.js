@@ -1,6 +1,7 @@
 class BatCSVGenerator {
 	constructor() {
 		this.generatedLines = [];
+		this.currentInterval = "000000_to_000000";
 	}
 
 	receiveBatListData(firstFrame, lastFrame, fps, startTime, batListSegmentationSize, enteringBats, exitingBats, populationBats) {
@@ -16,9 +17,11 @@ class BatCSVGenerator {
 				"batPopulation": populationBats[i]
 			});
 		}
+
+		this.currentInterval = this.convertFrameToHHMMSS(firstFrame, fps, startTime) + "_to_" + this.convertFrameToHHMMSS(lastFrame, fps, startTime);
 	}
 
-	generateCSV() {
+	generateCSV(currentFileDate) {
 		var csvContent = "data:text/csv;charset=utf-8,";
 		csvContent += "Time,Entered Bats,Exited Bats,Bat Population\n";
 		for(var i = 0; i < this.generatedLines.length; i++) {
@@ -28,12 +31,11 @@ class BatCSVGenerator {
 						 this.generatedLines[i].batPopulation;
 			csvContent += i < this.generatedLines.length ? dataString + "\n" : dataString;
 		}
+
 		var encodedUri = encodeURI(csvContent);
 		var link = document.createElement("a");
 		link.setAttribute("href", encodedUri);
-		link.setAttribute("download", "my_data.csv");
-		// document.body.appendChild(link);
-
+		link.setAttribute("download", currentFileDate + "_" + this.currentInterval + ".csv");
 		link.click();
 	}
 
