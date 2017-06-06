@@ -16,12 +16,25 @@ class BatCSVGenerator {
 				"batPopulation": populationBats[i]
 			});
 		}
-
-		// console.log(this.generatedLines);
 	}
 
 	generateCSV() {
+		var csvContent = "data:text/csv;charset=utf-8,";
+		csvContent += "Time,Entered Bats,Exited Bats,Bat Population\n";
+		for(var i = 0; i < this.generatedLines.length; i++) {
+			var dataString = this.generatedLines[i].time + "," +
+						 this.generatedLines[i].enteredBats + "," +
+						 this.generatedLines[i].exitedBats + "," +
+						 this.generatedLines[i].batPopulation;
+			csvContent += i < this.generatedLines.length ? dataString + "\n" : dataString;
+		}
+		var encodedUri = encodeURI(csvContent);
+		var link = document.createElement("a");
+		link.setAttribute("href", encodedUri);
+		link.setAttribute("download", "my_data.csv");
+		// document.body.appendChild(link);
 
+		link.click();
 	}
 
 	convertFrameToHHMMSS(d, fps, startTime) {
