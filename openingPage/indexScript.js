@@ -9,13 +9,11 @@ void 0!==c?e&&"set"in e&&void 0!==(d=e.set(a,c,b))?d:a[b]=c:e&&"get"in e&&null!=
 
     jQuery(document).ready(function () {
        	/* Preloader */
-		
         $(window).on('load', function() {
           	$('body').addClass('loaded');
         });
 		
         /* Typed.js */
-		
         $(window).load(function(){
         	$(".typing").typed({
             	strings: ["Morcegos e Cavernas.", "Uma tentativa de preservação.", "Projeto BatVis."], 
@@ -26,6 +24,28 @@ void 0!==c?e&&"set"in e&&void 0!==(d=e.set(a,c,b))?d:a[b]=c:e&&"get"in e&&null!=
 })(jQuery);
 
 var currentSelectedFile = "";
+setFileButtons();
+
+function setFileButtons() {
+	d3.text("../availableFileDates.txt", function(data) {
+		d3.selectAll("#divFileButtons").selectAll("button")
+			.data(data.split("\n"))
+			.enter()
+			.append("button")
+			.attr("class", "button batFile")
+			.attr("id", function(d) { return "file_" + dateStringToFileFormat(d); })
+			.attr("selected", "false")
+			.attr("onclick", function(d) { return "selectBatFile('" + dateStringToFileFormat(d) + "')"; })
+			.html(function(d) { return d; });
+	});
+}
+
+function dateStringToFileFormat(date) {
+	var d = date.substring(0,2);
+	var m = date.substring(3,5);
+	var y = date.substring(6,10);
+	return "" + y + m + d;
+}
 
 function selectBatFile(batFileId) {
 	d3.selectAll(".batFile").attr("selected", "false");
