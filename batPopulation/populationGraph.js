@@ -662,10 +662,6 @@ class PopulationGraph {
 					"exitingBats":  this.exitingBatData[1],
 					"neutralBats":  this.neutralBatData[1]
 				},
-				"sendToBatViewer": {
-					"firstFrame": this.firstFrame[1],
-					"lastFrame":  this.lastFrame[1]
-				},
 				"sendToBatCSVGenerator": {
 					"firstFrame":              this.firstFrame[1],
 					"lastFrame":               this.lastFrame[1],
@@ -675,6 +671,10 @@ class PopulationGraph {
 					"enteringBats":            this.enteringBatData[1].map(function(d)   { return d.bats.length; }),
 					"exitingBats":             this.exitingBatData[1].map(function(d)    { return d.bats.length; }),
 					"populationBats":          this.populationBatData[1].map(function(d) { return d.population; })
+				},
+				"sendToBatViewer": {
+					"firstFrame": this.firstFrame[1],
+					"lastFrame":  this.lastFrame[1]
 				}
 			}
 		);

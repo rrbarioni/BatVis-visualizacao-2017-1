@@ -2,23 +2,31 @@ var deviceWidth = 320;
 var deviceHeight = 240;
 var calibratorScale = 1.5;
 
-var caveDMYSelectorWidth = 600;
-var caveDMYSelectorHeight = 300;
+// var caveDMYSelectorWidth = 600;
+// var caveDMYSelectorHeight = 300;
 
-var populationGraphWidth = 550;
-var populationGraphHeight = 550;
+var tablesWidth = 610;
+var tablesHeight = 550;
 
-var flightsHistogramWidth = 550;
-var flightsHistogramHeight = 550;
+// var populationGraphWidth = 550;
+// var populationGraphHeight = 550;
+// var flightsHistogramWidth = 550;
+// var flightsHistogramHeight = 550;
+// var averageFlightTimeGraphWidth = 550;
+// var averageFlightTimeGraphHeight = 550;
 
-var averageFlightTimeGraphWidth = 550;
-var averageFlightTimeGraphHeight = 550;
+var populationGraphWidth =         tablesWidth;
+var populationGraphHeight =        tablesHeight;
+var flightsHistogramWidth =        tablesWidth;
+var flightsHistogramHeight =       tablesHeight;
+var averageFlightTimeGraphWidth =  tablesWidth;
+var averageFlightTimeGraphHeight = tablesHeight;
 
 var batViewerWidth = deviceWidth * calibratorScale;
 var batViewerHeight = deviceHeight * calibratorScale;
 
 var calibrator =             new Calibrator            (deviceWidth,                 deviceHeight,calibratorScale);
-var caveDMYSelector =        new CaveDMYSelector       (caveDMYSelectorWidth,        caveDMYSelectorHeight);
+// var caveDMYSelector =        new CaveDMYSelector       (caveDMYSelectorWidth,        caveDMYSelectorHeight);
 var populationGraph =        new PopulationGraph       (populationGraphWidth,        populationGraphHeight);
 var flightsHistogram =       new FlightsHistogram      (flightsHistogramWidth,       flightsHistogramHeight);
 var averageFlightTimeGraph = new AverageFlightTimeGraph(averageFlightTimeGraphWidth, averageFlightTimeGraphHeight);
@@ -50,10 +58,6 @@ batListDispatch.on("batListChanged", function() {
 		this.sendToAverageFlightTimeGraph.exitingBats,
 		this.sendToAverageFlightTimeGraph.neutralBats
 	);
-	batViewer.setInterval(
-		this.sendToBatViewer.firstFrame,
-		this.sendToBatViewer.lastFrame
-	);
 	batCSVGenerator.receiveBatListData(
 		this.sendToBatCSVGenerator.firstFrame,
 		this.sendToBatCSVGenerator.lastFrame,
@@ -63,6 +67,10 @@ batListDispatch.on("batListChanged", function() {
 		this.sendToBatCSVGenerator.enteringBats,
 		this.sendToBatCSVGenerator.exitingBats,
 		this.sendToBatCSVGenerator.populationBats
+	);
+	batViewer.setInterval(
+		this.sendToBatViewer.firstFrame,
+		this.sendToBatViewer.lastFrame
 	);
 });
 
@@ -79,5 +87,6 @@ flightsHistogram.dispatch = histogramBarsListDispatch;
 var currentFileDate = window.location.href.substring(window.location.href.indexOf('#')+1);
 if (window.location.href.indexOf('#') == -1) { currentFileDate = "20141003"; }
 
+calibrator.setBackground(currentFileDate);
 populationGraph.loadBatFile("files/" + currentFileDate + "_tracking.json");
 batViewer.loadFile("files/" + currentFileDate + "_s3dr.json");
