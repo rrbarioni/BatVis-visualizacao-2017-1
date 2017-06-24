@@ -34,7 +34,6 @@ class Scene{
 
 	init() {
 		this.container = document.getElementById( 'threejsviewer' );
-		// document.body.appendChild( this.container );
 		this.camera = new THREE.PerspectiveCamera( 70, this.width / this.height, 1, 10000 );//new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
 		this.camera.position.z = 1000;
 		this.controls = new THREE.TrackballControls( this.camera, this.container );
@@ -109,22 +108,36 @@ class Scene{
   	}
 
   	fillBatScene(){
+  		this.clearScene();
+
   		this.objects = [];
   		this.scene = null;
 	    this.scene = new THREE.Scene();
+
   		this.drawCave();
 	    this.drawGrid();
 	    this.drawBats();
+	}
 
-	    var dragControls = new THREE.DragControls( this.objects, this.camera, this.renderer.domElement );
-		dragControls.addEventListener( 'dragstart', function ( event ) { this.controls.enabled = false; }.bind(this) );
-		dragControls.addEventListener( 'dragend', function ( event ) { this.controls.enabled = true; }.bind(this) );
+	clearScene(){
+		for(var i = 0; i < this.objects.length; i++) {
+			this.scene.remove(this.objects[i]);
+
+			if (!(this.objects[i].geometry === undefined)) {
+				this.objects[i].geometry.dispose();
+			}
+			if (!(this.objects[i].material === undefined)) {
+				this.objects[i].material.dispose();
+			}
+		}
 	}
 
 	drawCave(){
 	    var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
-		var leftWall = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xff0000 } ) );
-		var rightWall = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xff0000 } ) );
+	    var materialL = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
+	    var materialR = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
+		var leftWall = new THREE.Mesh( geometry, materialL );
+		var rightWall = new THREE.Mesh( geometry, materialR );
 		//debugger;
 		var scaleX = 5;
 		var scaleY = this.cave.yMax-this.cave.yMin;
@@ -146,11 +159,10 @@ class Scene{
 		rightWall.scale.y = scaleY + this.batScale;
 		rightWall.scale.z = scaleZ + this.batScale;
 
-		this.scene.add( leftWall );
-		this.scene.add( rightWall );
-
-		this.objects.push( leftWall );
-		this.objects.push( rightWall );
+		this.scene.add(leftWall);
+		this.scene.add(rightWall);
+		this.objects.push(leftWall);
+		this.objects.push(rightWall);
 	}
 
 	drawGrid(){
@@ -164,15 +176,25 @@ class Scene{
 			var geometryH = new THREE.Geometry();
 			geometryH.vertices.push(new THREE.Vector3( -gridCubeSize*nCubes/2,  y, i*gridCubeSize));
 			geometryH.vertices.push(new THREE.Vector3( gridCubeSize*nCubes/2,  y, i*gridCubeSize));
-			var lineH = new THREE.Line(geometryH, new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } ));
-			this.scene.add( lineH );
+			var materialH = new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } );
+			var lineH = new THREE.Line(geometryH, materialH);
+			this.scene.add(lineH);
+			this.objects.push(lineH);
+
+			// geometryH.dispose();
+			// materialH.dispose();
 
 			//Vertical
 			var geometryV = new THREE.Geometry();
 			geometryV.vertices.push(new THREE.Vector3( i*gridCubeSize,  y, -gridCubeSize*nCubes/2));
 			geometryV.vertices.push(new THREE.Vector3( i*gridCubeSize, y, gridCubeSize*nCubes/2));
-			var lineV = new THREE.Line(geometryV, new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } ));
-			this.scene.add( lineV );
+			var materialV = new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } );
+			var lineV = new THREE.Line(geometryV, materialV);
+			this.scene.add(lineV);
+			this.objects.push(lineV);
+
+			// geometryV.dispose();
+			// materialV.dispose();
 		}
 	}
 
@@ -187,7 +209,9 @@ class Scene{
 		var data = this.bats;
 	    var light = new THREE.DirectionalLight( 0xffffff, 1 );
 	    light.position.set( 1, 1, 1 ).normalize();
-	    this.scene.add( light );
+	    this.scene.add(light);
+	    this.objects.push(light);
+
 	    var geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
 	   
 	    for ( var i = 0; i < data.bats.length; i ++ ) {
@@ -201,7 +225,8 @@ class Scene{
 			if(this.frame < tracks[0].f || this.frame > tracks[tracks.length-1].f)
 				continue;
 
-			var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: i*0xffffff } ) );
+			var materialO = new THREE.MeshLambertMaterial( { color: i*0xffffff } );
+			var object = new THREE.Mesh( geometry, materialO );
 
 			var z = 0;
 			for(var k=0; k < tracks.length; k++){
@@ -229,14 +254,15 @@ class Scene{
 					var pathLine = new THREE.Geometry();
 					pathLine.vertices.push(new THREE.Vector3( tracks[j].x, tracks[j].y, z));
 					pathLine.vertices.push(new THREE.Vector3( tracks[j+1].x, tracks[j+1].y, z));
-					var line = new THREE.Line(pathLine, new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } ));
-					this.scene.add( line );
+					var materialLine = new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } )
+					var line = new THREE.Line(pathLine, materialLine);
+					this.scene.add(line);
 					this.objects.push(line);
 				}
 			}
 			
-			this.objects.push( object );
-			this.scene.add( object );
+			this.scene.add(object);
+			this.objects.push(object);
 	    }
 	}
 	
@@ -259,7 +285,8 @@ class Scene{
 	    	return;
 	    }
 
-		var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xffffff } ) );
+	    var materialO = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+		var object = new THREE.Mesh( geometry, materialO );
 
 		var z = 0;
 		for(var k=0; k < bat.track.length; k++){
@@ -282,14 +309,15 @@ class Scene{
 			var pathLine = new THREE.Geometry();
 			pathLine.vertices.push(new THREE.Vector3( bat.track[j].x, bat.track[j].y, z));
 			pathLine.vertices.push(new THREE.Vector3( bat.track[j+1].x, bat.track[j+1].y, z));
-			var line = new THREE.Line(pathLine, new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } ));
-			this.scene.add( line );
+			var materialLine = new THREE.LineBasicMaterial( {color: 0x000000, linewidth: 1 } );
+			var line = new THREE.Line(pathLine, materialLine);
+			this.scene.add(line);
 			this.objects.push(line);
 		}
 	
 		
-		this.objects.push( object );
-		this.scene.add( object );
+		this.scene.add(object);
+		this.objects.push(object);
 
 		this.trackIndex++;
 	}
@@ -309,6 +337,6 @@ class Scene{
 		}
 		
 		this.controls.update();
-		this.renderer.render( this.scene, this.camera );
+		this.renderer.render(this.scene, this.camera);
 	}
 }
