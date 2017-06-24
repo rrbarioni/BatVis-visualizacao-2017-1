@@ -67,6 +67,7 @@ class PopulationGraph {
 		];
 
 		this.batEnabled = [true, true, true, true];
+		this.numberOfEnabledBatLines = 4;
 
 		this.drawCaptions();
 	}
@@ -124,6 +125,7 @@ class PopulationGraph {
 		var captionsX = this.width - 85;
 		var captionsY = 30;
 
+		this.container.selectAll(".captionCircle").remove();
 		this.container.selectAll(".captionCircle")
 			.data(this.batCaptionTypes)
 			.enter()
@@ -132,13 +134,19 @@ class PopulationGraph {
 			.attr("r", 10)
 			.attr("cx", captionsX)
 			.attr("cy", function(d,i) { return captionsY + i*25; })
-			.attr("fill", function(d,i) { return d.color; })
+			.attr("fill", function(d,i) { if (this.batEnabled[i]) { return d.color; } else { return "#555555"; } }.bind(this))
 			.on("click", function(d,i) {
+					if (this.batEnabled[i] && this.numberOfEnabledBatLines == 1) { return; }
+					if (this.batEnabled[i]) { this.numberOfEnabledBatLines--; }
+					if (!this.batEnabled[i]) { this.numberOfEnabledBatLines++; }
+					
 					this.selectCaption(i);
 					this.drawGraph();
 					this.drawMiniGraph();
+					this.drawCaptions();
 				}.bind(this));
 
+		this.container.selectAll(".captionText").remove();
 		this.container.selectAll(".captionText")
 			.data(this.batCaptionTypes)
 			.enter()
@@ -185,13 +193,6 @@ class PopulationGraph {
 	}
 
 	setAxisDomain() {
-		// var minPop = d3.min(this.populationBatData[1], function(d) { return d.population; });
-		// var maxPop = d3.max(this.populationBatData[1], function(d) { return d.population; });
-		// this.minEntranceOrExitingOnInterval[1] =             d3.min(this.enteringBatData[1].concat(this.exitingBatData[1]).concat(this.neutralBatData[1]), function(d) { return d.bats.length; });
-		// this.maxEntranceOrExitingOnInterval[1] = Math.max(1, d3.max(this.enteringBatData[1].concat(this.exitingBatData[1]).concat(this.neutralBatData[1]), function(d) { return d.bats.length; }));
-		// this.minEntranceOrExitingOnInterval[1] = Math.min(this.minEntranceOrExitingOnInterval[1], minPop);
-		// this.maxEntranceOrExitingOnInterval[1] = Math.max(this.maxEntranceOrExitingOnInterval[1], maxPop);
-
 		this.minEntranceOrExitingOnInterval[1] = 0;
 		this.maxEntranceOrExitingOnInterval[1] = 1;
 		if (this.batEnabled[0]) {
@@ -366,13 +367,6 @@ class PopulationGraph {
 	}
 
 	setMiniAxisDomain() {
-		// var minPop = d3.min(this.populationBatData[0], function(d) { return d.population; });
-		// var maxPop = d3.max(this.populationBatData[0], function(d) { return d.population; });
-		// this.minEntranceOrExitingOnInterval[0] =             d3.min(this.enteringBatData[0].concat(this.exitingBatData[0]).concat(this.neutralBatData[0]), function(d) { return d.bats.length; });
-		// this.maxEntranceOrExitingOnInterval[0] = Math.max(1, d3.max(this.enteringBatData[0].concat(this.exitingBatData[0]).concat(this.neutralBatData[0]), function(d) { return d.bats.length; }));
-		// this.minEntranceOrExitingOnInterval[0] = Math.min(this.minEntranceOrExitingOnInterval[0], minPop);
-		// this.maxEntranceOrExitingOnInterval[0] = Math.max(this.maxEntranceOrExitingOnInterval[0], maxPop);
-
 		this.minEntranceOrExitingOnInterval[0] = 0;
 		this.maxEntranceOrExitingOnInterval[0] = 1;
 		if (this.batEnabled[0]) {
