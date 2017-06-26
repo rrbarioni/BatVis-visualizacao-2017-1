@@ -2,18 +2,8 @@ var deviceWidth = 320;
 var deviceHeight = 240;
 var calibratorScale = 1.5;
 
-// var caveDMYSelectorWidth = 600;
-// var caveDMYSelectorHeight = 300;
-
 var tablesWidth = 610;
 var tablesHeight = 550;
-
-// var populationGraphWidth = 550;
-// var populationGraphHeight = 550;
-// var flightsHistogramWidth = 550;
-// var flightsHistogramHeight = 550;
-// var averageFlightTimeGraphWidth = 550;
-// var averageFlightTimeGraphHeight = 550;
 
 var populationGraphWidth =         tablesWidth;
 var populationGraphHeight =        tablesHeight;
@@ -26,7 +16,6 @@ var batViewerWidth = deviceWidth * calibratorScale;
 var batViewerHeight = deviceHeight * calibratorScale;
 
 var calibrator =             new Calibrator            (deviceWidth,                 deviceHeight,calibratorScale);
-// var caveDMYSelector =        new CaveDMYSelector       (caveDMYSelectorWidth,        caveDMYSelectorHeight);
 var populationGraph =        new PopulationGraph       (populationGraphWidth,        populationGraphHeight);
 var flightsHistogram =       new FlightsHistogram      (flightsHistogramWidth,       flightsHistogramHeight);
 var averageFlightTimeGraph = new AverageFlightTimeGraph(averageFlightTimeGraphWidth, averageFlightTimeGraphHeight);
@@ -83,7 +72,6 @@ calibrator.dispatch      = calibratorChangeDispatch;
 populationGraph.dispatch = batListDispatch;
 flightsHistogram.dispatch = histogramBarsListDispatch;
 
-// var currentFileDate = "20141003";
 var currentFileDate = window.location.href.substring(window.location.href.indexOf('#')+1);
 if (window.location.href.indexOf('#') == -1) { currentFileDate = "20141003"; }
 

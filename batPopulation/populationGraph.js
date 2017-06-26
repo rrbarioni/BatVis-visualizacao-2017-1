@@ -69,6 +69,11 @@ class PopulationGraph {
 		this.batEnabled = [true, true, true, true];
 		this.numberOfEnabledBatLines = 4;
 
+		this.tooltip = d3.select("body")
+		    .append("iv")
+		    .attr("class", "populationGraphTooltip")
+		    .style("opacity", 0);
+
 		this.drawCaptions();
 	}
 
@@ -241,7 +246,9 @@ class PopulationGraph {
 		var lineLinecap ="round";
 
 		this.enteringBatGraphLines = this.container.selectAll(".enteringBatLine")
-			.data(this.enteringBatData[1]);
+			.data(this.enteringBatData[1])
+			.on("mouseover", this.enableTooltip.bind(this))
+			.on("mouseout", this.disableTooltip.bind(this));
 		this.enteringBatGraphLines
 			.exit()
 			.remove();
@@ -271,7 +278,9 @@ class PopulationGraph {
 			.attr("stroke-linecap", lineLinecap);
 
 		this.exitingBatGraphLines = this.container.selectAll(".exitingBatLine")
-			.data(this.exitingBatData[1]);
+			.data(this.exitingBatData[1])
+			.on("mouseover", this.enableTooltip.bind(this))
+			.on("mouseout", this.disableTooltip.bind(this));
 		this.exitingBatGraphLines
 			.exit()
 			.remove();
@@ -301,7 +310,9 @@ class PopulationGraph {
 			.attr("stroke-linecap", lineLinecap);
 
 		this.neutralBatGraphLines = this.container.selectAll(".neutralBatLine")
-			.data(this.neutralBatData[1]);
+			.data(this.neutralBatData[1])
+			.on("mouseover", this.enableTooltip.bind(this))
+			.on("mouseout", this.disableTooltip.bind(this));
 		this.neutralBatGraphLines
 			.exit()
 			.remove();
@@ -331,7 +342,9 @@ class PopulationGraph {
 			.attr("stroke-linecap", lineLinecap);
 
 		this.populationBatGraphLines = this.container.selectAll(".populationBatLine")
-			.data(this.populationBatData[1]);
+			.data(this.populationBatData[1])
+			.on("mouseover", this.enableTooltip.bind(this))
+			.on("mouseout", this.disableTooltip.bind(this));
 		this.populationBatGraphLines
 			.exit()
 			.remove();
@@ -635,6 +648,25 @@ class PopulationGraph {
 		if (flightEndTimeHours < 10)   { flightEndTimeHours = "0" + flightEndTimeHours; }
 
 		return flightEndTimeHours + ":" + flightEndTimeMinutes + ":" + flightEndTimeSeconds;
+	}
+
+	enableTooltip(d,i) {
+		this.tooltip.transition()
+	        .duration(200)
+	        .style("opacity", .9);
+	    this.tooltip.html("Entered Bats: " + this.enteringBatData[1][i].bats.length + "<br>" +
+	    				  "Exited Bats: "  + this.exitingBatData[1][i].bats.length  + "<br>" +
+	    				  "Neutral Bats: " + this.neutralBatData[1][i].bats.length  + "<br>" +
+	    				  "Population: "   + this.populationBatData[1][i].population)
+	        .style("left", (d3.event.pageX) + "px")
+	        .style("top", (d3.event.pageY - 14) + "px");
+
+	}
+
+	disableTooltip(d,i) {
+		this.tooltip.transition()
+	        .duration(500)
+	        .style("opacity", 0);
 	}
 
 	sendData() {
