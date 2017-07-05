@@ -27,7 +27,7 @@ var currentSelectedFile = "";
 setFileButtons();
 
 function setFileButtons() {
-	d3.text("availableFileDates.txt", function(data) {
+	d3.text("BatVis-visualizacao-2017-1/availableFileDates.txt", function(data) {
 		d3.selectAll("#divFileButtons").selectAll("button")
 			.data(data.split("\n"))
 			.enter()
