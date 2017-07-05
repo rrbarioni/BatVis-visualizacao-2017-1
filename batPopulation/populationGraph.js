@@ -55,7 +55,7 @@ class PopulationGraph {
 		this.neutralBatData = [];
 		this.populationBatData = [];
 
-		this.batEnabled;
+		this.batEnabled = [true, true, true, true];
 		this.enteringBatGraphLines, this.exitingBatGraphLines, this.neutralBatGraphLines, this.populationBatGraphLines;
 		this.enteringBatGraphMiniLines, this.exitingBatGraphMiniLines, this.neutralBatGraphMiniLines, this.populationBatGraphMiniLines;
 
@@ -66,7 +66,6 @@ class PopulationGraph {
 			{"text": "Bat Population", "color": "#FF9900"}
 		];
 
-		this.batEnabled = [true, true, true, true];
 		this.numberOfEnabledBatLines = 4;
 
 		this.tooltip = d3.select("body")
@@ -247,8 +246,8 @@ class PopulationGraph {
 
 		this.enteringBatGraphLines = this.container.selectAll(".enteringBatLine")
 			.data(this.enteringBatData[1])
-			.on("mouseover", this.enableTooltip.bind(this))
-			.on("mouseout", this.disableTooltip.bind(this));
+			.on("mouseover", function(d,i) { if (this.batEnabled[0]) { this.enableTooltip(d,i); }}.bind(this))
+			.on("mouseout", function(d,i) { if (this.batEnabled[0]) { this.disableTooltip(d,i); }}.bind(this));
 		this.enteringBatGraphLines
 			.exit()
 			.remove();
@@ -279,8 +278,8 @@ class PopulationGraph {
 
 		this.exitingBatGraphLines = this.container.selectAll(".exitingBatLine")
 			.data(this.exitingBatData[1])
-			.on("mouseover", this.enableTooltip.bind(this))
-			.on("mouseout", this.disableTooltip.bind(this));
+			.on("mouseover", function(d,i) { if (this.batEnabled[1]) { this.enableTooltip(d,i); }}.bind(this))
+			.on("mouseout", function(d,i) { if (this.batEnabled[1]) { this.disableTooltip(d,i); }}.bind(this));
 		this.exitingBatGraphLines
 			.exit()
 			.remove();
@@ -311,8 +310,8 @@ class PopulationGraph {
 
 		this.neutralBatGraphLines = this.container.selectAll(".neutralBatLine")
 			.data(this.neutralBatData[1])
-			.on("mouseover", this.enableTooltip.bind(this))
-			.on("mouseout", this.disableTooltip.bind(this));
+			.on("mouseover", function(d,i) { if (this.batEnabled[2]) { this.enableTooltip(d,i); }}.bind(this))
+			.on("mouseout", function(d,i) { if (this.batEnabled[2]) { this.disableTooltip(d,i); }}.bind(this));
 		this.neutralBatGraphLines
 			.exit()
 			.remove();
@@ -343,8 +342,8 @@ class PopulationGraph {
 
 		this.populationBatGraphLines = this.container.selectAll(".populationBatLine")
 			.data(this.populationBatData[1])
-			.on("mouseover", this.enableTooltip.bind(this))
-			.on("mouseout", this.disableTooltip.bind(this));
+			.on("mouseover", function(d,i) { if (this.batEnabled[3]) { this.enableTooltip(d,i); }}.bind(this))
+			.on("mouseout", function(d,i) { if (this.batEnabled[3]) { this.disableTooltip(d,i); }}.bind(this));
 		this.populationBatGraphLines
 			.exit()
 			.remove();
@@ -660,7 +659,6 @@ class PopulationGraph {
 	    				  "Population: "   + this.populationBatData[1][i].population)
 	        .style("left", (d3.event.pageX) + "px")
 	        .style("top", (d3.event.pageY - 14) + "px");
-
 	}
 
 	disableTooltip(d,i) {
