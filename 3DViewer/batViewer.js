@@ -31,6 +31,7 @@ class BatViewer{
 		this.scene.finalFrame = f2;
 		this.scene.frame = f1;
 		this.scene.renderBatsUsingFrameInterval = true;
+		console.log(f1 + " ASD " + f2)
 	}
 
 	receiveBatLabels(labels){

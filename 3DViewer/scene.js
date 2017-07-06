@@ -13,7 +13,7 @@ class Scene{
 	    this.scene;
 	    this.renderer;
 	    
-	    this.initialFrame = 30000;
+	    this.initialFrame = 0;
 	    this.frame = this.initialFrame;
 	    this.finalFrame = data.total;
 	    this.bats = data;
@@ -206,6 +206,7 @@ class Scene{
 	}
 
 	drawBatsInsideFrameInterval(){
+		//console.log(this.initialFrame + " QWE " + this.finalFrame + " ZXC " + this.frame);
 		var data = this.bats;
 	    var light = new THREE.DirectionalLight( 0xffffff, 1 );
 	    light.position.set( 1, 1, 1 ).normalize();
@@ -332,7 +333,12 @@ class Scene{
     	var n = d.getMilliseconds();
 		if(n < this.lastMilisec || (this.lastMilisec + this.frameRenderInterval)%1000 <= n){
 			this.lastMilisec = n;
-			this.frame = this.frame < this.finalFrame ? (this.frame + 1) : this.initialFrame;
+
+			if(this.frame < this.finalFrame)
+				this.frame++;
+			else
+				this.frame = this.initialFrame;
+
 			this.fillBatScene(this.bats, this.frame);
 		}
 		
