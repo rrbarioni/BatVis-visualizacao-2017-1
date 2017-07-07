@@ -23,7 +23,9 @@ class PopulationGraph {
 		this.container = this.svg.append("g")
 			.attr("class", "container");
 		this.miniContainer = this.svg.append("g")
-			.attr("class", "miniContainer")
+			.attr("class", "miniContainer");
+		this.brushMiniContainer = this.miniContainer.append("g")
+			.attr("class", "brushMiniContainer")
 			.call(this.horizontalBrush);
 
 		this.xScale = d3.scaleLinear().range([this.margin.left, this.width + this.margin.left]);
