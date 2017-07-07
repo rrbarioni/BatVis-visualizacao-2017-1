@@ -22,6 +22,13 @@ var averageFlightTimeGraph = new AverageFlightTimeGraph(averageFlightTimeGraphWi
 var batViewer =              new BatViewer             (batViewerWidth, batViewerHeight);
 var batCSVGenerator =        new BatCSVGenerator();
 
+var startLRTBLinesDispatch = d3.dispatch("LRTBLinesStarted");
+startLRTBLinesDispatch.on("LRTBLinesStarted", function(d) {
+	calibrator.receiveLRTBLines(
+		this.l, this.r, this.t, this.b
+	);
+});
+
 var calibratorChangeDispatch = d3.dispatch("calibratorChanged");
 calibratorChangeDispatch.on("calibratorChanged", function() {
 	populationGraph.receiveCalibratorData(
@@ -69,6 +76,7 @@ histogramBarsListDispatch.on("histogramBarListChanged", function() {
 });
 
 calibrator.dispatch      = calibratorChangeDispatch;
+populationGraph.startDispatch = startLRTBLinesDispatch;
 populationGraph.dispatch = batListDispatch;
 flightsHistogram.dispatch = histogramBarsListDispatch;
 

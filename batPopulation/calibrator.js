@@ -165,4 +165,13 @@ class Calibrator {
 		);
 	}
 
+	receiveLRTBLines(left, right, top, bottom) {
+		Math.max(0, Math.min(left * this.screenScale, this.height))
+		this.linesContainer.select("#leftLine").attr  ("x", this.linesValues[this.getLineIndexById("leftLine")].x =   Math.max(0, Math.min(left * this.screenScale, this.width + this.lineThickness)));
+		this.linesContainer.select("#rightLine").attr ("x", this.linesValues[this.getLineIndexById("rightLine")].x =  Math.max(0, Math.min(right * this.screenScale, this.width - this.lineThickness)));
+		this.linesContainer.select("#topLine").attr   ("y", this.linesValues[this.getLineIndexById("topLine")].y =    Math.max(0, Math.min(top * this.screenScale, this.height + this.lineThickness)));
+		this.linesContainer.select("#bottomLine").attr("y", this.linesValues[this.getLineIndexById("bottomLine")].y = Math.max(0, Math.min(bottom * this.screenScale, this.height - this.lineThickness)));
+		this.updateCells();
+	}
+
 }

@@ -100,6 +100,8 @@ class PopulationGraph {
 			this.drawGraph();
 			this.setEnteringAndExitingBatData(0);
 			this.drawMiniGraph();
+
+			this.sendStartLRTBLines(this.batData.l, this.batData.r, this.batData.t, this.batData.b);
 		}.bind(this));
 	}
 
@@ -665,6 +667,18 @@ class PopulationGraph {
 		this.tooltip.transition()
 	        .duration(500)
 	        .style("opacity", 0);
+	}
+
+	sendStartLRTBLines(left, right, top, bottom) {
+		this.startDispatch.call(
+			"LRTBLinesStarted",
+			{
+				"l": left,
+				"r": right,
+				"t": top,
+				"b": bottom
+			}
+		);
 	}
 
 	sendData() {
