@@ -16,7 +16,7 @@ void 0!==c?e&&"set"in e&&void 0!==(d=e.set(a,c,b))?d:a[b]=c:e&&"get"in e&&null!=
         /* Typed.js */
         $(window).load(function(){
         	$(".typing").typed({
-            	strings: ["Morcegos e Cavernas.", "Uma tentativa de preservação.", "Projeto BatVis."], 
+            	strings: ["Welcome to BatVis.", "Pick a date and explore."], 
             	typeSpeed: 70
           	});
         });
