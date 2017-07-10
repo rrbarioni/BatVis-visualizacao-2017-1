@@ -35,6 +35,9 @@ class FlightsHistogram {
 
 		this.receiveBatListData([], [], []);
 		this.drawCaptions();
+
+		this.helpTooltip;
+		this.setHelpTooltip();
 	}
 
 	receiveBatListData(enteringBats, exitingBats, neutralBats) {
@@ -95,6 +98,31 @@ class FlightsHistogram {
 		}
 
 		this.drawHistogram();
+	}
+
+	setHelpTooltip() {
+		this.helpTooltip = d3.select("body")
+		    .append("div")
+		    .attr("class", "helpTooltip flightsHistogramHTT")
+		    .style("opacity", 0);
+
+		this.container.append("circle")
+			.attr("class", "helpTooltipCircle")
+			.attr("r", 10)
+			.attr("cx", this.margin.right)
+			.attr("cy", this.margin.top)
+			.on("mouseover", this.enableHelpTooltip.bind(this))
+			.on("mouseout", this.disableHelpTooltip.bind(this));
+		this.container
+			.append("text")
+			.attr("class", "helpTooltipText")
+			.attr("x", this.margin.right)
+			.attr("y", 5 + this.margin.top)
+			.attr("text-anchor", "middle")
+			.attr("stroke", "#888888")
+			.html("?")
+			.on("mouseover", this.enableHelpTooltip.bind(this))
+			.on("mouseout", this.disableHelpTooltip.bind(this));
 	}
 
 	drawCaptions() {
@@ -296,6 +324,21 @@ class FlightsHistogram {
 
 	batFlightDuration(bat) {
 		return bat.f2 - bat.f1;
+	}
+
+	enableHelpTooltip() {
+		this.helpTooltip.transition()
+	        .duration(200)
+	        .style("opacity", .9);
+	    this.helpTooltip.html("Flights Histogram")
+	    	.style("left", (d3.event.pageX + 10) + "px")
+	    	.style("top", (d3.event.pageY) + "px");
+	}
+
+	disableHelpTooltip() {
+		this.helpTooltip.transition()
+	        .duration(500)
+	        .style("opacity", 0);
 	}
 
 }

@@ -23,12 +23,40 @@ class Calibrator {
 			.attr("class", "calibratorCells");
 		this.cellsValues, this.cells;
 		this.startCells();
+
+		this.helpTooltip;
+		this.setHelpTooltip();
 	}
 
 	setBackground(file) {
 		this.svg
 			.style("background", "url(\"images/" + file + "_img.png\") 0 0")
 			.style("background-size", this.width + "px " + this.height + "px");
+	}
+
+	setHelpTooltip() {
+		this.helpTooltip = d3.select("body")
+		    .append("div")
+		    .attr("class", "helpTooltip calibratorHTT")
+		    .style("opacity", 0);
+
+		this.container.append("circle")
+			.attr("class", "helpTooltipCircle calibratorHTT")
+			.attr("r", 10)
+			.attr("cx", 20)
+			.attr("cy", 20)
+			.on("mouseover", this.enableHelpTooltip.bind(this))
+			.on("mouseout", this.disableHelpTooltip.bind(this));
+		this.container
+			.append("text")
+			.attr("class", "helpTooltipText")
+			.attr("x", 20)
+			.attr("y", 25)
+			.attr("text-anchor", "middle")
+			.attr("stroke", "#888888")
+			.html("?")
+			.on("mouseover", this.enableHelpTooltip.bind(this))
+			.on("mouseout", this.disableHelpTooltip.bind(this));
 	}
 
 	updateLinesValues() {
@@ -151,6 +179,21 @@ class Calibrator {
 			}
 		}
 		return -1;
+	}
+
+	enableHelpTooltip() {
+		this.helpTooltip.transition()
+	        .duration(200)
+	        .style("opacity", .9);
+	    this.helpTooltip.html("Calibrator")
+	    	.style("left", (d3.event.pageX + 10) + "px")
+	    	.style("top", (d3.event.pageY) + "px");
+	}
+
+	disableHelpTooltip() {
+		this.helpTooltip.transition()
+	        .duration(500)
+	        .style("opacity", 0);
 	}
 
 	sendData() {

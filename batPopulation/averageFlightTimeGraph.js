@@ -35,6 +35,9 @@ class AverageFlightTimeGraph {
 		this.batsEnabled = [true, true, true];
 
 		this.drawCaptions();
+
+		this.helpTooltip;
+		this.setHelpTooltip();
 	}
 
 	receiveBatListData(firstFrame, lastFrame, fps, startTime, enteringBats, exitingBats, neutralBats) {
@@ -105,6 +108,31 @@ class AverageFlightTimeGraph {
 		}
 
 		this.drawGraph();
+	}
+
+	setHelpTooltip() {
+		this.helpTooltip = d3.select("body")
+		    .append("div")
+		    .attr("class", "helpTooltip averageFlightTimeGraphHTT")
+		    .style("opacity", 0);
+
+		this.container.append("circle")
+			.attr("class", "helpTooltipCircle")
+			.attr("r", 10)
+			.attr("cx", this.margin.right - 10)
+			.attr("cy", this.margin.top)
+			.on("mouseover", this.enableHelpTooltip.bind(this))
+			.on("mouseout", this.disableHelpTooltip.bind(this));
+		this.container
+			.append("text")
+			.attr("class", "helpTooltipText")
+			.attr("x", this.margin.right - 10)
+			.attr("y", this.margin.top + 5)
+			.attr("text-anchor", "middle")
+			.attr("stroke", "#888888")
+			.html("?")
+			.on("mouseover", this.enableHelpTooltip.bind(this))
+			.on("mouseout", this.disableHelpTooltip.bind(this));
 	}
 
 	drawCaptions() {
@@ -312,5 +340,20 @@ class AverageFlightTimeGraph {
 		if (flightEndTimeHours < 10)   { flightEndTimeHours = "0" + flightEndTimeHours; }
 
 		return flightEndTimeHours + ":" + flightEndTimeMinutes + ":" + flightEndTimeSeconds;
+	}
+
+	enableHelpTooltip() {
+		this.helpTooltip.transition()
+	        .duration(200)
+	        .style("opacity", .9);
+	    this.helpTooltip.html("Average Flight Time Graph")
+	    	.style("left", (d3.event.pageX + 10) + "px")
+	    	.style("top", (d3.event.pageY) + "px");
+	}
+
+	disableHelpTooltip() {
+		this.helpTooltip.transition()
+	        .duration(500)
+	        .style("opacity", 0);
 	}
 }

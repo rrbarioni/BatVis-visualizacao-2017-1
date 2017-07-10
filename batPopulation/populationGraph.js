@@ -71,11 +71,14 @@ class PopulationGraph {
 		this.numberOfEnabledBatLines = 4;
 
 		this.tooltip = d3.select("body")
-		    .append("iv")
+		    .append("div")
 		    .attr("class", "populationGraphTooltip")
 		    .style("opacity", 0);
 
 		this.drawCaptions();
+
+		this.helpTooltip;
+		this.setHelpTooltip();
 	}
 
 	loadBatFile(batFilePath) {
@@ -127,6 +130,31 @@ class PopulationGraph {
 		if (!this.firstCalibrationDone) { return; }
 
 		this.sendData();
+	}
+
+	setHelpTooltip() {
+		this.helpTooltip = d3.select("body")
+		    .append("div")
+		    .attr("class", "helpTooltip populationGraphHTT")
+		    .style("opacity", 0);
+
+		this.miniContainer.append("circle")
+			.attr("class", "helpTooltipCircle")
+			.attr("r", 10)
+			.attr("cx", this.miniMargin.right)
+			.attr("cy", this.margin.top)
+			.on("mouseover", this.enableHelpTooltip.bind(this))
+			.on("mouseout", this.disableHelpTooltip.bind(this));
+		this.miniContainer
+			.append("text")
+			.attr("class", "helpTooltipText")
+			.attr("x", this.miniMargin.right)
+			.attr("y", 5 + this.margin.top)
+			.attr("text-anchor", "middle")
+			.attr("stroke", "#888888")
+			.html("?")
+			.on("mouseover", this.enableHelpTooltip.bind(this))
+			.on("mouseout", this.disableHelpTooltip.bind(this));
 	}
 
 	drawCaptions() {
@@ -667,6 +695,22 @@ class PopulationGraph {
 
 	disableTooltip(d,i) {
 		this.tooltip.transition()
+	        .duration(500)
+	        .style("opacity", 0);
+	}
+
+	enableHelpTooltip() {
+		this.helpTooltip.transition()
+	        .duration(200)
+	        .style("opacity", .9);
+	    this.helpTooltip.html("Este gráfico " + "<br>" +
+	    	                  "eae")
+	        .style("left", (d3.event.pageX + 10) + "px")
+	        .style("top", (d3.event.pageY) + "px");
+	}
+
+	disableHelpTooltip() {
+		this.helpTooltip.transition()
 	        .duration(500)
 	        .style("opacity", 0);
 	}
