@@ -330,7 +330,7 @@ class FlightsHistogram {
 		this.helpTooltip.transition()
 	        .duration(200)
 	        .style("opacity", .9);
-	    this.helpTooltip.html("Flights Histogram")
+	    this.helpTooltip.html("<b>" + "Flights Duration Histogram: " + "</b>" + "This graph shows the quantity of bats of each category clustered by it's flight time (in frames). Click on a bar of the histogram to visualize the flight simulation of the clustered bats in the 3D simulator.")
 	    	.style("left", (d3.event.pageX + 10) + "px")
 	    	.style("top", (d3.event.pageY) + "px");
 	}

@@ -346,7 +346,7 @@ class AverageFlightTimeGraph {
 		this.helpTooltip.transition()
 	        .duration(200)
 	        .style("opacity", .9);
-	    this.helpTooltip.html("Average Flight Time Graph")
+	    this.helpTooltip.html("<b>" + "Average Flights Duration Graph: " + "</b>" + "This graph shows the average flight time (in frames) of the tracked bats along the video. You can also click on a colored ball in order to choose which lines you want to visualize.")
 	    	.style("left", (d3.event.pageX + 10) + "px")
 	    	.style("top", (d3.event.pageY) + "px");
 	}

@@ -185,7 +185,7 @@ class Calibrator {
 		this.helpTooltip.transition()
 	        .duration(200)
 	        .style("opacity", .9);
-	    this.helpTooltip.html("Calibrator")
+	    this.helpTooltip.html("<b>" + "Calibrator: " + "</b>" + "Click on each cell to set it's color. A green cell represent a cave entrance and a red cell represent a cave exit. This information is used to calculate the cave population.")
 	    	.style("left", (d3.event.pageX + 10) + "px")
 	    	.style("top", (d3.event.pageY) + "px");
 	}

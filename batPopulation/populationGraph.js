@@ -703,8 +703,7 @@ class PopulationGraph {
 		this.helpTooltip.transition()
 	        .duration(200)
 	        .style("opacity", .9);
-	    this.helpTooltip.html("Este gráfico " + "<br>" +
-	    	                  "eae")
+	    this.helpTooltip.html("<b>" + "Bat Population Graph: " + "</b>" + "The top part of the graph is the population graph. Put the mouse over the line in a given position to see the lines values on that point. The bottom part is a brush area. Select an area to see a detailed information about it on the top graph. You can also click on a colored ball in order to choose which lines you want to visualize.")
 	        .style("left", (d3.event.pageX + 10) + "px")
 	        .style("top", (d3.event.pageY) + "px");
 	}
