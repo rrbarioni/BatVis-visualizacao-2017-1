@@ -3,6 +3,7 @@ body {
     opacity: 0.9;
     user-select: none;
     background-image-transform: ;
+    background-image: url("../images/bat_cave.jpg");
 }
 
 #preloader {
@@ -21,17 +22,6 @@ body {
 body.loaded #preloader{
     opacity: 1;
     visibility: hidden;
-}
-
-.bg_video{
-    position: fixed; 
-    right: 0; 
-    bottom: 0;
-    min-width: 100%; 
-    min-height: 100%;
-    width: auto; 
-    height: auto; 
-    z-index: -1000;
 }
 
 .loader{
@@ -77,32 +67,6 @@ body.loaded #preloader{
     animation: spin 1.5s linear infinite;
 }
 
-@-webkit-keyframes spin {
-    0%   {
-        -webkit-transform: rotate(0deg);
-        -ms-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(360deg);
-        -ms-transform: rotate(360deg);
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes spin {
-    0%   {
-        -webkit-transform: rotate(0deg);
-        -ms-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(360deg);
-        -ms-transform: rotate(360deg);
-        transform: rotate(360deg);
-    }
-}
-
 .home-section {
     height: 100%;
 }
@@ -120,7 +84,7 @@ body.loaded #preloader{
 }
 
 .home-section-background h2 {
-    color: black;
+    color: yellow;
     font-size: 60px;
     letter-spacing: 4px;
     margin: 20px;
@@ -131,7 +95,7 @@ body.loaded #preloader{
 }
 
 .home-section-background p {
-    color: black;
+    color: yellow;
     letter-spacing: 3px;
     font-weight: 900;
     font-size: 22px;
@@ -145,7 +109,7 @@ body.loaded #preloader{
     display: block;
     margin: auto;
     font-family: "Lucida Console";
-    fill: #000000;
+    fill: #FFFF00;
 }
 
 .button {

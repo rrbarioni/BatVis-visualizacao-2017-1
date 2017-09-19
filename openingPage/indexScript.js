@@ -23,35 +23,50 @@ void 0!==c?e&&"set"in e&&void 0!==(d=e.set(a,c,b))?d:a[b]=c:e&&"get"in e&&null!=
     });
 })(jQuery);
 
+var fileList = [];
 var currentSelectedFile = "";
-setFileButtons();
+
+$.ajax({
+    type: "GET",
+    url: "files/",
+    success : function(html) {
+    	filesGet = document.createElement("html");
+		filesGet.innerHTML = html;
+		console.log(filesGet)
+		for(var i = 0; i < filesGet.getElementsByTagName("a").length; i++) {
+			fileList.push(filesGet.getElementsByTagName("a")[i].getAttribute("href").split("_")[0]);
+		}
+		fileList = fileList.filter(function(elem, index, self) {
+		    return index == self.indexOf(elem);
+		});
+		setFileButtons();
+    }
+});
 
 function setFileButtons() {
-	d3.text("./availableFileDates.txt", function(data) {
-		d3.selectAll("#divFileButtons").selectAll("button")
-			.data(data.split("\n"))
-			.enter()
-			.append("button")
-			.attr("class", "button batFile")
-			.attr("id", function(d) { return "file_" + dateStringToFileFormat(d); })
-			.attr("selected", "false")
-			.attr("onclick", function(d) { return "selectBatFile('" + dateStringToFileFormat(d) + "')"; })
-			.html(function(d) { return d; });
-	});
+	d3.selectAll("#divFileButtons").selectAll("button")
+		.data(fileList)
+		.enter()
+		.append("button")
+		.attr("class", "button batFile")
+		.attr("id", function(d) { return "file_" + d; })
+		.attr("selected", "false")
+		.attr("onclick", function(d) { return "selectBatFile('" + d + "')"; })
+		.html(function(d) { return fileFormatToDateString(d); });
 }
 
-function dateStringToFileFormat(date) {
-	var d = date.substring(0,2);
-	var m = date.substring(3,5);
-	var y = date.substring(6,10);
-	return "" + y + m + d;
+function fileFormatToDateString(date) {
+	var y = date.substring(0,4);
+	var m = date.substring(4,6);
+	var d = date.substring(6,8);
+	return d + "/" + m + "/" + y;
 }
 
 function selectBatFile(batFileId) {
 	d3.selectAll(".batFile").attr("selected", "false");
 	currentSelectedFile = batFileId;
 	d3.select("#file_" + batFileId).attr("selected", "true");
-	}
+}
 
 function openBatPopulationWindow() {
 	if (currentSelectedFile == "") { return; }
