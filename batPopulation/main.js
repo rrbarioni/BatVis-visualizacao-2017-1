@@ -80,7 +80,9 @@ populationGraph.startDispatch = startLRTBLinesDispatch;
 populationGraph.dispatch = batListDispatch;
 flightsHistogram.dispatch = histogramBarsListDispatch;
 
-var currentFileDate = window.location.href.substring(window.location.href.indexOf('#')+1);
+var currentFileDate = window.location.href.substring(window.location.href.indexOf('#')+1).replace(/_/g, "/");
+
+console.log(currentFileDate);
 if (window.location.href.indexOf('#') == -1) { currentFileDate = "20141003"; }
 
 calibrator.setBackground(currentFileDate);

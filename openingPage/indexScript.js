@@ -23,36 +23,84 @@ void 0!==c?e&&"set"in e&&void 0!==(d=e.set(a,c,b))?d:a[b]=c:e&&"get"in e&&null!=
     });
 })(jQuery);
 
-var fileList = [];
+function list_files(dir) {
+	files = [];
+	$.ajax({
+		type: "GET",
+		async: false,
+		url: dir,
+		success: function(html) {
+			$(html).find("li > a").each(function() {
+				files.push(dir + $(this).attr("href"));
+			});
+		}
+	});
+	return files;
+}
+
+var file_dictionary = {};
+files_root = "files/";
+countries = list_files(files_root);
+for (i in countries) {
+	country_name = countries[i].split("/")[1];
+	file_dictionary[country_name] = {};
+	regions = list_files(countries[i]);
+	for (j in regions) {
+		region_name = regions[j].split("/")[2];
+		file_dictionary[country_name][region_name] = {};
+		caves = list_files(regions[j]);
+		for (k in caves) {
+			cave_name = caves[k].split("/")[3];
+			file_dictionary[country_name][region_name][cave_name] = [];
+			records = list_files(caves[k]);
+			for (l in records) {
+				record_name = records[l].split("/")[4].split("_")[0];
+				file_dictionary[country_name][region_name][cave_name].push(record_name);
+			}
+			file_dictionary[country_name][region_name][cave_name] = file_dictionary[country_name][region_name][cave_name].filter(function(item, pos) {
+				return file_dictionary[country_name][region_name][cave_name].indexOf(item) == pos;
+			});
+		}
+	}
+}
+
+function dicToArray(dic) {
+	array = [];
+	for (var key in dic) {
+		array.push(key);
+	}
+	return array;
+}
+
 var currentSelectedFile = "";
 
-$.ajax({
-    type: "GET",
-    url: "files/",
-    success : function(html) {
-    	filesGet = document.createElement("html");
-		filesGet.innerHTML = html;
-		console.log(filesGet)
-		for(var i = 0; i < filesGet.getElementsByTagName("a").length; i++) {
-			fileList.push(filesGet.getElementsByTagName("a")[i].getAttribute("href").split("_")[0]);
-		}
-		fileList = fileList.filter(function(elem, index, self) {
-		    return index == self.indexOf(elem);
-		});
-		setFileButtons();
-    }
-});
+setFileButtons("", "", "");
 
-function setFileButtons() {
+function setFileButtons(country, region, cave) {
+	file_list = [];
+	if      (country == "") { file_list = dicToArray(file_dictionary); }
+	else if (region == "")  { file_list = dicToArray(file_dictionary[country]); }
+	else if (cave == "")    { file_list = dicToArray(file_dictionary[country][region]); }
+	else                    { file_list = file_dictionary[country][region][cave]; }
+
+	d3.selectAll("#divFileButtons").selectAll("button").remove();
 	d3.selectAll("#divFileButtons").selectAll("button")
-		.data(fileList)
+		.data(file_list)
 		.enter()
 		.append("button")
 		.attr("class", "button batFile")
-		.attr("id", function(d) { return "file_" + d; })
+		.attr("id", function(d) { return "file_" + country + "_" + region + "_" + cave + "_" + d; })
 		.attr("selected", "false")
-		.attr("onclick", function(d) { return "selectBatFile('" + d + "')"; })
-		.html(function(d) { return fileFormatToDateString(d); });
+		.attr("onclick", function(d) {
+			if      (country == "") { return "setFileButtons('" + d + "', ''         , ''         )"; }
+			else if (region == "")  { return "setFileButtons('" + country + "'  , '" + d + "', ''         )"; }
+			else if (cave == "")    { return "setFileButtons('" + country + "'  , '" + region + "'   , '" + d + "')"; }
+			return "selectBatFile('" + country + "_" + region + "_" + cave + "_" + d + "')";
+		})
+		.html(function(d) { 
+			if (cave == "") { return d; } 
+			return fileFormatToDateString(d); 
+		});
 }
 
 function fileFormatToDateString(date) {
@@ -65,6 +113,7 @@ function fileFormatToDateString(date) {
 function selectBatFile(batFileId) {
 	d3.selectAll(".batFile").attr("selected", "false");
 	currentSelectedFile = batFileId;
+	console.log("#file_" + batFileId);
 	d3.select("#file_" + batFileId).attr("selected", "true");
 }
 

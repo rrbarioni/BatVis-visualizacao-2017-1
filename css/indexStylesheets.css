@@ -112,6 +112,10 @@ body.loaded #preloader{
     fill: #FFFF00;
 }
 
+#divFileButtons {
+    /*display: inline-grid;*/
+}
+
 .button {
     display: block;
     margin: auto;
