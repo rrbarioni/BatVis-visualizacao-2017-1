@@ -83,24 +83,47 @@ function setFileButtons(country, region, cave) {
 	else if (cave == "")    { file_list = dicToArray(file_dictionary[country][region]); }
 	else                    { file_list = file_dictionary[country][region][cave]; }
 
+	d3.selectAll("#accessBatVis")
+		.html(function(d) {
+			if      (country == "") { return "Select a country"; }
+			else if (region == "")  { return "Select a region";  }
+			else if (cave == "")    { return "Select a cave";    }
+			return "<span>Access BatVis</span>";
+		});
+
+	var t = d3.selectAll("#divFileButtons").transition().duration(300);
 	d3.selectAll("#divFileButtons").selectAll("button").remove();
 	d3.selectAll("#divFileButtons").selectAll("button")
 		.data(file_list)
 		.enter()
 		.append("button")
+		// .transition(t)
 		.attr("class", "button batFile")
 		.attr("id", function(d) { return "file_" + country + "_" + region + "_" + cave + "_" + d; })
 		.attr("selected", "false")
 		.attr("onclick", function(d) {
-			if      (country == "") { return "setFileButtons('" + d + "', ''         , ''         )"; }
-			else if (region == "")  { return "setFileButtons('" + country + "'  , '" + d + "', ''         )"; }
-			else if (cave == "")    { return "setFileButtons('" + country + "'  , '" + region + "'   , '" + d + "')"; }
+			if      (country == "") { return "setFileButtons('" + d       + "', ''              , ''         )"; }
+			else if (region == "")  { return "setFileButtons('" + country + "', '" + d      + "', ''         )"; }
+			else if (cave == "")    { return "setFileButtons('" + country + "', '" + region + "', '" + d + "')"; }
 			return "selectBatFile('" + country + "_" + region + "_" + cave + "_" + d + "')";
 		})
 		.html(function(d) { 
 			if (cave == "") { return d; } 
 			return fileFormatToDateString(d); 
 		});
+
+	if (country != "") {
+		d3.selectAll("#divFileButtons")
+			.append("button")
+			.attr("class", "button")
+			.attr("id", "back")
+			.attr("onclick", function(d) {
+				if      (region == "") { return "setFileButtons('',                ''              , '')"; }
+				else if (cave == "")   { return "setFileButtons('" + country + "', ''              , '')"; }
+				else                   { return "setFileButtons('" + country + "', '" + region + "', '')"; }
+			})
+			.html("<span>Back</span>");
+	}
 }
 
 function fileFormatToDateString(date) {
@@ -113,7 +136,6 @@ function fileFormatToDateString(date) {
 function selectBatFile(batFileId) {
 	d3.selectAll(".batFile").attr("selected", "false");
 	currentSelectedFile = batFileId;
-	console.log("#file_" + batFileId);
 	d3.select("#file_" + batFileId).attr("selected", "true");
 }
 
