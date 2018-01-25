@@ -24,7 +24,7 @@ void 0!==c?e&&"set"in e&&void 0!==(d=e.set(a,c,b))?d:a[b]=c:e&&"get"in e&&null!=
 })(jQuery);
 
 function list_files(dir) {
-	url = "http://api.github.com/repos/rrbarioni/BatVis-visualizacao-2017-1/contents/" + dir;
+	url = "https://api.github.com/repos/rrbarioni/BatVis-visualizacao-2017-1/contents/" + dir;
 	files = [];
 	var x = "eae";
 	$.ajax({
