@@ -24,27 +24,42 @@ void 0!==c?e&&"set"in e&&void 0!==(d=e.set(a,c,b))?d:a[b]=c:e&&"get"in e&&null!=
 })(jQuery);
 
 function list_files(dir) {
-	// $.ajax({
-	// 	type: "GET",
-	// 	async: false,
-	// 	url: dir,
-	// 	success: function(html) {
-	// 		$(html).find("li > a").each(function() {
-	// 			files.push(dir + $(this).attr("href"));
-	// 		});
-	// 	}
-	// });
-
+	url = "http://api.github.com/repos/rrbarioni/BatVis-visualizacao-2017-1/contents/" + dir;
 	files = [];
-	
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', dir, false);
-	xhr.setRequestHeader("Accept", "");
-	xhr.send();	$(xhr.response).find("li > a").each(function() {
-		files.push(dir + $(this).attr("href"));
+	var x = "eae";
+	$.ajax({
+	    url: url,
+	    dataType: 'json',
+        async: false,
+	    // crossDomain: true,
+	    success: function(data) {
+	    	x = data;
+	        // console.log(data);
+	        // Object.keys(data).forEach(function(key) {
+			//     files.push(data[key].path);
+			// });
+			// console.log(files);
+			console.log("inside success" + x);
+	    },
+	    // type: 'GET'
 	});
+	console.log(x);
+	// console.log(x.responseText)
+	// console.log(files);
 
-	return files;
+	// files = [];
+	// var xhr = new XMLHttpRequest();
+	// xhr.open('GET', dir, false);
+	// xhr.setRequestHeader("Accept", "application/vnd.github.v3+json");
+	// xhr.send();
+	// $(xhr.response).find("li > a").each(function() {
+	// 	files.push(dir + $(this).attr("href"));
+	// });
+	// return files;
+}
+
+function test() {
+
 }
 
 var file_dictionary = {};
