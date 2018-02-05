@@ -24,43 +24,55 @@ void 0!==c?e&&"set"in e&&void 0!==(d=e.set(a,c,b))?d:a[b]=c:e&&"get"in e&&null!=
 })(jQuery);
 
 function list_files(dir) {
-	url = "https://api.github.com/repos/rrbarioni/BatVis-visualizacao-2017-1/contents/" + dir;
-	files = [];
-	var x = "eae";
-	$.ajax({
-	    url: url,
-	    dataType: 'json',
-        async: false,
-	    // crossDomain: true,
-	    success: function(data) {
-	    	x = data;
-	        // console.log(data);
-	        // Object.keys(data).forEach(function(key) {
-			//     files.push(data[key].path);
-			// });
-			// console.log(files);
-			console.log("inside success" + x);
-	    },
-	    // type: 'GET'
-	});
-	console.log(x);
-	// console.log(x.responseText)
-	// console.log(files);
-
+	// url = "https://api.github.com/repos/rrbarioni/BatVis-visualizacao-2017-1/contents/" + dir;
 	// files = [];
-	// var xhr = new XMLHttpRequest();
-	// xhr.open('GET', dir, false);
-	// xhr.setRequestHeader("Accept", "application/vnd.github.v3+json");
-	// xhr.send();
-	// $(xhr.response).find("li > a").each(function() {
-	// 	files.push(dir + $(this).attr("href"));
+	// return $.ajax({
+	//     url: url,
+	//     dataType: 'json',
+ //        async: true,
+	//     crossDomain: true
 	// });
-	// return files;
+
+	files = [];
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', dir, false);
+	xhr.setRequestHeader("Accept", "application/vnd.github.v3+json");
+	xhr.send();
+	$(xhr.response).find("li > a").each(function() {
+		files.push(dir + $(this).attr("href"));
+	});
+	return files;
 }
 
-function test() {
-
+function get_attr_list_from_dict(dict, attr) {
+	ret_list = [];
+	Object.keys(dict).forEach(function(key) {
+	    ret_list.push(dict[key][attr]);
+	});
+	return ret_list;
 }
+
+function dicToArray(dic) {
+	array = [];
+	for (var key in dic) {
+		array.push(key);
+	}
+	return array;
+}
+
+// var file_dictionary = {};
+// files_root = "files/";
+// list_files(files_root).done(function(countries_json) {
+// 	countries = get_attr_list_from_dict(countries_json, "path");
+// 	countries_names = get_attr_list_from_dict(countries_json, "name");
+// 	for (i in countries) {
+// 		country_name = countries_names[i]
+// 		file_dictionary[country_name] = {};
+// 	}
+// 	console.log(file_dictionary)
+// 	var currentSelectedFile = "";
+// 	setFileButtons("", "", "");
+// });
 
 var file_dictionary = {};
 files_root = "files/";
@@ -86,14 +98,6 @@ for (i in countries) {
 			});
 		}
 	}
-}
-
-function dicToArray(dic) {
-	array = [];
-	for (var key in dic) {
-		array.push(key);
-	}
-	return array;
 }
 
 var currentSelectedFile = "";
