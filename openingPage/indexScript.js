@@ -134,6 +134,7 @@ function fileFormatToDateString(date) {
 }
 
 function selectBatFile(batFileId) {
+	console.log(batFileId)
 	d3.selectAll(".batFile").attr("selected", "false");
 	currentSelectedFile = batFileId;
 	d3.select("#file_" + batFileId).attr("selected", "true");

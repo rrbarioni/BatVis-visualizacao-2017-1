@@ -85,6 +85,6 @@ var currentFileDate = window.location.href.substring(window.location.href.indexO
 console.log(currentFileDate);
 if (window.location.href.indexOf('#') == -1) { currentFileDate = "20141003"; }
 
-calibrator.setBackground(currentFileDate);
-populationGraph.loadBatFile("files/" + currentFileDate + "_tracking.json");
-batViewer.loadFile("files/" + currentFileDate + "_s3dr.json");
+calibrator.setBackground("files/" + currentFileDate + "/img.png");
+batViewer.loadFile("files/" + currentFileDate + "/s3dr.json");
+populationGraph.loadBatFile("files/" + currentFileDate + "/tracking.json");
