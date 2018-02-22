@@ -102,7 +102,7 @@ class PopulationGraph {
 			this.neutralBatData[0] = [];                                                                                 this.neutralBatData[1] = this.neutralBatData[0];
 			this.populationBatData[0] = [];                                                                              this.populationBatData[1] = this.populationBatData[0];
 
-			this.csvEnteringExitingBatDataSize = Math.ceil(this.batData.total / (60 * this.batData.fps));
+			this.csvEnteringExitingBatDataSize = Math.ceil(this.batData.total / (60 * this.batData.fps)) + 1;
 
 			this.setEnteringAndExitingBatData(1);
 			this.drawGraph();
@@ -130,7 +130,7 @@ class PopulationGraph {
 		this.setEnteringAndExitingBatData(1);
 		this.drawGraph();
 
-		this.csvEnteringExitingBatDataSize = Math.ceil((this.lastFrame[1] - this.firstFrame[1]) / (60 * this.batData.fps));
+		this.csvEnteringExitingBatDataSize = Math.ceil((this.lastFrame[1] - this.firstFrame[1]) / (60 * this.batData.fps)) + 1;
 
 		if (!this.firstCalibrationDone) { return; }
 

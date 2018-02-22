@@ -7,7 +7,7 @@ class BatCSVGenerator {
 	receiveBatListData(firstFrame, lastFrame, fps, startTime, batListSegmentationSize, enteringBats, exitingBats, populationBats) {
 		this.generatedLines = [];
 
-		// console.log("batListSegmentationSize: " + batListSegmentationSize)
+		console.log("batListSegmentationSize: " + batListSegmentationSize)
 
 		enteringBats = [].concat.apply([], enteringBats.map(function(d) { return d.bats; }))
 		exitingBats = [].concat.apply([], exitingBats.map(function(d) { return d.bats; }))
@@ -24,9 +24,13 @@ class BatCSVGenerator {
 				populationBats_2[i] += populationBats_2[i-1];
 			}
 		}
+
 		enteringBats_2[i] = enteringBats.filter(function(d) { return d.f2 >= firstFrame + i*fps*60; }).length;
 		exitingBats_2[i] = exitingBats.filter(function(d) { return d.f2 >= firstFrame + i*fps*60; }).length;
-		populationBats_2[i] = (exitingBats_2[i] - enteringBats_2[i]) + populationBats_2[i-1];
+		populationBats_2[i] = exitingBats_2[i] - enteringBats_2[i] + populationBats_2[i-1];
+		// if (batListSegmentationSize - 1 == 1) {
+		// 	populationBats_2[i] += populationBats_2[i-1];
+		// }
 
 		for(i = 0; i < batListSegmentationSize - 1; i++) {
 			this.generatedLines.push({
