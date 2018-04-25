@@ -24,55 +24,19 @@ void 0!==c?e&&"set"in e&&void 0!==(d=e.set(a,c,b))?d:a[b]=c:e&&"get"in e&&null!=
 })(jQuery);
 
 function list_files(dir) {
-	// url = "https://api.github.com/repos/rrbarioni/BatVis-visualizacao-2017-1/contents/" + dir;
-	// files = [];
-	// return $.ajax({
-	//     url: url,
-	//     dataType: 'json',
- //        async: true,
-	//     crossDomain: true
-	// });
-
 	files = [];
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', dir, false);
-	xhr.setRequestHeader("Accept", "application/vnd.github.v3+json");
-	xhr.send();
-	$(xhr.response).find("li > a").each(function() {
-		files.push(dir + $(this).attr("href"));
+	$.ajax({
+		type: "GET",
+		async: false,
+		url: dir,
+		success: function(html) {
+			$(html).find("li > a").each(function() {
+				files.push(dir + $(this).attr("href"));
+			});
+		}
 	});
 	return files;
 }
-
-function get_attr_list_from_dict(dict, attr) {
-	ret_list = [];
-	Object.keys(dict).forEach(function(key) {
-	    ret_list.push(dict[key][attr]);
-	});
-	return ret_list;
-}
-
-function dicToArray(dic) {
-	array = [];
-	for (var key in dic) {
-		array.push(key);
-	}
-	return array;
-}
-
-// var file_dictionary = {};
-// files_root = "files/";
-// list_files(files_root).done(function(countries_json) {
-// 	countries = get_attr_list_from_dict(countries_json, "path");
-// 	countries_names = get_attr_list_from_dict(countries_json, "name");
-// 	for (i in countries) {
-// 		country_name = countries_names[i]
-// 		file_dictionary[country_name] = {};
-// 	}
-// 	console.log(file_dictionary)
-// 	var currentSelectedFile = "";
-// 	setFileButtons("", "", "");
-// });
 
 var file_dictionary = {};
 files_root = "files/";
@@ -100,6 +64,14 @@ for (i in countries) {
 	}
 }
 
+function dicToArray(dic) {
+	array = [];
+	for (var key in dic) {
+		array.push(key);
+	}
+	return array;
+}
+
 var currentSelectedFile = "";
 
 setFileButtons("", "", "");
@@ -111,47 +83,24 @@ function setFileButtons(country, region, cave) {
 	else if (cave == "")    { file_list = dicToArray(file_dictionary[country][region]); }
 	else                    { file_list = file_dictionary[country][region][cave]; }
 
-	d3.selectAll("#accessBatVis")
-		.html(function(d) {
-			if      (country == "") { return "Select a country"; }
-			else if (region == "")  { return "Select a region";  }
-			else if (cave == "")    { return "Select a cave";    }
-			return "<span>Access BatVis</span>";
-		});
-
-	var t = d3.selectAll("#divFileButtons").transition().duration(300);
 	d3.selectAll("#divFileButtons").selectAll("button").remove();
 	d3.selectAll("#divFileButtons").selectAll("button")
 		.data(file_list)
 		.enter()
 		.append("button")
-		// .transition(t)
 		.attr("class", "button batFile")
 		.attr("id", function(d) { return "file_" + country + "_" + region + "_" + cave + "_" + d; })
 		.attr("selected", "false")
 		.attr("onclick", function(d) {
-			if      (country == "") { return "setFileButtons('" + d       + "', ''              , ''         )"; }
-			else if (region == "")  { return "setFileButtons('" + country + "', '" + d      + "', ''         )"; }
-			else if (cave == "")    { return "setFileButtons('" + country + "', '" + region + "', '" + d + "')"; }
+			if      (country == "") { return "setFileButtons('" + d + "', ''         , ''         )"; }
+			else if (region == "")  { return "setFileButtons('" + country + "'  , '" + d + "', ''         )"; }
+			else if (cave == "")    { return "setFileButtons('" + country + "'  , '" + region + "'   , '" + d + "')"; }
 			return "selectBatFile('" + country + "_" + region + "_" + cave + "_" + d + "')";
 		})
 		.html(function(d) { 
 			if (cave == "") { return d; } 
 			return fileFormatToDateString(d); 
 		});
-
-	if (country != "") {
-		d3.selectAll("#divFileButtons")
-			.append("button")
-			.attr("class", "button")
-			.attr("id", "back")
-			.attr("onclick", function(d) {
-				if      (region == "") { return "setFileButtons('',                ''              , '')"; }
-				else if (cave == "")   { return "setFileButtons('" + country + "', ''              , '')"; }
-				else                   { return "setFileButtons('" + country + "', '" + region + "', '')"; }
-			})
-			.html("<span>Back</span>");
-	}
 }
 
 function fileFormatToDateString(date) {
@@ -164,6 +113,7 @@ function fileFormatToDateString(date) {
 function selectBatFile(batFileId) {
 	d3.selectAll(".batFile").attr("selected", "false");
 	currentSelectedFile = batFileId;
+	console.log("#file_" + batFileId);
 	d3.select("#file_" + batFileId).attr("selected", "true");
 }
 

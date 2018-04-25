@@ -113,8 +113,7 @@ body.loaded #preloader{
 }
 
 #divFileButtons {
-    /*overflow: auto;
-    overflow-y: scroll;*/
+    /*display: inline-grid;*/
 }
 
 .button {
@@ -133,7 +132,7 @@ body.loaded #preloader{
     font-family: "Lucida Console";
 }
 
-.button#accessBatVis {
+.button#batPopulationGraph {
     background-color: #000000;
     color: #FFFF00;
 }
@@ -161,7 +160,7 @@ body.loaded #preloader{
     transition: 0.5s;
 }
 
-.button#accessBatVis span:after {
+.button span:after {
     content: '\00bb';
     position: absolute;
     opacity: 0;
@@ -169,16 +168,12 @@ body.loaded #preloader{
     right: -20px;
     transition: 0.5s;
 }
-.button#accessBatVis:hover span { padding-right: 25px; }
-.button#accessBatVis:hover span:after { opacity: 1; right: 0; }
 
-.button#back span:after {
-    content: '\00ab';
-    position: absolute;
-    opacity: 0;
-    top: 0;
-    left: -20px;
-    transition: 0.5s;
+.button:hover span {
+    padding-right: 25px;
 }
-.button#back:hover span { padding-left: 25px; }
-.button#back:hover span:after { opacity: 1; left: 0; }
+
+.button:hover span:after {
+    opacity: 1;
+    right: 0;
+}
