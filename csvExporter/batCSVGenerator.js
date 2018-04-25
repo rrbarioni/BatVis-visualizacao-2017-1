@@ -7,7 +7,7 @@ class BatCSVGenerator {
 	receiveBatListData(firstFrame, lastFrame, fps, startTime, batListSegmentationSize, enteringBats, exitingBats, populationBats) {
 		this.generatedLines = [];
 
-		console.log("batListSegmentationSize: " + batListSegmentationSize)
+		//console.log("batListSegmentationSize: " + batListSegmentationSize)
 
 		enteringBats = [].concat.apply([], enteringBats.map(function(d) { return d.bats; }))
 		exitingBats = [].concat.apply([], exitingBats.map(function(d) { return d.bats; }))
